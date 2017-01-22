@@ -8,10 +8,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class StreamingPrototype extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-    BitmapFont font;
-	Connection conn;
+	private SpriteBatch batch;
+    private Texture img;
+    private BitmapFont font;
+    private Connection conn;
+    private int count;
 	
 	@Override
 	public void create () {
@@ -21,6 +22,7 @@ public class StreamingPrototype extends ApplicationAdapter {
         conn = new Connection();
 
         conn.connect();
+        count = 0;
 	}
 
 	@Override
@@ -29,7 +31,14 @@ public class StreamingPrototype extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
         if(conn.getReady()){
+            // write
+            count += 1;
+            conn.write(("Client:" + count + "\n").getBytes());
+            // read
+            byte[] text = new byte[100];
+            conn.read(text);
             batch.draw(img, 0, 0);
+            font.draw(batch, new String(text), 0, 100);
         }
         else{
             // draw connection state

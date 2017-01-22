@@ -5,6 +5,7 @@ import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -32,7 +33,13 @@ public class Connection {
     }
 
     synchronized public void connect(){
-        if(!getReady()){
+        // only issue a connection when disconnected
+        if(state == State.Disconnected){
+            if(socket  != null){
+                // delete previous socket  if exists
+                socket.dispose();
+                socket = null;
+            }
             new Thread(
                 new Runnable() {
                     @Override
@@ -76,10 +83,41 @@ public class Connection {
     }
 
     public void dispose(){
+        close();
+    }
+
+    synchronized public void close(){
         if(socket != null){
             socket.dispose();
             socket = null;
+            recvStream = null;
+            sendStream = null;
             state = State.Disconnected;
+        }
+    }
+
+    public int read(byte[] array){
+        try{
+            int nRead = recvStream.read(array);
+            if(nRead < 0){
+                // EOF
+                close();
+            }
+            return nRead;
+        }
+        catch (IOException e){
+            close();
+            return 0;
+        }
+    }
+
+    public boolean write(byte[] array){
+        try {
+            sendStream.write(array);
+            return true;
+        } catch (IOException e) {
+            close();
+            return false;
         }
     }
 
