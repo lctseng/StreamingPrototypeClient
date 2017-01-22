@@ -111,6 +111,44 @@ public class Connection {
         }
     }
 
+    public int readn(byte[] array){
+        int n = array.length;
+        try{
+            int total_read_n = 0;
+            while(total_read_n < n){
+                int nRead = recvStream.read(array, total_read_n, n - total_read_n);
+                if(nRead <= 0){
+                    // EOF
+                    close();
+                    return -1;
+                }
+                else{
+                    total_read_n += nRead;
+                }
+            }
+            return total_read_n;
+        }
+        catch (IOException e){
+            close();
+            return -1;
+        }
+    }
+
+    public int read(byte[] array, int offset, int len){
+        try{
+            int nRead = recvStream.read(array, offset, len);
+            if(nRead < 0){
+                // EOF
+                close();
+            }
+            return nRead;
+        }
+        catch (IOException e){
+            close();
+            return 0;
+        }
+    }
+
     public boolean write(byte[] array){
         try {
             sendStream.write(array);
