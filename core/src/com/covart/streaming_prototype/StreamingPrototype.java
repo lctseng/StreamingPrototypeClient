@@ -35,6 +35,9 @@ public class StreamingPrototype extends ApplicationAdapter {
             // draw connection state
             font.draw(batch, "Connection is not ready!", 0, 100);
             font.draw(batch, "Touch the screen to force reconnect", 0, 80);
+            // draw state
+            font.draw(batch, "State: " + conn.getStateText(), 0, 60);
+            // re-connect
             if(Gdx.input.isTouched()){
                 // re-connect!
                 conn.connect();

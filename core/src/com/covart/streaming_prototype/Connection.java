@@ -15,7 +15,12 @@ import static com.badlogic.gdx.Gdx.net;
  */
 
 public class Connection {
-    private boolean ready;
+
+    enum State{
+        Disconnected, Connecting, Connected
+    }
+
+    private State state;
     private Socket socket;
 
     public InputStream recvStream;
@@ -23,7 +28,7 @@ public class Connection {
 
 
     Connection(){
-        ready = false;
+        state = State.Disconnected;
     }
 
     synchronized public void connect(){
@@ -32,15 +37,16 @@ public class Connection {
                 new Runnable() {
                     @Override
                     public void run() {
+                        state = State.Connecting;
                         SocketHints hints = new SocketHints();
                         try {
                             socket = net.newClientSocket(Protocol.TCP, "covart.csie.org", 3333, hints);
                             recvStream = socket.getInputStream();
                             sendStream = socket.getOutputStream();
-                            ready = true;
+                            state = State.Connected;
                         }
                         catch (GdxRuntimeException e){
-                            ready = false;
+                            state = State.Disconnected;
                         }
                     }
                 }
@@ -49,13 +55,31 @@ public class Connection {
     }
 
     public boolean getReady(){
-        return ready;
+        return state == State.Connected;
+    }
+
+    public State getState(){
+        return state;
+    }
+
+    public String getStateText(){
+        switch(getState()){
+            case Disconnected:
+                return "Disconnected";
+            case Connected:
+                return "Connected";
+            case Connecting:
+                return "Connecting";
+            default:
+                return "Unknown";
+        }
     }
 
     public void dispose(){
         if(socket != null){
             socket.dispose();
-            ready = false;
+            socket = null;
+            state = State.Disconnected;
         }
     }
 
