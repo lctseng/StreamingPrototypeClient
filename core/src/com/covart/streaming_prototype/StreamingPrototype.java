@@ -35,10 +35,18 @@ public class StreamingPrototype extends ApplicationAdapter {
             count += 1;
             conn.write(("Client:" + count + "\n").getBytes());
             // read
+            long start = System.nanoTime();
+            long time_recv, time_proc;
             byte[] text = new byte[100];
             conn.read(text);
-            batch.draw(img, 0, 0);
+            long stop = System.nanoTime();
+            time_recv = stop - start;
+            start = stop;
+            batch.draw(img, 0, 110);
+            time_proc = System.nanoTime() - start;
             font.draw(batch, new String(text), 0, 100);
+            font.draw(batch, "Time for receive (ms): " + (double)time_recv * 0.001, 0, 80);
+            font.draw(batch, "Time for process (ms): " + (double)time_proc * 0.001, 0, 60);
         }
         else{
             // draw connection state
