@@ -14,20 +14,20 @@ import java.util.ArrayList;
 
 public class StreamingPrototype extends ApplicationAdapter {
 	private SpriteBatch batch;
-    private Texture img;
     private BitmapFont font;
     private Connection conn;
     private int count;
+    private Pixmap image;
 
     private ArrayList<String> texts;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
         font = new BitmapFont();
         conn = new Connection();
         texts = new ArrayList<String>();
+        image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
 
         conn.connect();
         count = 0;
@@ -65,9 +65,9 @@ public class StreamingPrototype extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
         font.dispose();
         conn.dispose();
+        image.dispose();
 	}
 
     private void receiveAndDisplay(){
@@ -94,7 +94,14 @@ public class StreamingPrototype extends ApplicationAdapter {
                 start = stop;
                 // start proc
                 Pixmap pixmap = new Pixmap(buf_data, 0, n);
-                Texture tex = new Texture(pixmap);
+                ByteBuffer raw_buf = pixmap.getPixels();
+                ByteBuffer finalImageBuf = image.getPixels();
+                finalImageBuf.rewind();
+                while(raw_buf.hasRemaining()){
+                    finalImageBuf.put(raw_buf.get());
+                }
+                finalImageBuf.rewind();
+                Texture tex = new Texture(image);
                 batch.draw(tex, 0, 110);
                 // end proc
                 time_proc = System.nanoTime() - start;
