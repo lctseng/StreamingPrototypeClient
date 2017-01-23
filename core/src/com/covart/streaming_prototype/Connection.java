@@ -40,11 +40,11 @@ public class Connection {
                 socket.dispose();
                 socket = null;
             }
+            state = State.Connecting;
             new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        state = State.Connecting;
                         SocketHints hints = new SocketHints();
                         try {
                             socket = net.newClientSocket(Protocol.TCP, "covart.csie.org", 3333, hints);
