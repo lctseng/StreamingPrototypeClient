@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 public class StreamingPrototype extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -17,6 +18,8 @@ public class StreamingPrototype extends ApplicationAdapter {
     private BitmapFont font;
     private Connection conn;
     private int count;
+
+    private ArrayList<String> texts;
 	
 	@Override
 	public void create () {
@@ -24,6 +27,7 @@ public class StreamingPrototype extends ApplicationAdapter {
 		img = new Texture("badlogic.jpg");
         font = new BitmapFont();
         conn = new Connection();
+        texts = new ArrayList<String>();
 
         conn.connect();
         count = 0;
@@ -42,16 +46,17 @@ public class StreamingPrototype extends ApplicationAdapter {
         }
         else{
             batch.begin();
+            clearTextDraw();
             // draw connection state
-            font.draw(batch, "Connection is not ready!", 0, 100);
-            font.draw(batch, "Touch the screen to force reconnect", 0, 80);
-            // draw state
-            font.draw(batch, "State: " + conn.getStateText(), 0, 60);
+            addTextDraw("Connection is not ready!");
+            addTextDraw("Touch the screen to force reconnect");
+            addTextDraw("State: " + conn.getStateText());
             // re-connect
             if(Gdx.input.isTouched()){
                 // re-connect!
                 conn.connect();
             }
+            processTextDraw();
             batch.end();
         }
 
@@ -71,8 +76,9 @@ public class StreamingPrototype extends ApplicationAdapter {
         byte[] buf_size = new byte[4];
         if(conn.readn(buf_size) == 4){
             batch.begin();
+            clearTextDraw();
             int n = byteArrayToLeInt(buf_size);
-            font.draw(batch, "Image Size:" + n, 0, 100);
+            addTextDraw(String.format("Image size: %6d bytes", n));
             // read image data
 
             long start = System.nanoTime();
@@ -81,22 +87,28 @@ public class StreamingPrototype extends ApplicationAdapter {
 
             byte[] buf_data = new byte[n];
             int r = conn.readn(buf_data);
-
-            // end recv
-            long stop = System.nanoTime();
-            time_recv = stop - start;
-            start = stop;
-            // start proc
-            Pixmap pixmap = new Pixmap(buf_data, 0, n);
-            Texture tex = new Texture(pixmap);
-            batch.draw(tex, 0, 110);
-            // end proc
-            time_proc = System.nanoTime() - start;
-            font.draw(batch, "Time for receive (ms): " + (double)time_recv * 0.001, 0, 60);
-            font.draw(batch, "Time for process (ms): " + (double)time_proc * 0.001, 0, 40);
-            batch.end();
-            pixmap.dispose();
-            tex.dispose();
+            if(r > 0){
+                // end recv
+                long stop = System.nanoTime();
+                time_recv = stop - start;
+                start = stop;
+                // start proc
+                Pixmap pixmap = new Pixmap(buf_data, 0, n);
+                Texture tex = new Texture(pixmap);
+                batch.draw(tex, 0, 110);
+                // end proc
+                time_proc = System.nanoTime() - start;
+                addTextDraw(String.format("Time for receive : %6.4f ms", (double)time_recv * 0.000001));
+                addTextDraw(String.format("Time for process : %6.4f ms", (double)time_proc * 0.000001));
+                processTextDraw();
+                batch.end();
+                pixmap.dispose();
+                tex.dispose();
+            }
+            else {
+                processTextDraw();
+                batch.end();
+            }
         }
     }
 
@@ -105,4 +117,22 @@ public class StreamingPrototype extends ApplicationAdapter {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         return bb.getInt();
     }
+
+    private void clearTextDraw(){
+        texts.clear();
+    }
+
+    private void addTextDraw(String text){
+        texts.add(text);
+    }
+
+    private void processTextDraw(){
+        int dy = 100;
+        for(String text : texts){
+            font.draw(batch, text, 0, dy);
+            dy -= 20;
+        }
+    }
+
+
 }
