@@ -13,20 +13,27 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class StreamingPrototype extends ApplicationAdapter {
-	private SpriteBatch batch;
+	// basic
+    private SpriteBatch batch;
     private BitmapFont font;
-    private Connection conn;
+
+    // debug
     private int count;
+
+    // display
     private Pixmap image;
+    private ByteBuffer imageBuf;
 
     // connection buffers
     private byte[] bufHeader;
     private byte[] bufData;
 
+    // text drawing
     private ArrayList<String> texts;
 
-    // profiler
+    // major component
     private Profiler profiler;
+    private Connection conn;
 
 	
 	@Override
@@ -37,6 +44,7 @@ public class StreamingPrototype extends ApplicationAdapter {
         profiler = new Profiler();
         texts = new ArrayList<String>();
         image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
+        imageBuf = image.getPixels();
 
         bufHeader = new byte[4];
         bufData = new byte[106400];
@@ -106,10 +114,9 @@ public class StreamingPrototype extends ApplicationAdapter {
                 profiler.reportOnRecvEnd();
                 // start proc
                 profiler.reportOnProcStart();
-                ByteBuffer finalImageBuf = image.getPixels();
-                finalImageBuf.rewind();
-                finalImageBuf.put(bufData);
-                finalImageBuf.rewind();
+                imageBuf.rewind();
+                imageBuf.put(bufData);
+                imageBuf.rewind();
                 Texture tex = new Texture(image);
                 batch.draw(tex, 0, 110);
                 // end proc
