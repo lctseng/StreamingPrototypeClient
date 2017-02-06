@@ -20,6 +20,10 @@ public class StreamingPrototype extends ApplicationAdapter {
     private Pixmap image;
 
     private ArrayList<String> texts;
+
+    private double total_proc = 0.0;
+    private double total_recv = 0.0;
+    private double n_data = 0.0;
 	
 	@Override
 	public void create () {
@@ -55,6 +59,9 @@ public class StreamingPrototype extends ApplicationAdapter {
             if(Gdx.input.isTouched()){
                 // re-connect!
                 conn.connect();
+                total_proc = 0.0;
+                total_recv = 0.0;
+                n_data = 0.0;
             }
             processTextDraw();
             batch.end();
@@ -97,16 +104,21 @@ public class StreamingPrototype extends ApplicationAdapter {
                 ByteBuffer raw_buf = pixmap.getPixels();
                 ByteBuffer finalImageBuf = image.getPixels();
                 finalImageBuf.rewind();
-                while(raw_buf.hasRemaining()){
-                    finalImageBuf.put(raw_buf.get());
-                }
+                finalImageBuf.put(raw_buf);
                 finalImageBuf.rewind();
                 Texture tex = new Texture(image);
                 batch.draw(tex, 0, 110);
                 // end proc
                 time_proc = System.nanoTime() - start;
-                addTextDraw(String.format("Time for receive : %6.4f ms", (double)time_recv * 0.000001));
-                addTextDraw(String.format("Time for process : %6.4f ms", (double)time_proc * 0.000001));
+
+                double f_recv = (double)time_recv * 0.000001;
+                double f_proc = (double)time_proc * 0.000001;
+                n_data += 1.0;
+                total_proc += f_proc;
+                total_recv += f_recv;
+
+                addTextDraw(String.format("Time for receive : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", f_recv, total_recv, total_recv / n_data));
+                addTextDraw(String.format("Time for process : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", f_proc, total_proc, total_proc / n_data));
                 processTextDraw();
                 batch.end();
                 pixmap.dispose();
