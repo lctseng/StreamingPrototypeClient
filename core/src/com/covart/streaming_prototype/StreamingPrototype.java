@@ -19,7 +19,12 @@ public class StreamingPrototype extends ApplicationAdapter {
     private int count;
     private Pixmap image;
 
+    // connection buffers
+    private byte[] bufHeader;
+    private byte[] bufData;
+
     private ArrayList<String> texts;
+
 
     private double total_proc = 0.0;
     private double total_recv = 0.0;
@@ -32,6 +37,9 @@ public class StreamingPrototype extends ApplicationAdapter {
         conn = new Connection();
         texts = new ArrayList<String>();
         image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
+
+        bufHeader = new byte[4];
+        bufData = new byte[106400];
 
         conn.connect();
         count = 0;
@@ -80,27 +88,24 @@ public class StreamingPrototype extends ApplicationAdapter {
     private void receiveAndDisplay(){
         // read image size
 
-        byte[] buf_size = new byte[4];
-        if(conn.readn(buf_size) == 4){
+        if(conn.readn(bufHeader) == 4){
             batch.begin();
             clearTextDraw();
-            int n = byteArrayToLeInt(buf_size);
+            int n = byteArrayToLeInt(bufHeader);
             addTextDraw(String.format("Image size: %6d bytes", n));
             // read image data
 
             long start = System.nanoTime();
             long time_recv, time_proc;
             // start recv
-
-            byte[] buf_data = new byte[n];
-            int r = conn.readn(buf_data);
+            int r = conn.readn(bufData, n);
             if(r > 0){
                 // end recv
                 long stop = System.nanoTime();
                 time_recv = stop - start;
                 start = stop;
                 // start proc
-                Pixmap pixmap = new Pixmap(buf_data, 0, n);
+                Pixmap pixmap = new Pixmap(bufData, 0, n);
                 ByteBuffer raw_buf = pixmap.getPixels();
                 ByteBuffer finalImageBuf = image.getPixels();
                 finalImageBuf.rewind();

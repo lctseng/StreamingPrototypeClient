@@ -111,8 +111,7 @@ public class Connection {
         }
     }
 
-    public int readn(byte[] array){
-        int n = array.length;
+    public int readn(byte[] array, int n){
         try{
             int total_read_n = 0;
             while(total_read_n < n){
@@ -133,6 +132,11 @@ public class Connection {
             return -1;
         }
     }
+
+    public int readn(byte[] array){
+        return readn(array, array.length);
+    }
+
 
     public int read(byte[] array, int offset, int len){
         try{
