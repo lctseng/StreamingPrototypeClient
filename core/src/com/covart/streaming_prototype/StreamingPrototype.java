@@ -25,16 +25,16 @@ public class StreamingPrototype extends ApplicationAdapter {
 
     private ArrayList<String> texts;
 
+    // profiler
+    private Profiler profiler;
 
-    private double total_proc = 0.0;
-    private double total_recv = 0.0;
-    private double n_data = 0.0;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
         font = new BitmapFont();
         conn = new Connection();
+        profiler = new Profiler();
         texts = new ArrayList<String>();
         image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
 
@@ -51,6 +51,11 @@ public class StreamingPrototype extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if(conn.getReady()){
+            clearTextDraw();
+            float accelX = Gdx.input.getAccelerometerX();
+            float accelY = Gdx.input.getAccelerometerY();
+            float accelZ = Gdx.input.getAccelerometerZ();
+            addTextDraw(String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
             // write
             count += 1;
             conn.write(("Client:" + count + "\n").getBytes());
@@ -67,9 +72,7 @@ public class StreamingPrototype extends ApplicationAdapter {
             if(Gdx.input.isTouched()){
                 // re-connect!
                 conn.connect();
-                total_proc = 0.0;
-                total_recv = 0.0;
-                n_data = 0.0;
+                profiler.reset();
             }
             processTextDraw();
             batch.end();
@@ -90,21 +93,19 @@ public class StreamingPrototype extends ApplicationAdapter {
 
         if(conn.readn(bufHeader) == 4){
             batch.begin();
-            clearTextDraw();
+
             int n = byteArrayToLeInt(bufHeader);
             addTextDraw(String.format("Image size: %6d bytes", n));
             // read image data
 
-            long start = System.nanoTime();
-            long time_recv, time_proc;
+            profiler.reportOnRecvStart();
             // start recv
             int r = conn.readn(bufData, n);
             if(r > 0){
                 // end recv
-                long stop = System.nanoTime();
-                time_recv = stop - start;
-                start = stop;
+                profiler.reportOnRecvEnd();
                 // start proc
+                profiler.reportOnProcStart();
                 ByteBuffer finalImageBuf = image.getPixels();
                 finalImageBuf.rewind();
                 finalImageBuf.put(bufData);
@@ -112,16 +113,11 @@ public class StreamingPrototype extends ApplicationAdapter {
                 Texture tex = new Texture(image);
                 batch.draw(tex, 0, 110);
                 // end proc
-                time_proc = System.nanoTime() - start;
-
-                double f_recv = (double)time_recv * 0.000001;
-                double f_proc = (double)time_proc * 0.000001;
-                n_data += 1.0;
-                total_proc += f_proc;
-                total_recv += f_recv;
-
-                addTextDraw(String.format("Time for receive : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", f_recv, total_recv, total_recv / n_data));
-                addTextDraw(String.format("Time for process : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", f_proc, total_proc, total_proc / n_data));
+                profiler.reportOnProcEnd();
+                // add profiler text
+                for(String s : profiler.generateProfilingStrings()){
+                    addTextDraw(s);
+                }
                 processTextDraw();
                 batch.end();
                 tex.dispose();
