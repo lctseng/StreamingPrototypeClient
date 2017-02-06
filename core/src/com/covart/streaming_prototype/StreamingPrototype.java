@@ -105,11 +105,9 @@ public class StreamingPrototype extends ApplicationAdapter {
                 time_recv = stop - start;
                 start = stop;
                 // start proc
-                Pixmap pixmap = new Pixmap(bufData, 0, n);
-                ByteBuffer raw_buf = pixmap.getPixels();
                 ByteBuffer finalImageBuf = image.getPixels();
                 finalImageBuf.rewind();
-                finalImageBuf.put(raw_buf);
+                finalImageBuf.put(bufData);
                 finalImageBuf.rewind();
                 Texture tex = new Texture(image);
                 batch.draw(tex, 0, 110);
@@ -126,7 +124,6 @@ public class StreamingPrototype extends ApplicationAdapter {
                 addTextDraw(String.format("Time for process : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", f_proc, total_proc, total_proc / n_data));
                 processTextDraw();
                 batch.end();
-                pixmap.dispose();
                 tex.dispose();
             }
             else {
