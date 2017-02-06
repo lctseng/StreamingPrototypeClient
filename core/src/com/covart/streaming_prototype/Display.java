@@ -54,7 +54,6 @@ public class Display implements Disposable{
                 // read image data
                 profiler.reportOnRecvStart();
                 // start recv
-                app.addTextDraw("Image data size:" + n);
                 int r = conn.readn(bufData, n);
                 if(r == n){
                     // end recv
