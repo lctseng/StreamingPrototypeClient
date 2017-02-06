@@ -3,13 +3,10 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class StreamingPrototype extends ApplicationAdapter {
@@ -20,20 +17,13 @@ public class StreamingPrototype extends ApplicationAdapter {
     // debug
     private int count;
 
-    // display
-    private Pixmap image;
-    private ByteBuffer imageBuf;
-
-    // connection buffers
-    private byte[] bufHeader;
-    private byte[] bufData;
-
     // text drawing
     private ArrayList<String> texts;
 
     // major component
     private Profiler profiler;
     private Connection conn;
+    private Display display;
 
 	
 	@Override
@@ -43,13 +33,13 @@ public class StreamingPrototype extends ApplicationAdapter {
         conn = new Connection();
         profiler = new Profiler();
         texts = new ArrayList<String>();
-        image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
-        imageBuf = image.getPixels();
+        display = new Display(this);
 
-        bufHeader = new byte[4];
-        bufData = new byte[106400];
+        display.setConnection(conn);
+        display.setProfiler(profiler);
 
         conn.connect();
+
         count = 0;
 	}
 
@@ -58,8 +48,10 @@ public class StreamingPrototype extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        clearTextDraw();
+
         if(conn.getReady()){
-            clearTextDraw();
+
             float accelX = Gdx.input.getAccelerometerX();
             float accelY = Gdx.input.getAccelerometerY();
             float accelZ = Gdx.input.getAccelerometerZ();
@@ -67,11 +59,16 @@ public class StreamingPrototype extends ApplicationAdapter {
             // write
             count += 1;
             conn.write(("Client:" + count + "\n").getBytes());
+
+
             receiveAndDisplay();
+
+            for(String s : profiler.generateProfilingStrings()){
+                addTextDraw(s);
+            }
+
         }
         else{
-            batch.begin();
-            clearTextDraw();
             // draw connection state
             addTextDraw("Connection is not ready!");
             addTextDraw("Touch the screen to force reconnect");
@@ -82,10 +79,10 @@ public class StreamingPrototype extends ApplicationAdapter {
                 conn.connect();
                 profiler.reset();
             }
-            processTextDraw();
-            batch.end();
         }
-
+        batch.begin();
+        processTextDraw();
+        batch.end();
 	}
 	
 	@Override
@@ -93,60 +90,24 @@ public class StreamingPrototype extends ApplicationAdapter {
 		batch.dispose();
         font.dispose();
         conn.dispose();
-        image.dispose();
+        display.dispose();
 	}
 
     private void receiveAndDisplay(){
-        // read image size
-
-        if(conn.readn(bufHeader) == 4){
+        Texture tex = display.receiveNextTexture();
+        if(tex != null){
             batch.begin();
-
-            int n = byteArrayToLeInt(bufHeader);
-            addTextDraw(String.format("Image size: %6d bytes", n));
-            // read image data
-
-            profiler.reportOnRecvStart();
-            // start recv
-            int r = conn.readn(bufData, n);
-            if(r > 0){
-                // end recv
-                profiler.reportOnRecvEnd();
-                // start proc
-                profiler.reportOnProcStart();
-                imageBuf.rewind();
-                imageBuf.put(bufData);
-                imageBuf.rewind();
-                Texture tex = new Texture(image);
-                batch.draw(tex, 0, 110);
-                // end proc
-                profiler.reportOnProcEnd();
-                // add profiler text
-                for(String s : profiler.generateProfilingStrings()){
-                    addTextDraw(s);
-                }
-                processTextDraw();
-                batch.end();
-                tex.dispose();
-            }
-            else {
-                processTextDraw();
-                batch.end();
-            }
+            batch.draw(tex, 0, 110);
+            batch.end();
+            tex.dispose();
         }
-    }
-
-    public static int byteArrayToLeInt(byte[] b) {
-        final ByteBuffer bb = ByteBuffer.wrap(b);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        return bb.getInt();
     }
 
     private void clearTextDraw(){
         texts.clear();
     }
 
-    private void addTextDraw(String text){
+    public void addTextDraw(String text){
         texts.add(text);
     }
 
@@ -157,6 +118,4 @@ public class StreamingPrototype extends ApplicationAdapter {
             dy -= 20;
         }
     }
-
-
 }
