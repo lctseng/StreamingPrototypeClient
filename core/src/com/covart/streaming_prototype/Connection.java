@@ -13,6 +13,7 @@ import static com.badlogic.gdx.Gdx.net;
 
 /**
  * Created by lctseng on 2017/1/22.
+ * NTU COV-ART Lab, for NCP project
  */
 
 public class Connection {
