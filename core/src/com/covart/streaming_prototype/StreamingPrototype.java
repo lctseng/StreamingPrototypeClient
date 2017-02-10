@@ -36,7 +36,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	public void create () {
         conn = new Connection(this);
         texts = new ArrayList<String>();
-        display = new Display(this);
+        display = new Display();
 
 
         display.setConnection(conn);

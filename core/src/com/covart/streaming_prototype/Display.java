@@ -34,13 +34,11 @@ public class Display implements Disposable{
     private byte[] bufHeader;
     private byte[] bufData;
 
-    private StreamingPrototype app;
-
-    Display(StreamingPrototype app){
-        this.app = app;
+    Display(){
 
         batch = new SpriteBatch();
         font = new BitmapFont();
+        font.getData().setScale(1.5f);
 
         image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
         imageBuf = image.getPixels();

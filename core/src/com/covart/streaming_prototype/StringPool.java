@@ -33,7 +33,7 @@ public class StringPool {
         int index = 0;
         for (Map.Entry<String, String> entry : instance.fields.entrySet())
         {
-            texts[index] = String.format(Locale.TAIWAN,"%10s:%s", entry.getKey(), entry.getValue());
+            texts[index] = String.format(Locale.TAIWAN,"%s : %s", entry.getKey(), entry.getValue());
             index++;
 
         }
