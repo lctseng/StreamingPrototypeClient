@@ -20,9 +20,6 @@ public class StringPool {
     private static StringPool instance = new StringPool();
 
     public static StringPool getInstance(){
-        if(instance == null){
-            instance = new StringPool();
-        }
         return instance;
     }
 
