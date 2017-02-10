@@ -27,9 +27,13 @@ public class Connection {
     public InputStream recvStream;
     public OutputStream sendStream;
 
+    private ConnectionListener listener;
 
-    Connection(){
+
+    Connection(ConnectionListener listener)
+    {
         state = State.Disconnected;
+        this.listener = listener;
     }
 
     synchronized public void connect(){
@@ -51,6 +55,7 @@ public class Connection {
                             recvStream = socket.getInputStream();
                             sendStream = socket.getOutputStream();
                             state = State.Connected;
+                            listener.onConnectionReady();
                         }
                         catch (GdxRuntimeException e){
                             state = State.Disconnected;
@@ -93,6 +98,7 @@ public class Connection {
             recvStream = null;
             sendStream = null;
             state = State.Disconnected;
+            listener.onConnectionClose();
         }
     }
 

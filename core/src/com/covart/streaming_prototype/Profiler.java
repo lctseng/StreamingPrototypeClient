@@ -20,6 +20,14 @@ public class Profiler {
     private long procTimestamp;
     private long procCurrent;
 
+    private static Profiler instance = null;
+    public static Profiler getInstance(){
+        if(instance == null){
+            instance = new Profiler();
+        }
+        return instance;
+    }
+
     Profiler() {
         reset();
     }

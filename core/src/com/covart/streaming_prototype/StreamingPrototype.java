@@ -12,7 +12,19 @@ import java.util.ArrayList;
 
 import StreamingFormat.Message;
 
-public class StreamingPrototype extends ApplicationAdapter {
+import static com.covart.streaming_prototype.StreamingPrototype.State.Init;
+import static com.covart.streaming_prototype.StreamingPrototype.State.Ready;
+import static com.covart.streaming_prototype.StreamingPrototype.State.WaitForConnection;
+
+public class StreamingPrototype extends ApplicationAdapter
+        implements ConnectionListener {
+
+    enum State {
+        Init, WaitForConnection, Ready
+    }
+
+    private State state = Init;
+
 	// basic
     private SpriteBatch batch;
     private BitmapFont font;
@@ -31,20 +43,32 @@ public class StreamingPrototype extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+
 		batch = new SpriteBatch();
         font = new BitmapFont();
-        conn = new Connection();
-        profiler = new Profiler();
+        conn = new Connection(this);
+        profiler = Profiler.getInstance();
         texts = new ArrayList<String>();
         display = new Display(this);
 
         display.setConnection(conn);
-        display.setProfiler(profiler);
 
         conn.connect();
 
         count = 0;
+
+        state = WaitForConnection;
 	}
+
+    @Override
+    public void onConnectionReady(){
+        state = Ready;
+    }
+
+    @Override
+    public void onConnectionClose(){
+        state = WaitForConnection;
+    }
 
 	@Override
 	public void render () {
@@ -61,6 +85,7 @@ public class StreamingPrototype extends ApplicationAdapter {
             addTextDraw(String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
 
             exchange_header();
+
 
             for(String s : profiler.generateProfilingStrings()){
                 addTextDraw(s);
