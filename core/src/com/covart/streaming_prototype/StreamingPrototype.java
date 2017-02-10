@@ -118,12 +118,12 @@ public class StreamingPrototype extends ApplicationAdapter
         // write pb
         conn.write(sendData);
         // recv!
-        Profiler.reportOnRecvStart();
         // read bs
         byte[] bs_data = new byte[4];
         conn.read(bs_data);
         int bs = PackInteger.unpack(bs_data);
         // read pb
+        Profiler.reportOnRecvStart();
         byte[] msg_data = new byte[bs];
         conn.read(msg_data);
         try {
