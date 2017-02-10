@@ -47,7 +47,7 @@ public class Connection {
                     public void run() {
                         SocketHints hints = new SocketHints();
                         try {
-                            socket = net.newClientSocket(Protocol.TCP, "covart.csie.org", 3333, hints);
+                            socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3333, hints);
                             recvStream = socket.getInputStream();
                             sendStream = socket.getOutputStream();
                             state = State.Connected;
