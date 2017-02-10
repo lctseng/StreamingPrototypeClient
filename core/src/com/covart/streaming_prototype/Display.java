@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * Created by lctseng on 2017/2/6.
@@ -50,7 +49,7 @@ public class Display implements Disposable{
     public Texture receiveNextTexture(){
         if(conn != null){
             if(conn.readn(bufHeader) == 4){
-                int n = byteArrayToLeInt(bufHeader);
+                int n = PackInteger.unpack(bufHeader);
                 // read image data
                 profiler.reportOnRecvStart();
                 // start recv
@@ -84,11 +83,31 @@ public class Display implements Disposable{
         }
     }
 
-    private static int byteArrayToLeInt(byte[] b) {
-        final ByteBuffer bb = ByteBuffer.wrap(b);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        return bb.getInt();
+    public Texture receiveNextTexture(int imageSize){
+        // read image data
+        profiler.reportOnRecvStart();
+        // start recv
+        int r = conn.readn(bufData, imageSize);
+        if(r == imageSize){
+            // end recv
+            profiler.reportOnRecvEnd();
+            // start proc
+            profiler.reportOnProcStart();
+            imageBuf.rewind();
+            imageBuf.put(bufData);
+            imageBuf.rewind();
+            Texture tex = new Texture(image);
+            // end proc
+            profiler.reportOnProcEnd();
+            return tex;
+        }
+        else{
+            Gdx.app.error("Display", "Cannot read data. Data size mismatch");
+            return null;
+        }
     }
+
+
 
     @Override
     public void dispose() {

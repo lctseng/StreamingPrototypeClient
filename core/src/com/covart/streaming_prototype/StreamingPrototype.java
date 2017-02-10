@@ -6,8 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.ArrayList;
+
+import StreamingFormat.Message;
 
 public class StreamingPrototype extends ApplicationAdapter {
 	// basic
@@ -56,12 +59,8 @@ public class StreamingPrototype extends ApplicationAdapter {
             float accelY = Gdx.input.getAccelerometerY();
             float accelZ = Gdx.input.getAccelerometerZ();
             addTextDraw(String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
-            // write
-            count += 1;
-            conn.write(("Client:" + count + "\n").getBytes());
 
-
-            receiveAndDisplay();
+            exchange_header();
 
             for(String s : profiler.generateProfilingStrings()){
                 addTextDraw(s);
@@ -93,8 +92,49 @@ public class StreamingPrototype extends ApplicationAdapter {
         display.dispose();
 	}
 
-    private void receiveAndDisplay(){
-        Texture tex = display.receiveNextTexture();
+    private void exchange_header(){
+        // create data
+        count += 1;
+        Message.StreamingMessage msg =
+                Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgCameraInfo)
+                .setCameraMsg(
+                        Message.Camera.newBuilder()
+                        .setSerialNumber(count)
+                        .build()
+                )
+                .build();
+        // send!
+        byte[] sendData = msg.toByteArray();
+        // write bs
+        conn.write(PackInteger.pack(sendData.length));
+        // write pb
+        conn.write(sendData);
+        // recv!
+        // read bs
+        byte[] bs_data = new byte[4];
+        conn.read(bs_data);
+        int bs = PackInteger.unpack(bs_data);
+        // read pb
+        byte[] msg_data = new byte[bs];
+        conn.read(msg_data);
+        try {
+            Message.StreamingMessage recvMsg = Message.StreamingMessage.parseFrom(msg_data);
+            if(recvMsg.getType() == Message.MessageType.MsgImage){
+                receiveAndDisplay(recvMsg.getImageMsg().getByteSize());
+            }
+            else{
+                Gdx.app.log("Protobuf","Not an image:" + recvMsg.toString());
+                conn.close();
+            }
+        } catch (InvalidProtocolBufferException e) {
+            Gdx.app.error("Protobuf","Unable to receive message!!");
+            e.printStackTrace();
+        }
+    }
+
+    private void receiveAndDisplay(int imageSize){
+        Texture tex = display.receiveNextTexture(imageSize);
         if(tex != null){
             batch.begin();
             batch.draw(tex, 0, 110);
