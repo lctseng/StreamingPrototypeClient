@@ -2,10 +2,6 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.ArrayList;
@@ -25,10 +21,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private State state = Init;
 
-	// basic
-    private SpriteBatch batch;
-    private BitmapFont font;
-
     // debug
     private int count;
 
@@ -43,9 +35,6 @@ public class StreamingPrototype extends ApplicationAdapter
 	
 	@Override
 	public void create () {
-
-		batch = new SpriteBatch();
-        font = new BitmapFont();
         conn = new Connection(this);
         profiler = Profiler.getInstance();
         texts = new ArrayList<String>();
@@ -72,8 +61,8 @@ public class StreamingPrototype extends ApplicationAdapter
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        display.updateStart();
 
         clearTextDraw();
 
@@ -104,15 +93,14 @@ public class StreamingPrototype extends ApplicationAdapter
                 profiler.reset();
             }
         }
-        batch.begin();
+
         processTextDraw();
-        batch.end();
+
+        display.updateEnd();
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-        font.dispose();
         conn.dispose();
         display.dispose();
 	}
@@ -159,13 +147,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     private void receiveAndDisplay(int imageSize){
-        Texture tex = display.receiveNextTexture(imageSize);
-        if(tex != null){
-            batch.begin();
-            batch.draw(tex, 0, 110);
-            batch.end();
-            tex.dispose();
-        }
+        display.receiveAndDisplay(imageSize);
     }
 
     private void clearTextDraw(){
@@ -177,10 +159,6 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     private void processTextDraw(){
-        int dy = 100;
-        for(String text : texts){
-            font.draw(batch, text, 0, dy);
-            dy -= 20;
-        }
+        display.processTextDraw(texts);
     }
 }

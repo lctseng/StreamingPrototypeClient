@@ -1,11 +1,15 @@
 package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * Created by lctseng on 2017/2/6.
@@ -13,8 +17,14 @@ import java.nio.ByteBuffer;
 
 public class Display implements Disposable{
 
+    // gdx basic drawing
+    private SpriteBatch batch;
+    private BitmapFont font;
+
+    // buffers
     private Pixmap image;
     private ByteBuffer imageBuf;
+    private Texture texture;
 
     private Connection conn;
     private Profiler profiler;
@@ -28,8 +38,12 @@ public class Display implements Disposable{
     Display(StreamingPrototype app){
         this.app = app;
 
+        batch = new SpriteBatch();
+        font = new BitmapFont();
+
         image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
         imageBuf = image.getPixels();
+        texture = null;
 
         bufHeader = new byte[4];
         bufData = new byte[106400];
@@ -40,6 +54,24 @@ public class Display implements Disposable{
 
     public void setConnection(Connection conn){
         this.conn = conn;
+    }
+
+    public void updateStart(){
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        // TODO
+    }
+
+    public void updateEnd(){
+
+        batch.end();
+        // clean up
+        if (texture != null){
+            texture.dispose();
+            texture = null;
+        }
     }
 
 
@@ -106,6 +138,24 @@ public class Display implements Disposable{
 
     @Override
     public void dispose() {
+        batch.dispose();
+        font.dispose();
         image.dispose();
     }
+
+
+    public void receiveAndDisplay(int imageSize){
+        texture = receiveNextTexture(imageSize);
+        if(texture != null){
+            batch.draw(texture, 0, 110);
+        }
+    }
+    public void processTextDraw(ArrayList<String> texts){
+        int dy = 100;
+        for(String text : texts){
+            font.draw(batch, text, 0, dy);
+            dy -= 20;
+        }
+    }
+
 }
