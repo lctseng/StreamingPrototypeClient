@@ -32,13 +32,9 @@ public class StreamingPrototype extends ApplicationAdapter
     private Connection conn;
     private Display display;
 
-    // string pool
-    private StringPool stringPool;
-
 	
 	@Override
 	public void create () {
-        stringPool = StringPool.getInstance();
         conn = new Connection(this);
         profiler = Profiler.getInstance();
         texts = new ArrayList<String>();
@@ -75,7 +71,7 @@ public class StreamingPrototype extends ApplicationAdapter
             float accelX = Gdx.input.getAccelerometerX();
             float accelY = Gdx.input.getAccelerometerY();
             float accelZ = Gdx.input.getAccelerometerZ();
-            stringPool.addField("Sensor", String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
+            StringPool.addField("Sensor", String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
 
             exchange_header();
 
@@ -83,10 +79,10 @@ public class StreamingPrototype extends ApplicationAdapter
         }
         else{
             // draw connection state
-            stringPool.clearFields();
-            stringPool.addFlashMessage("Connection is not ready!");
-            stringPool.addFlashMessage("Touch the screen to force reconnect");
-            stringPool.addFlashMessage("State: " + conn.getStateText());
+            StringPool.clearFields();
+            StringPool.addFlashMessage("Connection is not ready!");
+            StringPool.addFlashMessage("Touch the screen to force reconnect");
+            StringPool.addFlashMessage("State: " + conn.getStateText());
             // re-connect
             if(Gdx.input.isTouched()){
                 // re-connect!

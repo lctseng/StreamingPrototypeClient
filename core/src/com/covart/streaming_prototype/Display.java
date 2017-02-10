@@ -29,7 +29,6 @@ public class Display implements Disposable{
     private Profiler profiler;
 
     // string pool
-    private StringPool stringPool;
 
     // connection buffers
     private byte[] bufHeader;
@@ -50,8 +49,6 @@ public class Display implements Disposable{
         bufHeader = new byte[4];
         bufData = new byte[106400];
 
-        stringPool = StringPool.getInstance();
-
         conn = null;
         profiler = Profiler.getInstance();
     }
@@ -67,13 +64,13 @@ public class Display implements Disposable{
         batch.begin();
 
         // clear flash messages
-        stringPool.clearFlashMessages();
+        StringPool.clearFlashMessages();
     }
 
     public void updateEnd(){
         // draw all text
         int dy = 100;
-        for(String text : stringPool.getAllText()){
+        for(String text : StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy -= 20;
         }
