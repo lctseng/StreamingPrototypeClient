@@ -6,6 +6,7 @@ import java.util.Locale;
 
 /**
  * Created by lctseng on 2017/2/6.
+ * NTU COV-ART Lab, for NCP project
  */
 
 public class Profiler {
@@ -20,19 +21,56 @@ public class Profiler {
     private long procTimestamp;
     private long procCurrent;
 
-    private static Profiler instance = null;
-    public static Profiler getInstance(){
-        if(instance == null){
-            instance = new Profiler();
+    private static Profiler instance = new Profiler();
+
+    public static void reset(){
+        instance._reset();
+    }
+
+    public static void reportOnRecvStart(){
+        instance.recvTimestamp = System.nanoTime();
+    }
+
+    public static void reportOnRecvEnd(){
+        if(instance.recvTimestamp > 0){
+            instance.recvCurrent = System.nanoTime() - instance.recvTimestamp;
+            instance.recvTotal += instance.recvCurrent;
+            instance.recvCount += 1;
+            instance.recvTimestamp = -1;
         }
-        return instance;
+        else{
+            Gdx.app.error("Profiler", "Should call reportOnRecvStart before reportOnRecvEnd");
+        }
     }
 
-    Profiler() {
-        reset();
+    public static void reportOnProcStart(){
+        instance.procTimestamp = System.nanoTime();
     }
 
-    public void reset(){
+    public static void reportOnProcEnd(){
+        if(instance.procTimestamp > 0){
+            instance.procCurrent = System.nanoTime() - instance.procTimestamp;
+            instance.procTotal += instance.procCurrent;
+            instance.procCount += 1;
+            instance.procTimestamp = -1;
+        }
+        else{
+            Gdx.app.error("Profiler", "Should call reportOnProcStart before reportOnProcEnd");
+        }
+    }
+
+    public static void generateProfilingStrings(){
+        double totalRecv = instance.recvTotal * 0.000001;
+        double totalProc = instance.procTotal * 0.000001;
+        StringPool.addField("Time for receive", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", instance.recvCurrent * 0.000001, totalRecv, totalRecv / instance.recvCount));
+        StringPool.addField("Time for process", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", instance.procCurrent * 0.000001, totalProc, totalProc / instance.procCount));
+    }
+
+    private Profiler() {
+        _reset();
+    }
+
+    public void _reset(){
         recvTotal = 0;
         recvCount = 0;
         recvTimestamp = -1;
@@ -42,44 +80,5 @@ public class Profiler {
         procCount = 0;
         procTimestamp = -1;
         procCurrent = 0;
-    }
-
-    public void reportOnRecvStart(){
-        recvTimestamp = System.nanoTime();
-    }
-
-    public void reportOnRecvEnd(){
-        if(recvTimestamp > 0){
-            recvCurrent = System.nanoTime() - recvTimestamp;
-            recvTotal += recvCurrent;
-            recvCount += 1;
-            recvTimestamp = -1;
-        }
-        else{
-            Gdx.app.error("Profiler", "Should call reportOnRecvStart before reportOnRecvEnd");
-        }
-    }
-
-    public void reportOnProcStart(){
-        procTimestamp = System.nanoTime();
-    }
-
-    public void reportOnProcEnd(){
-        if(procTimestamp > 0){
-            procCurrent = System.nanoTime() - procTimestamp;
-            procTotal += procCurrent;
-            procCount += 1;
-            procTimestamp = -1;
-        }
-        else{
-            Gdx.app.error("Profiler", "Should call reportOnProcStart before reportOnProcEnd");
-        }
-    }
-
-    public void generateProfilingStrings(){
-        double totalRecv = recvTotal * 0.000001;
-        double totalProc = procTotal * 0.000001;
-        StringPool.addField("Time for receive", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", recvCurrent * 0.000001, totalRecv, totalRecv / recvCount));
-        StringPool.addField("Time for process", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", procCurrent * 0.000001, totalProc, totalProc / procCount));
     }
 }

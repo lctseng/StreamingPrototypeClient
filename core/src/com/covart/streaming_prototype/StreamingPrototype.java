@@ -28,7 +28,6 @@ public class StreamingPrototype extends ApplicationAdapter
     private ArrayList<String> texts;
 
     // major component
-    private Profiler profiler;
     private Connection conn;
     private Display display;
 
@@ -36,7 +35,6 @@ public class StreamingPrototype extends ApplicationAdapter
 	@Override
 	public void create () {
         conn = new Connection(this);
-        profiler = Profiler.getInstance();
         texts = new ArrayList<String>();
         display = new Display(this);
 
@@ -75,7 +73,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
             exchange_header();
 
-            profiler.generateProfilingStrings();
+            Profiler.generateProfilingStrings();
         }
         else{
             // draw connection state
@@ -87,7 +85,7 @@ public class StreamingPrototype extends ApplicationAdapter
             if(Gdx.input.isTouched()){
                 // re-connect!
                 conn.connect();
-                profiler.reset();
+                Profiler.reset();
             }
         }
 

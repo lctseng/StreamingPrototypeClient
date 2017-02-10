@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Created by lctseng on 2017/2/6.
+ * NTU COV-ART Lab, for NCP project
  */
 
 public class Display implements Disposable{
@@ -26,7 +27,6 @@ public class Display implements Disposable{
     private Texture texture;
 
     private Connection conn;
-    private Profiler profiler;
 
     // string pool
 
@@ -50,7 +50,6 @@ public class Display implements Disposable{
         bufData = new byte[106400];
 
         conn = null;
-        profiler = Profiler.getInstance();
     }
 
     public void setConnection(Connection conn){
@@ -89,20 +88,20 @@ public class Display implements Disposable{
             if(conn.readn(bufHeader) == 4){
                 int n = PackInteger.unpack(bufHeader);
                 // read image data
-                profiler.reportOnRecvStart();
+                Profiler.reportOnRecvStart();
                 // start recv
                 int r = conn.readn(bufData, n);
                 if(r == n){
                     // end recv
-                    profiler.reportOnRecvEnd();
+                    Profiler.reportOnRecvEnd();
                     // start proc
-                    profiler.reportOnProcStart();
+                    Profiler.reportOnProcStart();
                     imageBuf.rewind();
                     imageBuf.put(bufData);
                     imageBuf.rewind();
                     Texture tex = new Texture(image);
                     // end proc
-                    profiler.reportOnProcEnd();
+                    Profiler.reportOnProcEnd();
                     return tex;
                 }
                 else{
@@ -123,20 +122,20 @@ public class Display implements Disposable{
 
     public Texture receiveNextTexture(int imageSize){
         // read image data
-        profiler.reportOnRecvStart();
+        Profiler.reportOnRecvStart();
         // start recv
         int r = conn.readn(bufData, imageSize);
         if(r == imageSize){
             // end recv
-            profiler.reportOnRecvEnd();
+            Profiler.reportOnRecvEnd();
             // start proc
-            profiler.reportOnProcStart();
+            Profiler.reportOnProcStart();
             imageBuf.rewind();
             imageBuf.put(bufData);
             imageBuf.rewind();
             Texture tex = new Texture(image);
             // end proc
-            profiler.reportOnProcEnd();
+            Profiler.reportOnProcEnd();
             return tex;
         }
         else{
