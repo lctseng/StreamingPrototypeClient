@@ -26,13 +26,7 @@ public class Display implements Disposable{
     private ByteBuffer imageBuf;
     private Texture texture;
 
-    private Connection conn;
-
     // string pool
-
-    // connection buffers
-    private byte[] bufHeader;
-    private byte[] bufData;
 
     Display(){
 
@@ -44,14 +38,6 @@ public class Display implements Disposable{
         imageBuf = image.getPixels();
         texture = null;
 
-        bufHeader = new byte[4];
-        bufData = new byte[106400];
-
-        conn = null;
-    }
-
-    public void setConnection(Connection conn){
-        this.conn = conn;
     }
 
     public void updateStart(){
@@ -80,66 +66,16 @@ public class Display implements Disposable{
         }
     }
 
-
-    public Texture receiveNextTexture(){
-        if(conn != null){
-            if(conn.readn(bufHeader) == 4){
-                int n = PackInteger.unpack(bufHeader);
-                // read image data
-                Profiler.reportOnRecvStart();
-                // start recv
-                int r = conn.readn(bufData, n);
-                if(r == n){
-                    // end recv
-                    Profiler.reportOnRecvEnd();
-                    // start proc
-                    Profiler.reportOnProcStart();
-                    imageBuf.rewind();
-                    imageBuf.put(bufData);
-                    imageBuf.rewind();
-                    Texture tex = new Texture(image);
-                    // end proc
-                    Profiler.reportOnProcEnd();
-                    return tex;
-                }
-                else{
-                    Gdx.app.error("Display", "Cannot read data. Data size mismatch");
-                    return null;
-                }
-            }
-            else{
-                Gdx.app.error("Display", "Cannot read header. Header size mismatch");
-                return null;
-            }
-        }
-        else{
-            Gdx.app.error("Display", "No Connection object assigned");
-            return null;
-        }
-    }
-
-    public Texture receiveNextTexture(int imageSize){
-        // read image data
-        Profiler.reportOnRecvStart();
-        // start recv
-        int r = conn.readn(bufData, imageSize);
-        if(r == imageSize){
-            // end recv
-            Profiler.reportOnRecvEnd();
-            // start proc
-            Profiler.reportOnProcStart();
-            imageBuf.rewind();
-            imageBuf.put(bufData);
-            imageBuf.rewind();
-            Texture tex = new Texture(image);
-            // end proc
-            Profiler.reportOnProcEnd();
-            return tex;
-        }
-        else{
-            Gdx.app.error("Display", "Cannot read data. Data size mismatch");
-            return null;
-        }
+    public void injectImageData(byte[] bufData){
+        // start proc
+        Profiler.reportOnProcStart();
+        imageBuf.rewind();
+        imageBuf.put(bufData);
+        imageBuf.rewind();
+        texture = new Texture(image);
+        // end proc
+        Profiler.reportOnProcEnd();
+        batch.draw(texture, 0, 110);
     }
 
     @Override
@@ -149,11 +85,4 @@ public class Display implements Disposable{
         image.dispose();
     }
 
-
-    public void receiveAndDisplay(int imageSize){
-        texture = receiveNextTexture(imageSize);
-        if(texture != null){
-            batch.draw(texture, 0, 110);
-        }
-    }
 }

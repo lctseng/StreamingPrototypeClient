@@ -31,15 +31,16 @@ public class StreamingPrototype extends ApplicationAdapter
     private Connection conn;
     private Display display;
 
+    // connection buffers
+    private byte[] bufData;
+
 	
 	@Override
 	public void create () {
         conn = new Connection(this);
         texts = new ArrayList<String>();
         display = new Display();
-
-
-        display.setConnection(conn);
+        bufData = new byte[106400];
 
         conn.connect();
 
@@ -117,6 +118,7 @@ public class StreamingPrototype extends ApplicationAdapter
         // write pb
         conn.write(sendData);
         // recv!
+        Profiler.reportOnRecvStart();
         // read bs
         byte[] bs_data = new byte[4];
         conn.read(bs_data);
@@ -127,19 +129,19 @@ public class StreamingPrototype extends ApplicationAdapter
         try {
             Message.StreamingMessage recvMsg = Message.StreamingMessage.parseFrom(msg_data);
             if(recvMsg.getType() == Message.MessageType.MsgImage){
-                receiveAndDisplay(recvMsg.getImageMsg().getByteSize());
+                conn.readn(bufData, recvMsg.getImageMsg().getByteSize());
+                Profiler.reportOnRecvEnd();
+                display.injectImageData(bufData);
             }
             else{
+                Profiler.reportOnRecvEnd();
                 Gdx.app.log("Protobuf","Not an image:" + recvMsg.toString());
                 conn.close();
             }
         } catch (InvalidProtocolBufferException e) {
+            Profiler.reportOnRecvEnd();
             Gdx.app.error("Protobuf","Unable to receive message!!");
             e.printStackTrace();
         }
-    }
-
-    private void receiveAndDisplay(int imageSize){
-        display.receiveAndDisplay(imageSize);
     }
 }
