@@ -32,13 +32,18 @@ public class StreamingPrototype extends ApplicationAdapter
     private Connection conn;
     private Display display;
 
+    // string pool
+    private StringPool stringPool;
+
 	
 	@Override
 	public void create () {
+        stringPool = StringPool.getInstance();
         conn = new Connection(this);
         profiler = Profiler.getInstance();
         texts = new ArrayList<String>();
         display = new Display(this);
+
 
         display.setConnection(conn);
 
@@ -47,6 +52,7 @@ public class StreamingPrototype extends ApplicationAdapter
         count = 0;
 
         state = WaitForConnection;
+
 	}
 
     @Override
@@ -64,28 +70,23 @@ public class StreamingPrototype extends ApplicationAdapter
 
         display.updateStart();
 
-        clearTextDraw();
-
         if(conn.getReady()){
 
             float accelX = Gdx.input.getAccelerometerX();
             float accelY = Gdx.input.getAccelerometerY();
             float accelZ = Gdx.input.getAccelerometerZ();
-            addTextDraw(String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
+            stringPool.addField("Sensor", String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
 
             exchange_header();
 
-
-            for(String s : profiler.generateProfilingStrings()){
-                addTextDraw(s);
-            }
-
+            profiler.generateProfilingStrings();
         }
         else{
             // draw connection state
-            addTextDraw("Connection is not ready!");
-            addTextDraw("Touch the screen to force reconnect");
-            addTextDraw("State: " + conn.getStateText());
+            stringPool.clearFields();
+            stringPool.addFlashMessage("Connection is not ready!");
+            stringPool.addFlashMessage("Touch the screen to force reconnect");
+            stringPool.addFlashMessage("State: " + conn.getStateText());
             // re-connect
             if(Gdx.input.isTouched()){
                 // re-connect!
@@ -93,8 +94,6 @@ public class StreamingPrototype extends ApplicationAdapter
                 profiler.reset();
             }
         }
-
-        processTextDraw();
 
         display.updateEnd();
 	}
@@ -148,17 +147,5 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private void receiveAndDisplay(int imageSize){
         display.receiveAndDisplay(imageSize);
-    }
-
-    private void clearTextDraw(){
-        texts.clear();
-    }
-
-    public void addTextDraw(String text){
-        texts.add(text);
-    }
-
-    private void processTextDraw(){
-        display.processTextDraw(texts);
     }
 }

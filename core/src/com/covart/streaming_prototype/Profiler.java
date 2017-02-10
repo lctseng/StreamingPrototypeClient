@@ -20,6 +20,8 @@ public class Profiler {
     private long procTimestamp;
     private long procCurrent;
 
+    private StringPool stringPool;
+
     private static Profiler instance = null;
     public static Profiler getInstance(){
         if(instance == null){
@@ -29,6 +31,7 @@ public class Profiler {
     }
 
     Profiler() {
+        stringPool = StringPool.getInstance();
         reset();
     }
 
@@ -76,12 +79,10 @@ public class Profiler {
         }
     }
 
-    public String[] generateProfilingStrings(){
-        String[] result = new String[2];
+    public void generateProfilingStrings(){
         double totalRecv = recvTotal * 0.000001;
         double totalProc = procTotal * 0.000001;
-        result[0] = String.format(Locale.TAIWAN,"Time for receive : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", recvCurrent * 0.000001, totalRecv, totalRecv / recvCount);
-        result[1] = String.format(Locale.TAIWAN,"Time for process : %6.4f ms, total: %6.4f ms, avg: %6.4f ms", procCurrent * 0.000001, totalProc, totalProc / procCount);
-        return result;
+        stringPool.addField("Time for receive", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", recvCurrent * 0.000001, totalRecv, totalRecv / recvCount));
+        stringPool.addField("Time for process", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", procCurrent * 0.000001, totalProc, totalProc / procCount));
     }
 }

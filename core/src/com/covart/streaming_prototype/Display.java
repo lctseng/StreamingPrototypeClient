@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 /**
  * Created by lctseng on 2017/2/6.
@@ -28,6 +27,9 @@ public class Display implements Disposable{
 
     private Connection conn;
     private Profiler profiler;
+
+    // string pool
+    private StringPool stringPool;
 
     // connection buffers
     private byte[] bufHeader;
@@ -48,6 +50,8 @@ public class Display implements Disposable{
         bufHeader = new byte[4];
         bufData = new byte[106400];
 
+        stringPool = StringPool.getInstance();
+
         conn = null;
         profiler = Profiler.getInstance();
     }
@@ -61,11 +65,19 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        // TODO
+
+        // clear flash messages
+        stringPool.clearFlashMessages();
     }
 
     public void updateEnd(){
-
+        // draw all text
+        int dy = 100;
+        for(String text : stringPool.getAllText()){
+            font.draw(batch, text, 0, dy);
+            dy -= 20;
+        }
+        // end batch
         batch.end();
         // clean up
         if (texture != null){
@@ -150,12 +162,4 @@ public class Display implements Disposable{
             batch.draw(texture, 0, 110);
         }
     }
-    public void processTextDraw(ArrayList<String> texts){
-        int dy = 100;
-        for(String text : texts){
-            font.draw(batch, text, 0, dy);
-            dy -= 20;
-        }
-    }
-
 }
