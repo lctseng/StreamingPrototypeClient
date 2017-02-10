@@ -35,16 +35,13 @@ public class Display implements Disposable{
         bufData = new byte[106400];
 
         conn = null;
-        profiler = new Profiler();
+        profiler = Profiler.getInstance();
     }
 
     public void setConnection(Connection conn){
         this.conn = conn;
     }
 
-    public void setProfiler(Profiler profiler){
-        this.profiler = profiler;
-    }
 
     public Texture receiveNextTexture(){
         if(conn != null){
@@ -106,8 +103,6 @@ public class Display implements Disposable{
             return null;
         }
     }
-
-
 
     @Override
     public void dispose() {
