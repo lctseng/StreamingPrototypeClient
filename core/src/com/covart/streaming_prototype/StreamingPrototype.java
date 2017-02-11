@@ -20,12 +20,13 @@ public class StreamingPrototype extends ApplicationAdapter
     // major component
     private Display display;
     private Network network;
+    private ImageDecoderBase decoder;
 	
 	@Override
 	public void create () {
         network = new Network(this);
         display = new Display();
-
+        decoder = new ImageDecoderSimple();
     }
 
     @Override
@@ -37,6 +38,7 @@ public class StreamingPrototype extends ApplicationAdapter
         this.state = Running;
         Profiler.reset();
         network.start();
+        decoder.start();
     }
 
     @Override
@@ -45,6 +47,7 @@ public class StreamingPrototype extends ApplicationAdapter
         startRequired = false;
         Gdx.app.log("App","stopping");
         this.state = Stopped;
+        decoder.stop();
         network.stop();
         Profiler.reset();
     }
@@ -81,6 +84,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	
 	@Override
 	public void dispose () {
+        decoder.dispose();
         display.dispose();
         network.dispose();
 	}

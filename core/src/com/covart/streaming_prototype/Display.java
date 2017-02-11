@@ -48,13 +48,12 @@ public class Display implements Disposable{
         // clear flash messages
         StringPool.clearFlashMessages();
         // Get display image
-        // TODO: get from decoder not network!
-        byte[] bufData = BufferPool.getInstance().queueNetworkToDecoder.poll();
+        byte[] bufData = BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(bufData != null){
             // upload to GPU!
             injectImageData(bufData);
             // release buffer
-            if(!BufferPool.getInstance().queueDecoderToNetwork.offer(bufData)){
+            if(!BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){
                 Gdx.app.error("Display", "Cannot return the buffer to pool");
             }
         }
@@ -79,15 +78,11 @@ public class Display implements Disposable{
     }
 
     public void injectImageData(byte[] bufData){
-        // start proc
         disposeExistingTexture();
-        Profiler.reportOnProcStart();
         imageBuf.rewind();
         imageBuf.put(bufData);
         imageBuf.rewind();
         texture = new Texture(image);
-        // end proc
-        Profiler.reportOnProcEnd();
     }
 
     @Override
