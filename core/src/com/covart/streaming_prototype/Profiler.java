@@ -21,10 +21,23 @@ public class Profiler {
     private long procTimestamp;
     private long procCurrent;
 
+    private long displayTimestamp;
+    private long displayCurrent;
+    private long displayTotal;
+    private long displayCount;
+
     private static Profiler instance = new Profiler();
 
     public static void reset(){
         instance._reset();
+    }
+
+    public static void reportOnDisplay(){
+        long now = System.nanoTime();
+        instance.displayCurrent = now -instance.displayTimestamp;
+        instance.displayTimestamp = now;
+        instance.displayTotal += instance.displayCurrent;
+        instance.displayCount += 1;
     }
 
     public static void reportOnRecvStart(){
@@ -62,8 +75,17 @@ public class Profiler {
     public static void generateProfilingStrings(){
         double totalRecv = instance.recvTotal * 0.000001;
         double totalProc = instance.procTotal * 0.000001;
-        StringPool.addField("Time for receive", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", instance.recvCurrent * 0.000001, totalRecv, totalRecv / instance.recvCount));
-        StringPool.addField("Time for process", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.4f ms, avg: %6.4f ms", instance.procCurrent * 0.000001, totalProc, totalProc / instance.procCount));
+        double totalDisplay = instance.displayTotal * 0.000001;
+        long fpsCurrent = 0;
+        long fpsAverage = 0;
+        if(instance.displayCount > 0){
+            fpsCurrent = Math.round(1.0 / (instance.displayCurrent * 0.000000001));
+            fpsAverage = Math.round(1.0 / ((instance.displayTotal / instance.displayCount) * 0.000000001));
+        }
+        StringPool.addField("Time for receive", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.1f ms, avg: %6.4f ms", instance.recvCurrent * 0.000001, totalRecv, totalRecv / instance.recvCount));
+        StringPool.addField("Time for process", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.1f ms, avg: %6.4f ms", instance.procCurrent * 0.000001, totalProc, totalProc / instance.procCount));
+        StringPool.addField("Time from last display", String.format(Locale.TAIWAN,"%6.4f ms, total: %6.1f ms, avg: %6.4f ms", instance.displayCurrent * 0.000001, totalDisplay, totalDisplay / instance.displayCount));
+        StringPool.addField("Display FPS", String.format(Locale.TAIWAN,"Current: %d, Average: %d", fpsCurrent, fpsAverage));
     }
 
     private Profiler() {
@@ -80,5 +102,10 @@ public class Profiler {
         procCount = 0;
         procTimestamp = -1;
         procCurrent = 0;
+
+        displayTimestamp = System.nanoTime();
+        displayCurrent = 0;
+        displayTotal = 0;
+        displayCount = 0;
     }
 }

@@ -52,13 +52,14 @@ public class Display implements Disposable{
         if(bufData != null){
             // upload to GPU!
             injectImageData(bufData);
+            Profiler.reportOnDisplay();
             // release buffer
             if(!BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){
                 Gdx.app.error("Display", "Cannot return the buffer to pool");
             }
         }
         if(texture != null){
-            batch.draw(texture, 0, 110);
+            batch.draw(texture, 0, 150);
         }
     }
 
