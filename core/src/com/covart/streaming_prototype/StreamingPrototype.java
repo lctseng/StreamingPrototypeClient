@@ -2,146 +2,67 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.ArrayList;
-
-import StreamingFormat.Message;
-
-import static com.covart.streaming_prototype.StreamingPrototype.State.Init;
-import static com.covart.streaming_prototype.StreamingPrototype.State.Ready;
-import static com.covart.streaming_prototype.StreamingPrototype.State.WaitForConnection;
+import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
+import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements ConnectionListener {
+        implements Component {
 
     enum State {
-        Init, WaitForConnection, Ready
+        Stopped, Running
     }
 
-    private State state = Init;
+    private State state = Stopped;
 
     // debug
     private int count;
 
-    // text drawing
-    private ArrayList<String> texts;
-
     // major component
-    private Connection conn;
     private Display display;
-
-    // connection buffers
-    private byte[] bufData;
-
+    private Network network;
 	
 	@Override
 	public void create () {
-        conn = new Connection(this);
-        texts = new ArrayList<String>();
+        network = new Network(this);
         display = new Display();
-        bufData = new byte[106400];
-
-        conn.connect();
-
         count = 0;
-
-        state = WaitForConnection;
 
 	}
 
     @Override
-    public void onConnectionReady(){
-        state = Ready;
+    public void start() {
+        Gdx.app.log("App","starting");
+        StringPool.addField("App", "Component started");
+        this.state = Running;
+        Profiler.reset();
+        network.start();
     }
 
     @Override
-    public void onConnectionClose(){
-        state = WaitForConnection;
+    public void stop() {
+        Gdx.app.log("App","stopping");
+        this.state = Stopped;
+        network.stop();
+
     }
 
 	@Override
 	public void render () {
-
         display.updateStart();
-
-        if(conn.getReady()){
-
-            float accelX = Gdx.input.getAccelerometerX();
-            float accelY = Gdx.input.getAccelerometerY();
-            float accelZ = Gdx.input.getAccelerometerZ();
-            StringPool.addField("Sensor", String.format("Accel X = %6.4f, Y = %6.4f, , Z = %6.4f", accelX, accelY, accelZ));
-
-            exchange_header();
-
-            Profiler.generateProfilingStrings();
-        }
-        else{
-            // draw connection state
-            StringPool.clearFields();
-            StringPool.addFlashMessage("Connection is not ready!");
-            StringPool.addFlashMessage("Touch the screen to force reconnect");
-            StringPool.addFlashMessage("State: " + conn.getStateText());
-            // re-connect
+        if(state == Stopped){
+            // show touch bar
+            StringPool.addField("App", "Stopped. Touch the screen to start the components");
             if(Gdx.input.isTouched()){
-                // re-connect!
-                conn.connect();
-                Profiler.reset();
+                start();
             }
         }
-
         display.updateEnd();
 	}
 	
 	@Override
 	public void dispose () {
-        conn.dispose();
         display.dispose();
+        network.dispose();
 	}
-
-    private void exchange_header(){
-        // create data
-        count += 1;
-        Message.StreamingMessage msg =
-                Message.StreamingMessage.newBuilder()
-                .setType(Message.MessageType.MsgCameraInfo)
-                .setCameraMsg(
-                        Message.Camera.newBuilder()
-                        .setSerialNumber(count)
-                        .build()
-                )
-                .build();
-        // send!
-        byte[] sendData = msg.toByteArray();
-        // write bs
-        conn.write(PackInteger.pack(sendData.length));
-        // write pb
-        conn.write(sendData);
-        // recv!
-        // read bs
-        byte[] bs_data = new byte[4];
-        conn.read(bs_data);
-        int bs = PackInteger.unpack(bs_data);
-        // read pb
-        Profiler.reportOnRecvStart();
-        byte[] msg_data = new byte[bs];
-        conn.read(msg_data);
-        try {
-            Message.StreamingMessage recvMsg = Message.StreamingMessage.parseFrom(msg_data);
-            if(recvMsg.getType() == Message.MessageType.MsgImage){
-                conn.readn(bufData, recvMsg.getImageMsg().getByteSize());
-                Profiler.reportOnRecvEnd();
-                display.injectImageData(bufData);
-            }
-            else{
-                Profiler.reportOnRecvEnd();
-                Gdx.app.log("Protobuf","Not an image:" + recvMsg.toString());
-                conn.close();
-            }
-        } catch (InvalidProtocolBufferException e) {
-            Profiler.reportOnRecvEnd();
-            Gdx.app.error("Protobuf","Unable to receive message!!");
-            e.printStackTrace();
-        }
-    }
 }

@@ -9,4 +9,6 @@ public interface ConnectionListener {
     public void onConnectionReady();
 
     public void onConnectionClose();
+
+    public void onConnectionStarted();
 }

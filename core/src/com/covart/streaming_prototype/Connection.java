@@ -1,5 +1,6 @@
 package com.covart.streaming_prototype;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.Protocol;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
@@ -22,11 +23,11 @@ public class Connection {
         Disconnected, Connecting, Connected
     }
 
-    private State state;
+    private volatile State state;
     private Socket socket;
 
-    public InputStream recvStream;
-    public OutputStream sendStream;
+    private InputStream recvStream;
+    private OutputStream sendStream;
 
     private ConnectionListener listener;
 
@@ -37,7 +38,7 @@ public class Connection {
         this.listener = listener;
     }
 
-    synchronized public void connect(){
+    public void connect(){
         // only issue a connection when disconnected
         if(state == State.Disconnected){
             if(socket  != null){
@@ -46,24 +47,22 @@ public class Connection {
                 socket = null;
             }
             state = State.Connecting;
-            new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        SocketHints hints = new SocketHints();
-                        try {
-                            socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3333, hints);
-                            recvStream = socket.getInputStream();
-                            sendStream = socket.getOutputStream();
-                            state = State.Connected;
-                            listener.onConnectionReady();
-                        }
-                        catch (GdxRuntimeException e){
-                            state = State.Disconnected;
-                        }
-                    }
-                }
-            ).start();
+            listener.onConnectionStarted();
+            Gdx.app.log("Connection", "Connecting...");
+            SocketHints hints = new SocketHints();
+            try {
+                socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3333, hints);
+                recvStream = socket.getInputStream();
+                sendStream = socket.getOutputStream();
+                state = State.Connected;
+                listener.onConnectionReady();
+                Gdx.app.log("Connection", "Connected");
+            }
+            catch (GdxRuntimeException e){
+                Gdx.app.log("Connection", "Disconnected");
+                e.printStackTrace();
+                close();
+            }
          }
     }
 
@@ -98,6 +97,8 @@ public class Connection {
             socket = null;
             recvStream = null;
             sendStream = null;
+        }
+        if(state != State.Disconnected){
             state = State.Disconnected;
             listener.onConnectionClose();
         }
