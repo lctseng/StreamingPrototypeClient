@@ -26,7 +26,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	public void create () {
         network = new Network(this);
         display = new Display();
-        decoder = new ImageDecoderSimple();
+        decoder = new ImageDecoderLZ4();
     }
 
     @Override
