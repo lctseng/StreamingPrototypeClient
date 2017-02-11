@@ -25,7 +25,6 @@ public class Display implements Disposable{
     private Pixmap image;
     private ByteBuffer imageBuf;
     private Texture texture;
-
     // string pool
 
     Display(){
@@ -51,12 +50,16 @@ public class Display implements Disposable{
     }
 
     public void updateEnd(){
+        // record FPS
+        StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
+
         int dy = 100;
         for(String text : StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy -= 20;
         }
+
         // end batch
         batch.end();
         // clean up
