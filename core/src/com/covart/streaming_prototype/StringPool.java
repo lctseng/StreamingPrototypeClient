@@ -18,6 +18,7 @@ public class StringPool {
     private Map<String, String> fields;
     private ArrayList<String> flashMessages;
 
+    private static Object lock = new Object();
     private static StringPool instance = new StringPool();
 
     public static StringPool getInstance(){
@@ -25,27 +26,38 @@ public class StringPool {
     }
 
     public static void addField(String field, String content){
-        instance.fields.put(field, content);
+        synchronized (lock){
+            instance.fields.put(field, content);
+        }
+    }
+
+    public static void removeField(String field){
+        synchronized (lock) {
+            instance.fields.remove(field);
+        }
     }
 
     public static String[] getAllText(){
-        String[] texts = new String[instance.fields.size() + instance.flashMessages.size()];
-        int index = 0;
-        for (Map.Entry<String, String> entry : instance.fields.entrySet())
-        {
-            texts[index] = String.format(Locale.TAIWAN,"%s : %s", entry.getKey(), entry.getValue());
-            index++;
+        synchronized (lock) {
+            String[] texts = new String[instance.fields.size() + instance.flashMessages.size()];
+            int index = 0;
+            for (Map.Entry<String, String> entry : instance.fields.entrySet()) {
+                texts[index] = String.format(Locale.TAIWAN, "%s : %s", entry.getKey(), entry.getValue());
+                index++;
 
+            }
+            for (String text : instance.flashMessages) {
+                texts[index] = text;
+                index++;
+            }
+            return texts;
         }
-        for(String text : instance.flashMessages){
-            texts[index] = text;
-            index++;
-        }
-        return texts;
     }
 
     public static void addFlashMessage(String text){
-        instance.flashMessages.add(text);
+        synchronized (lock) {
+            instance.flashMessages.add(text);
+        }
     }
 
     public static void clear(){
@@ -54,15 +66,21 @@ public class StringPool {
     }
 
     public static void clearFields(){
-        instance.fields.clear();
+        synchronized (lock) {
+            instance.fields.clear();
+        }
     }
 
     public static void clearFlashMessages(){
-        instance.flashMessages.clear();
+        synchronized (lock) {
+            instance.flashMessages.clear();
+        }
     }
 
     private StringPool(){
-        fields = Collections.synchronizedMap(new LinkedHashMap<String, String>());
-        flashMessages = new ArrayList<String>();
+        synchronized (lock) {
+            fields = Collections.synchronizedMap(new LinkedHashMap<String, String>());
+            flashMessages = new ArrayList<String>();
+        }
     }
 }

@@ -15,8 +15,16 @@ public class PackInteger {
         return bb.getInt();
     }
 
-    public static byte[] pack(int i){
+    public static byte[] pack(int i) {
         byte[] buffer = new byte[4];
+        buffer[3] = (byte) ((i >> 24) & 0xFF);
+        buffer[2] = (byte) ((i >> 16) & 0xFF);
+        buffer[1] = (byte) ((i >> 8) & 0xFF);
+        buffer[0] = (byte) ((i) & 0xFF);
+        return buffer;
+    }
+
+    public static byte[] pack(int i, byte[] buffer) {
         buffer[3] = (byte) ((i >> 24) & 0xFF);
         buffer[2] = (byte) ((i >> 16) & 0xFF);
         buffer[1] = (byte) ((i >> 8) & 0xFF);

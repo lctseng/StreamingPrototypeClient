@@ -17,9 +17,6 @@ public class StreamingPrototype extends ApplicationAdapter
     private volatile boolean startRequired = false;
     private volatile boolean stopRequired = false;
 
-    // debug
-    private int count;
-
     // major component
     private Display display;
     private Network network;
@@ -28,9 +25,8 @@ public class StreamingPrototype extends ApplicationAdapter
 	public void create () {
         network = new Network(this);
         display = new Display();
-        count = 0;
 
-	}
+    }
 
     @Override
     public void start() {

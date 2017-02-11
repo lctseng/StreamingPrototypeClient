@@ -105,6 +105,9 @@ public class Connection {
     }
 
     public int read(byte[] array){
+        if(state != State.Connected){
+            return -1;
+        }
         try{
             int nRead = recvStream.read(array);
             if(nRead < 0){
@@ -120,6 +123,9 @@ public class Connection {
     }
 
     public int readn(byte[] array, int n){
+        if(state != State.Connected){
+            return -1;
+        }
         try{
             int total_read_n = 0;
             while(total_read_n < n){
@@ -147,6 +153,9 @@ public class Connection {
 
 
     public int read(byte[] array, int offset, int len){
+        if(state != State.Connected){
+            return -1;
+        }
         try{
             int nRead = recvStream.read(array, offset, len);
             if(nRead < 0){
@@ -162,6 +171,9 @@ public class Connection {
     }
 
     public boolean write(byte[] array){
+        if(state != State.Connected){
+            return false;
+        }
         try {
             sendStream.write(array);
             return true;

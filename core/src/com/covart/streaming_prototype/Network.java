@@ -2,6 +2,11 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.util.Locale;
+
+import StreamingFormat.Message;
 
 import static com.covart.streaming_prototype.Network.State.NotReady;
 import static com.covart.streaming_prototype.Network.State.Ready;
@@ -24,11 +29,18 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     private MasterComponentAdapter app;
 
+    // for debug
+    private int count = 0;
+
     // connection buffers
+    private byte[] bufSendingHeader;
+    private byte[] bufReceivngHeader;
     private byte[] bufData;
 
     public Network(MasterComponentAdapter app){
         bufData = new byte[106400];
+        bufSendingHeader = new byte[4];
+        bufReceivngHeader = new byte[4];
         connection = new Connection(this);
         updateConnectionStateText();
         this.app = app;
@@ -58,18 +70,28 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     @Override
     public void run() {
+        Gdx.app.log("Network","Worker started");
         // connect!
         connection.connect();
         // TODO: start writer
         // start receiving
         while(true){
-            // TODO: read pb
-            // check exit thread
+            // check interrupt
             if(worker.isInterrupted()){
                 break;
             }
+            // read incoming packet
+            if(state == Ready){
+                handleIncomingPacket();
+            }
+            else{
+                // Worker should not continue if network is not ready!
+                break;
+            }
         }
+        // stop writer thread
         Gdx.app.log("Network","Worker terminated");
+        connection.close();
     }
 
     @Override
@@ -85,7 +107,15 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         if(worker != null){
             Gdx.app.log("Network","stopping");
             worker.interrupt();
-            // may interrupt myself! do not block here!
+            if(Thread.currentThread() != worker){
+                try {
+                    worker.join();
+                } catch (InterruptedException e) {
+                    Gdx.app.error("Network", "Cannot join worker: interrupted");
+                    e.printStackTrace();
+                }
+            }
+            worker = null;
         }
     }
 
@@ -100,6 +130,72 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    private void handleIncomingPacket(){
+        // FIXME: send packet is for test only!
+        count += 1;
+        Message.StreamingMessage msg =
+                Message.StreamingMessage.newBuilder()
+                        .setType(Message.MessageType.MsgCameraInfo)
+                        .setCameraMsg(
+                                Message.Camera.newBuilder()
+                                        .setSerialNumber(count)
+                                        .build()
+                        )
+                        .build();
+        // send!
+        sendMessageProtobuf(msg);
+        // FIXME: End of test packet
+        // Start receiving packets
+        Message.StreamingMessage pkt = readMessageProtobuf();
+        if(pkt != null){
+            switch(pkt.getType()){
+                case MsgImage:
+                    connection.readn(bufData, pkt.getImageMsg().getByteSize());
+                    StringPool.addField("Image Data", String.format(Locale.TAIWAN, " %d bytes", pkt.getImageMsg().getByteSize()));
+                    break;
+                case MsgEnding:
+                    app.requireStop();
+                    state = NotReady;
+                    StringPool.removeField("Image Data");
+                    break;
+                default:
+                    Gdx.app.error("Network", "Unknown packet!");
+                    break;
+            }
+        }
+    }
+
+    private void sendMessageProtobuf(Message.StreamingMessage msg){
+        byte[] sendData = msg.toByteArray();
+        // write bs
+        PackInteger.pack(sendData.length, bufSendingHeader);
+        connection.write(bufSendingHeader);
+        // write pb
+        connection.write(sendData);
+    }
+
+    public Message.StreamingMessage readMessageProtobuf(){
+        // read bs
+        if(connection.read(bufReceivngHeader) != bufReceivngHeader.length){
+            Gdx.app.error("Network","Unable to receive header!");
+            return null;
+        }
+        int bs = PackInteger.unpack(bufReceivngHeader);
+        // read pb
+        Profiler.reportOnRecvStart();
+        byte[] msg_data = new byte[bs];
+        connection.readn(msg_data);
+        try {
+            return Message.StreamingMessage.parseFrom(msg_data);
+        } catch (InvalidProtocolBufferException e) {
+            Gdx.app.error("Network","Unable to receive message!");
+            e.printStackTrace();
+            return null;
+        } finally {
+            Profiler.reportOnRecvEnd();
+        }
     }
 
     /*
