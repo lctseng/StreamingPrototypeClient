@@ -5,9 +5,8 @@ package com.covart.streaming_prototype;
  * NTU COV-ART Lab, for NCP project
  */
 
-public interface Component {
-    public void start();
+public interface MasterComponentAdapter extends Component {
+    public void requireStop();
 
-    public void stop();
-
+    public void requireStart();
 }

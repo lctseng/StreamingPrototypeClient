@@ -22,12 +22,12 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     private Thread worker = null;
     private Connection connection;
 
-    private Component app;
+    private MasterComponentAdapter app;
 
     // connection buffers
     private byte[] bufData;
 
-    public Network(Component app){
+    public Network(MasterComponentAdapter app){
         bufData = new byte[106400];
         connection = new Connection(this);
         updateConnectionStateText();
@@ -48,7 +48,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     public void onConnectionClose() {
         updateConnectionStateText();
         state = NotReady;
-        app.stop();
+        app.requireStop();
     }
 
     @Override
