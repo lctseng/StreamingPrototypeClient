@@ -46,7 +46,7 @@ public class StreamingPrototype extends ApplicationAdapter
         Gdx.app.log("App","stopping");
         this.state = Stopped;
         network.stop();
-
+        Profiler.reset();
     }
 
     @Override
@@ -75,6 +75,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 requireStart();
             }
         }
+        Profiler.generateProfilingStrings();
         display.updateEnd();
 	}
 	
