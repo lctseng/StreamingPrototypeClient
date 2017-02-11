@@ -35,10 +35,8 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     // connection buffers
     private byte[] bufSendingHeader;
     private byte[] bufReceivngHeader;
-    private byte[] bufData;
 
     public Network(MasterComponentAdapter app){
-        bufData = new byte[106400];
         bufSendingHeader = new byte[4];
         bufReceivngHeader = new byte[4];
         connection = new Connection(this);
@@ -82,7 +80,13 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
             }
             // read incoming packet
             if(state == Ready){
-                handleIncomingPacket();
+                try {
+                    handleIncomingPacket();
+                } catch (InterruptedException e) {
+                    Gdx.app.log("Network","Worker interrupted");
+                    e.printStackTrace();
+                    app.requireStop();
+                }
             }
             else{
                 // Worker should not continue if network is not ready!
@@ -132,7 +136,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         this.state = state;
     }
 
-    private void handleIncomingPacket(){
+    private void handleIncomingPacket() throws InterruptedException {
         // FIXME: send packet is for test only!
         count += 1;
         Message.StreamingMessage msg =
@@ -152,8 +156,13 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         if(pkt != null){
             switch(pkt.getType()){
                 case MsgImage:
+                    // acquire new buffer
+                    byte[] bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                    Profiler.reportOnRecvStart();
                     connection.readn(bufData, pkt.getImageMsg().getByteSize());
+                    Profiler.reportOnRecvEnd();
                     StringPool.addField("Image Data", String.format(Locale.TAIWAN, " %d bytes", pkt.getImageMsg().getByteSize()));
+                    BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                     break;
                 case MsgEnding:
                     app.requireStop();
@@ -165,6 +174,11 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
                     break;
             }
         }
+    }
+
+    // TODO: implementation
+    public void sendMessageProtobufAsync(Message.StreamingMessage msg){
+
     }
 
     private void sendMessageProtobuf(Message.StreamingMessage msg){
@@ -184,7 +198,6 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         }
         int bs = PackInteger.unpack(bufReceivngHeader);
         // read pb
-        Profiler.reportOnRecvStart();
         byte[] msg_data = new byte[bs];
         connection.readn(msg_data);
         try {
@@ -193,8 +206,6 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
             Gdx.app.error("Network","Unable to receive message!");
             e.printStackTrace();
             return null;
-        } finally {
-            Profiler.reportOnRecvEnd();
         }
     }
 

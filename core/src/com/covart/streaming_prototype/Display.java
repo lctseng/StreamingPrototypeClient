@@ -47,6 +47,20 @@ public class Display implements Disposable{
 
         // clear flash messages
         StringPool.clearFlashMessages();
+        // Get display image
+        // TODO: get from decoder not network!
+        byte[] bufData = BufferPool.getInstance().queueNetworkToDecoder.poll();
+        if(bufData != null){
+            // upload to GPU!
+            injectImageData(bufData);
+            // release buffer
+            if(!BufferPool.getInstance().queueDecoderToNetwork.offer(bufData)){
+                Gdx.app.error("Display", "Cannot return the buffer to pool");
+            }
+        }
+        if(texture != null){
+            batch.draw(texture, 0, 110);
+        }
     }
 
     public void updateEnd(){
@@ -54,23 +68,19 @@ public class Display implements Disposable{
         StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
 
-        int dy = 100;
+        int dy = 0;
         for(String text : StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
-            dy -= 20;
+            dy += 20;
         }
 
         // end batch
         batch.end();
-        // clean up
-        if (texture != null){
-            texture.dispose();
-            texture = null;
-        }
     }
 
     public void injectImageData(byte[] bufData){
         // start proc
+        disposeExistingTexture();
         Profiler.reportOnProcStart();
         imageBuf.rewind();
         imageBuf.put(bufData);
@@ -78,7 +88,6 @@ public class Display implements Disposable{
         texture = new Texture(image);
         // end proc
         Profiler.reportOnProcEnd();
-        batch.draw(texture, 0, 110);
     }
 
     @Override
@@ -86,6 +95,14 @@ public class Display implements Disposable{
         batch.dispose();
         font.dispose();
         image.dispose();
+        disposeExistingTexture();
+    }
+
+    private void disposeExistingTexture(){
+        if (texture != null){
+            texture.dispose();
+            texture = null;
+        }
     }
 
 }
