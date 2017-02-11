@@ -36,6 +36,7 @@ public class StreamingPrototype extends ApplicationAdapter
         Gdx.app.log("App","starting");
         StringPool.addField("App", "Component started");
         this.state = Running;
+        BufferPool.getInstance().reset();
         Profiler.reset();
         network.start();
         decoder.start();

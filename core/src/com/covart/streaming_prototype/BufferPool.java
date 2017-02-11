@@ -31,7 +31,7 @@ public class BufferPool {
         reset();
     }
 
-    private void reset(){
+    public void reset(){
         queueNetworkToDecoder.clear();
         queueDecoderToNetwork.clear();
         queueDecoderToDisplay.clear();
