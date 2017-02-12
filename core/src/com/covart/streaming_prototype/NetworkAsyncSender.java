@@ -64,6 +64,7 @@ public class NetworkAsyncSender implements Component, Runnable{
                 break;
             }
         }
+        messageQueue.clear();
     }
 
     public boolean addSendMessageRequest(Message.StreamingMessage msg){

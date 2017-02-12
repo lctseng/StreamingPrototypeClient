@@ -26,7 +26,6 @@ public class ImageDecoderSimple extends ImageDecoderBase {
                 sendImageResult(decodeBuf);
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Gdx.app.error("Decoder", "Worker interrupted");
                 break;
             }

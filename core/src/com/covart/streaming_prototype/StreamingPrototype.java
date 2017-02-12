@@ -61,7 +61,6 @@ public class StreamingPrototype extends ApplicationAdapter
         sensor.stop();
         decoder.stop();
         network.stop();
-        Profiler.reset();
     }
 
     @Override
@@ -121,11 +120,13 @@ public class StreamingPrototype extends ApplicationAdapter
                 Profiler.reportOnRecvStart();
                 network.getConnection().readn(bufData, msg.getImageMsg().getByteSize());
                 Profiler.reportOnRecvEnd();
-                StringPool.addField("Image Data", String.format(Locale.TAIWAN, " %d bytes", msg.getImageMsg().getByteSize()));
+                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber() ,msg.getImageMsg().getByteSize()));
+                Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));
                 // send data to decoder
                 BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 break;
             case MsgEnding:
+                Gdx.app.log("Dispatch","Ending message received");
                 requireStop();
                 StringPool.removeField("Image Data");
                 break;

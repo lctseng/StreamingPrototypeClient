@@ -33,7 +33,7 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        image = new Pixmap(133, 200, Pixmap.Format.RGBA8888);
+        image = new Pixmap(399, 600, Pixmap.Format.RGBA8888);
         imageBuf = image.getPixels();
         texture = null;
 
@@ -68,7 +68,7 @@ public class Display implements Disposable{
         StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
 
-        int dy = 0;
+        int dy = 20;
         for(String text : StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy += 20;

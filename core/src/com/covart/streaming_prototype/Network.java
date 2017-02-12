@@ -50,6 +50,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     @Override
     public void onConnectionReady() {
+        Gdx.app.log("Network","Connection Ready");
         updateConnectionStateText();
         state = Ready;
         sendInitPacket();
@@ -57,9 +58,10 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     @Override
     public void onConnectionClose() {
+        Gdx.app.log("Network","Connection Closed");
         updateConnectionStateText();
         state = NotReady;
-        app.requireStop();
+        this.app.requireStop();
     }
 
     @Override
@@ -77,20 +79,23 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         while(true){
             // check interrupt
             if(worker.isInterrupted()){
+                Gdx.app.log("Network","Worker interrupted");
                 break;
             }
             // read incoming packet
             if(state == Ready){
                 try {
-                    handleIncomingPacket();
+                    if(!handleIncomingPacket()){
+                        Gdx.app.log("Network","Worker terminated due to unable to receive header");
+                        break;
+                    }
                 } catch (InterruptedException e) {
-                    Gdx.app.log("Network","Worker interrupted");
-                    e.printStackTrace();
-                    app.requireStop();
+                    Gdx.app.log("Network","Worker interrupted by exception");
+                    break;
                 }
             }
             else{
-                // Worker should not continue if network is not ready!
+                Gdx.app.log("Network","Worker terminate due to not ready!");
                 break;
             }
         }
@@ -112,7 +117,9 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     public void stop() {
         sender.stop();
         if(worker != null){
-            Gdx.app.log("Network","stopping");
+            Gdx.app.log("Network","Closing connection");
+            connection.close();
+            Gdx.app.log("Network","stopping worker");
             worker.interrupt();
             if(Thread.currentThread() != worker){
                 try {
@@ -144,11 +151,15 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         return connection;
     }
 
-    private void handleIncomingPacket() throws InterruptedException {
+    private boolean handleIncomingPacket() throws InterruptedException {
         // Start receiving packets
         Message.StreamingMessage pkt = readMessageProtobuf();
         if(pkt != null){
             this.app.dispatchMessage(pkt);
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -167,7 +178,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     public Message.StreamingMessage readMessageProtobuf(){
         // read bs
-        if(connection.read(bufReceivngHeader) != bufReceivngHeader.length){
+        if(connection.readn(bufReceivngHeader) != bufReceivngHeader.length){
             Gdx.app.error("Network","Unable to receive header!");
             return null;
         }

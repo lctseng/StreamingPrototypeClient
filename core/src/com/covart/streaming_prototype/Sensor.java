@@ -69,7 +69,7 @@ public class Sensor implements Runnable, Component {
     @Override
     public void run() {
         // wait for default position
-        Gdx.app.error("Sensor Worker", "Start waiting for default position...");
+        Gdx.app.log("Sensor Worker", "Start waiting for default position...");
         lock.lock();
         try {
             defaultPosReady.await();
