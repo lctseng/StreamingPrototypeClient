@@ -18,7 +18,6 @@ import static com.covart.streaming_prototype.Network.State.Ready;
 
 public class Network implements ConnectionListener, Runnable, Component, Disposable {
 
-
     enum State {
         NotReady, Ready
     }
@@ -35,7 +34,6 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     // sender
     private NetworkAsyncSender sender;
-
 
     private int count = 0;
 
@@ -143,20 +141,6 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     }
 
     private void handleIncomingPacket() throws InterruptedException {
-        // FIXME: send packet is for test only!
-        count += 1;
-        Message.StreamingMessage msg =
-                Message.StreamingMessage.newBuilder()
-                        .setType(Message.MessageType.MsgCameraInfo)
-                        .setCameraMsg(
-                                Message.Camera.newBuilder()
-                                        .setSerialNumber(count)
-                                        .build()
-                        )
-                        .build();
-        // send!
-        sendMessageProtobufAsync(msg);
-        // FIXME: End of test packet
         // Start receiving packets
         Message.StreamingMessage pkt = readMessageProtobuf();
         if(pkt != null){
@@ -182,7 +166,6 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         }
     }
 
-    // TODO: implementation
     public void sendMessageProtobufAsync(Message.StreamingMessage msg){
         sender.addSendMessageRequest(msg);
     }
@@ -214,53 +197,4 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
             return null;
         }
     }
-
-    /*
-    private void exchange_header(){
-        // create data
-        count += 1;
-        Message.StreamingMessage msg =
-                Message.StreamingMessage.newBuilder()
-                        .setType(Message.MessageType.MsgCameraInfo)
-                        .setCameraMsg(
-                                Message.Camera.newBuilder()
-                                        .setSerialNumber(count)
-                                        .build()
-                        )
-                        .build();
-        // send!
-        byte[] sendData = msg.toByteArray();
-        // write bs
-        conn.write(PackInteger.pack(sendData.length));
-        // write pb
-        conn.write(sendData);
-        // recv!
-        // read bs
-        byte[] bs_data = new byte[4];
-        conn.read(bs_data);
-        int bs = PackInteger.unpack(bs_data);
-        // read pb
-        Profiler.reportOnRecvStart();
-        byte[] msg_data = new byte[bs];
-        conn.read(msg_data);
-        try {
-            Message.StreamingMessage recvMsg = Message.StreamingMessage.parseFrom(msg_data);
-            if(recvMsg.getType() == Message.MessageType.MsgImage){
-                conn.readn(bufData, recvMsg.getImageMsg().getByteSize());
-                Profiler.reportOnRecvEnd();
-                display.injectImageData(bufData);
-            }
-            else{
-                Profiler.reportOnRecvEnd();
-                Gdx.app.log("Protobuf","Not an image:" + recvMsg.toString());
-                conn.close();
-            }
-        } catch (InvalidProtocolBufferException e) {
-            Profiler.reportOnRecvEnd();
-            Gdx.app.error("Protobuf","Unable to receive message!!");
-            e.printStackTrace();
-        }
-    }
-    */
-
 }

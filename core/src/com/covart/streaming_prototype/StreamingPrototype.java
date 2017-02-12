@@ -99,6 +99,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void onSensorMessageReady(Message.StreamingMessage msg) {
-
+        network.sendMessageProtobufAsync(msg);
     }
 }
