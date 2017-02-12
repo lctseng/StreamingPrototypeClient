@@ -14,6 +14,7 @@ public class BufferPool {
         return ourInstance;
     }
 
+    public static final int QUEUE_SIZE = 3;
     public static final int IMAGE_BUFFER_SIZE = 957600;
     public static final int DECODER_BUFFER_SIZE = 957600;
 
