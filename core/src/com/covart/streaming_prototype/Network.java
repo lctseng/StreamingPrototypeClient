@@ -209,4 +209,8 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
                 ).build();
         sendMessageProtobufAsync(msg);
     }
+
+    public void blockedSendMessage(Message.StreamingMessage msg) throws InterruptedException {
+        sender.blockedSendMessage(msg);
+    }
 }

@@ -2,6 +2,7 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 
 import java.util.Locale;
 
@@ -9,6 +10,7 @@ import StreamingFormat.Message;
 
 import static com.badlogic.gdx.Gdx.app;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
+import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDown;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
@@ -16,7 +18,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     enum State {
-        Stopped, Running
+        Stopped, Running, ShuttingDown
     }
 
     private State state = Stopped;
@@ -31,10 +33,38 @@ public class StreamingPrototype extends ApplicationAdapter
 	
 	@Override
 	public void create () {
+        StringPool.addField("App", "Initializing");
         network = new Network(this);
         display = new Display();
         decoder = new ImageDecoderLZ4();
         sensor  = new Sensor(this);
+
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown (int x, int y, int pointer, int button) {
+                if(StreamingPrototype.this.state == Stopped){
+                    StringPool.addField("App", "Starting");
+                    requireStart();
+                }
+                else if(StreamingPrototype.this.state == Running){
+                    StringPool.addField("App", "Shutting Down...");
+                    sendEndingMessage();
+                    state = ShuttingDown;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            requireStop();
+                        }
+                    }).start();
+                }
+                return true; // return true to indicate the event was handled
+            }
+        });
     }
 
     @Override
@@ -50,6 +80,7 @@ public class StreamingPrototype extends ApplicationAdapter
         network.start();
         decoder.start();
         sensor.start();
+        StringPool.addField("App", "Running. Touch the screen to stop");
     }
 
     @Override
@@ -61,6 +92,7 @@ public class StreamingPrototype extends ApplicationAdapter
         sensor.stop();
         decoder.stop();
         network.stop();
+        StringPool.addField("App", "Stopped. Touch the screen to start the components");
     }
 
     @Override
@@ -82,18 +114,12 @@ public class StreamingPrototype extends ApplicationAdapter
             stop();
         }
         display.updateStart();
-        if(state == Stopped){
-            // show touch bar
-            StringPool.addField("App", "Stopped. Touch the screen to start the components");
-            if(Gdx.input.isTouched()){
-                requireStart();
-            }
-        }
         Profiler.generateProfilingStrings();
         display.updateEnd();
 	}
-	
-	@Override
+
+
+    @Override
 	public void dispose () {
         decoder.dispose();
         display.dispose();
@@ -133,6 +159,22 @@ public class StreamingPrototype extends ApplicationAdapter
             default:
                 Gdx.app.error("Dispatch", "Unknown message!");
                 break;
+        }
+    }
+
+    private void sendEndingMessage() {
+        Gdx.app.log("App", "Sending Ending message...");
+        // crafting packet
+        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgEnding)
+                .build();
+        try {
+            Gdx.app.log("App", "Wait for Ending message to be sent...");
+            network.blockedSendMessage(msg);
+            Gdx.app.log("App", "Ending message sent");
+        } catch (InterruptedException e) {
+            Gdx.app.error("App", "Interrupted when wait for sending ending message");
+            e.printStackTrace();
         }
     }
 }

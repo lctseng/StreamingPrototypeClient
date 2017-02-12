@@ -86,7 +86,7 @@ public class Sensor implements Runnable, Component {
                 break;
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 break;
             }

@@ -59,6 +59,11 @@ public class NetworkAsyncSender implements Component, Runnable{
             try {
                 Message.StreamingMessage msg = messageQueue.take();
                 network.sendMessageProtobuf(msg);
+                synchronized (messageQueue){
+                    if(messageQueue.isEmpty()){
+                        messageQueue.notify();
+                    }
+                }
             } catch (InterruptedException e) {
                 Gdx.app.error("Network Sender", "Interrupted when wait for request");
                 break;
@@ -69,5 +74,13 @@ public class NetworkAsyncSender implements Component, Runnable{
 
     public boolean addSendMessageRequest(Message.StreamingMessage msg){
         return messageQueue.offer(msg);
+    }
+
+
+    public void blockedSendMessage(Message.StreamingMessage msg) throws InterruptedException {
+        synchronized (messageQueue){
+            addSendMessageRequest(msg);
+            messageQueue.wait();
+        }
     }
 }

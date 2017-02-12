@@ -110,7 +110,6 @@ public class Connection {
                 Gdx.app.error("Connection", "Error when closing read end");
                 e.printStackTrace();
             }
-            recvStream = null;
         }
         if(!writable){
             disposeSocket();
@@ -126,7 +125,6 @@ public class Connection {
                 Gdx.app.error("Connection", "Error when closing write end");
                 e.printStackTrace();
             }
-            sendStream = null;
         }
         if(!readable){
             disposeSocket();
