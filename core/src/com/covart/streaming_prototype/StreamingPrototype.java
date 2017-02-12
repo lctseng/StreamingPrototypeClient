@@ -3,8 +3,11 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 
+import java.util.Locale;
+
 import StreamingFormat.Message;
 
+import static com.badlogic.gdx.Gdx.app;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
@@ -38,11 +41,12 @@ public class StreamingPrototype extends ApplicationAdapter
     public void start() {
         stopRequired = false;
         startRequired = false;
-        Gdx.app.log("App","starting");
+        app.log("App","starting");
         StringPool.addField("App", "Component started");
         this.state = Running;
         BufferPool.getInstance().reset();
         Profiler.reset();
+        display.disposeExistingTexture();
         network.start();
         decoder.start();
         sensor.start();
@@ -52,7 +56,7 @@ public class StreamingPrototype extends ApplicationAdapter
     public void stop() {
         stopRequired = false;
         startRequired = false;
-        Gdx.app.log("App","stopping");
+        app.log("App","stopping");
         this.state = Stopped;
         sensor.stop();
         decoder.stop();
@@ -100,5 +104,34 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onSensorMessageReady(Message.StreamingMessage msg) {
         network.sendMessageProtobufAsync(msg);
+    }
+
+    @Override
+    public void dispatchMessage(Message.StreamingMessage msg) throws InterruptedException {
+        switch(msg.getType()){
+            case MsgDefaultPos:
+                Gdx.app.log("Dispatch", "DefaultPos set");
+                Message.DefaultPos posMsg = msg.getDefaultPosMsg();
+                sensor.setInitialDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
+                break;
+            case MsgImage:
+                // acquire new buffer
+                byte[] bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                // start receiving image data
+                Profiler.reportOnRecvStart();
+                network.getConnection().readn(bufData, msg.getImageMsg().getByteSize());
+                Profiler.reportOnRecvEnd();
+                StringPool.addField("Image Data", String.format(Locale.TAIWAN, " %d bytes", msg.getImageMsg().getByteSize()));
+                // send data to decoder
+                BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
+                break;
+            case MsgEnding:
+                requireStop();
+                StringPool.removeField("Image Data");
+                break;
+            default:
+                Gdx.app.error("Dispatch", "Unknown message!");
+                break;
+        }
     }
 }

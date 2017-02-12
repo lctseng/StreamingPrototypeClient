@@ -94,7 +94,7 @@ public class Display implements Disposable{
         disposeExistingTexture();
     }
 
-    private void disposeExistingTexture(){
+    public void disposeExistingTexture(){
         if (texture != null){
             texture.dispose();
             texture = null;

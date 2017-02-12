@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.Locale;
-
 import StreamingFormat.Message;
 
 import static com.covart.streaming_prototype.Network.State.NotReady;
@@ -54,6 +52,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     public void onConnectionReady() {
         updateConnectionStateText();
         state = Ready;
+        sendInitPacket();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         Gdx.app.log("Network","Worker started");
         // connect!
         connection.connect();
-        // TODO: start writer
+        // send init packet
         // start receiving
         while(true){
             // check interrupt
@@ -141,29 +140,15 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         this.state = state;
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
     private void handleIncomingPacket() throws InterruptedException {
         // Start receiving packets
         Message.StreamingMessage pkt = readMessageProtobuf();
         if(pkt != null){
-            switch(pkt.getType()){
-                case MsgImage:
-                    // acquire new buffer
-                    byte[] bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
-                    Profiler.reportOnRecvStart();
-                    connection.readn(bufData, pkt.getImageMsg().getByteSize());
-                    Profiler.reportOnRecvEnd();
-                    StringPool.addField("Image Data", String.format(Locale.TAIWAN, " %d bytes", pkt.getImageMsg().getByteSize()));
-                    BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
-                    break;
-                case MsgEnding:
-                    app.requireStop();
-                    state = NotReady;
-                    StringPool.removeField("Image Data");
-                    break;
-                default:
-                    Gdx.app.error("Network", "Unknown packet!");
-                    break;
-            }
+            this.app.dispatchMessage(pkt);
         }
     }
 
@@ -197,5 +182,20 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void sendInitPacket(){
+        // crafting packet
+        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgInit)
+                .setInitMsg(
+                        Message.Init.newBuilder()
+                                .setModuleID(1)
+                                .setWidth(Gdx.graphics.getWidth())
+                                .setHeight(Gdx.graphics.getHeight())
+                                .build()
+
+                ).build();
+        sendMessageProtobufAsync(msg);
     }
 }

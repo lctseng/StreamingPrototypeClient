@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import java.util.Locale;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import StreamingFormat.Message;
 
@@ -23,6 +26,9 @@ public class Sensor implements Runnable, Component {
 
     private Matrix4 tempMatrix;
     private Quaternion tempQuaternion;
+
+    private final Lock lock = new ReentrantLock();
+    private final Condition defaultPosReady = lock.newCondition();
 
     private int serialNumber;
 
@@ -62,6 +68,18 @@ public class Sensor implements Runnable, Component {
 
     @Override
     public void run() {
+        // wait for default position
+        Gdx.app.error("Sensor Worker", "Start waiting for default position...");
+        lock.lock();
+        try {
+            defaultPosReady.await();
+        } catch (InterruptedException e) {
+            Gdx.app.error("Sensor Worker", "Waiting for default position is interrupted. Worker terminated");
+            return;
+        } finally {
+            lock.unlock();
+        }
+        // start sending
         serialNumber = 0;
         while(true){
             if(Thread.currentThread().isInterrupted()){
@@ -81,7 +99,10 @@ public class Sensor implements Runnable, Component {
     }
 
     public void setInitialDirection(float vx, float vy, float vz){
+        lock.lock();
         initDirection.set(vx, vy, vz);
+        defaultPosReady.signal();
+        lock.unlock();
     }
 
 
