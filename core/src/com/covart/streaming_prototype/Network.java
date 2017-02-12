@@ -118,6 +118,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
             if(Thread.currentThread() != worker){
                 try {
                     worker.join();
+                    Gdx.app.log("Network","Worker stopped");
                 } catch (InterruptedException e) {
                     Gdx.app.error("Network", "Cannot join worker: interrupted");
                     e.printStackTrace();

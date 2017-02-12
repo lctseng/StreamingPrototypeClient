@@ -44,6 +44,7 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
             if(Thread.currentThread() != worker){
                 try {
                     worker.join();
+                    Gdx.app.log("Decoder","Worker stopped");
                 } catch (InterruptedException e) {
                     Gdx.app.error("Decoder", "Cannot join worker: interrupted");
                     e.printStackTrace();

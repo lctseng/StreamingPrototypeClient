@@ -40,6 +40,7 @@ public class NetworkAsyncSender implements Component, Runnable{
             if(Thread.currentThread() != worker){
                 try {
                     worker.join();
+                    Gdx.app.log("Network Sender","Worker stopped");
                 } catch (InterruptedException e) {
                     Gdx.app.error("Network Sender", "Cannot join worker: interrupted");
                     e.printStackTrace();
@@ -60,6 +61,7 @@ public class NetworkAsyncSender implements Component, Runnable{
                 network.sendMessageProtobuf(msg);
             } catch (InterruptedException e) {
                 Gdx.app.error("Network Sender", "Interrupted when wait for request");
+                break;
             }
         }
     }
