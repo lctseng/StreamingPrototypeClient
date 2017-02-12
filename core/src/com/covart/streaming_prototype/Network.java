@@ -29,17 +29,21 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     private MasterComponentAdapter app;
 
-    // for debug
-    private int count = 0;
-
     // connection buffers
     private byte[] bufSendingHeader;
     private byte[] bufReceivngHeader;
+
+    // sender
+    private NetworkAsyncSender sender;
+
+
+    private int count = 0;
 
     public Network(MasterComponentAdapter app){
         bufSendingHeader = new byte[4];
         bufReceivngHeader = new byte[4];
         connection = new Connection(this);
+        sender = new NetworkAsyncSender(this);
         updateConnectionStateText();
         this.app = app;
     }
@@ -104,10 +108,12 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         Gdx.app.log("Network","starting");
         worker = new Thread(this);
         worker.start();
+        sender.start();
     }
 
     @Override
     public void stop() {
+        sender.stop();
         if(worker != null){
             Gdx.app.log("Network","stopping");
             worker.interrupt();
@@ -149,7 +155,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
                         )
                         .build();
         // send!
-        sendMessageProtobuf(msg);
+        sendMessageProtobufAsync(msg);
         // FIXME: End of test packet
         // Start receiving packets
         Message.StreamingMessage pkt = readMessageProtobuf();
@@ -178,10 +184,10 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     // TODO: implementation
     public void sendMessageProtobufAsync(Message.StreamingMessage msg){
-
+        sender.addSendMessageRequest(msg);
     }
 
-    private void sendMessageProtobuf(Message.StreamingMessage msg){
+    public void sendMessageProtobuf(Message.StreamingMessage msg){
         byte[] sendData = msg.toByteArray();
         // write bs
         PackInteger.pack(sendData.length, bufSendingHeader);
