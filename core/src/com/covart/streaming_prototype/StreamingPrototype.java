@@ -3,11 +3,14 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 
+import StreamingFormat.Message;
+
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter {
+        implements MasterComponentAdapter, SensorDataListener {
+
 
     enum State {
         Stopped, Running
@@ -21,12 +24,14 @@ public class StreamingPrototype extends ApplicationAdapter
     private Display display;
     private Network network;
     private ImageDecoderBase decoder;
+    private Sensor sensor;
 	
 	@Override
 	public void create () {
         network = new Network(this);
         display = new Display();
         decoder = new ImageDecoderLZ4();
+        sensor  = new Sensor(this);
     }
 
     @Override
@@ -40,6 +45,7 @@ public class StreamingPrototype extends ApplicationAdapter
         Profiler.reset();
         network.start();
         decoder.start();
+        sensor.start();
     }
 
     @Override
@@ -48,6 +54,7 @@ public class StreamingPrototype extends ApplicationAdapter
         startRequired = false;
         Gdx.app.log("App","stopping");
         this.state = Stopped;
+        sensor.stop();
         decoder.stop();
         network.stop();
         Profiler.reset();
@@ -89,4 +96,9 @@ public class StreamingPrototype extends ApplicationAdapter
         display.dispose();
         network.dispose();
 	}
+
+    @Override
+    public void onSensorMessageReady(Message.StreamingMessage msg) {
+
+    }
 }
