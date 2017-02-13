@@ -24,6 +24,7 @@ public class Sensor implements Runnable, Component {
 
     private Vector3 initDirection;
 
+    private Vector3 tempVector3;
     private Matrix4 tempMatrix;
     private Quaternion tempQuaternion;
 
@@ -35,6 +36,7 @@ public class Sensor implements Runnable, Component {
     Sensor(SensorDataListener listener){
         this.listener = listener;
         initDirection = new Vector3(0,0,1);
+        tempVector3 = new Vector3();
         tempMatrix = new Matrix4();
         tempQuaternion = new Quaternion();
         serialNumber = 0;
@@ -86,7 +88,7 @@ public class Sensor implements Runnable, Component {
                 break;
             }
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 break;
             }
@@ -116,17 +118,19 @@ public class Sensor implements Runnable, Component {
         // generate the current rotation matrix
         Gdx.input.getRotationMatrix(tempMatrix.val);
         tempQuaternion.setFromMatrix(true, tempMatrix);
-        Vector3 rotated = tempQuaternion.transform(initDirection);
-        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", rotated.x, rotated.y, rotated.z));
+        tempVector3.set(initDirection);
+        tempQuaternion.transform(tempVector3);
+        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", tempQuaternion.getYaw(), tempQuaternion.getPitch(), tempQuaternion.getRoll()));
+        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", tempVector3.x, tempVector3.y, tempVector3.z));
 
         // crafting packet
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
                 .setType(Message.MessageType.MsgCameraInfo)
                 .setCameraMsg(
                         Message.Camera.newBuilder()
-                                .setDeltaVx(rotated.x - initDirection.x)
-                                .setDeltaVy(rotated.y - initDirection.y)
-                                .setDeltaVz(rotated.y - initDirection.z)
+                                .setDeltaVx(tempVector3.x - initDirection.x)
+                                .setDeltaVy(tempVector3.y - initDirection.y)
+                                .setDeltaVz(tempVector3.y - initDirection.z)
                                 .setSerialNumber(serialNumber)
                                 .build()
 
