@@ -30,14 +30,24 @@ public class StreamingPrototype extends ApplicationAdapter
     private Network network;
     private ImageDecoderBase decoder;
     private Sensor sensor;
-	
+
+    StreamingPrototype(ImageDecoderBase platform_decoder){
+        if(platform_decoder != null){
+            decoder = platform_decoder;
+        }
+    }
+
 	@Override
 	public void create () {
         StringPool.addField("App", "Initializing");
         network = new Network(this);
         display = new Display();
-        decoder = new ImageDecoderLZ4();
         sensor  = new Sensor(this);
+
+        if(decoder == null){
+            Gdx.app.error("App", "No platform decoder specified! Use simple decoder instead!");
+            decoder = new ImageDecoderSimple();
+        }
 
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
