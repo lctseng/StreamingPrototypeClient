@@ -10,6 +10,6 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new StreamingPrototype(new ImageDecoderLZ4()), config);
+		initialize(new StreamingPrototype(new ImageDecoderH264()), config);
 	}
 }
