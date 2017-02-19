@@ -19,7 +19,7 @@ android {
     }
     defaultConfig {
         applicationId "com.covart.streaming_prototype"
-        minSdkVersion 11
+        minSdkVersion 19
         targetSdkVersion 25
     }
 }
