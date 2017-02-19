@@ -36,7 +36,6 @@ public class Display implements Disposable{
         image = new Pixmap(399, 600, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
-
     }
 
     public void updateStart(){
