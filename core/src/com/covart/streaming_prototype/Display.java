@@ -33,7 +33,7 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        image = new Pixmap(399, 600, Pixmap.Format.RGBA8888);
+        image = new Pixmap(399, 600, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
 
