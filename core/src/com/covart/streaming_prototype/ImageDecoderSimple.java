@@ -14,12 +14,13 @@ public class ImageDecoderSimple extends ImageDecoderBase {
         while(true){
             try {
                 // read from network
-                byte[] encodedBuf = acquireEncodedResult();
-                byte[] decodeBuf = acquireImageBuffer();
+                Buffer encodedBuf = acquireEncodedResult();
+                Buffer decodeBuf = acquireImageBuffer();
                 // dummy decode: copy
                 Profiler.reportOnProcStart();
-                System.arraycopy(encodedBuf, 0, decodeBuf, 0, Math.min(encodedBuf.length, decodeBuf.length));
+                System.arraycopy(encodedBuf.data, 0, decodeBuf.data, 0, Math.min(encodedBuf.data.length, decodeBuf.data.length));
                 Profiler.reportOnProcEnd();
+                decodeBuf.size = encodedBuf.size;
                 // release buffer to network
                 releaseEncodedBuffer(encodedBuf);
                 // send to display

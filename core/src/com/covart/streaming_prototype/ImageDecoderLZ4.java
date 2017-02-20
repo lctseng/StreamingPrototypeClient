@@ -27,12 +27,13 @@ public class ImageDecoderLZ4 extends ImageDecoderBase {
         while(true){
             try {
                 // read from network
-                byte[] encodedBuf = acquireEncodedResult();
-                byte[] decodeBuf = acquireImageBuffer();
+                Buffer encodedBuf = acquireEncodedResult();
+                Buffer decodeBuf = acquireImageBuffer();
                 // decode: lz4 decompress
                 Profiler.reportOnProcStart();
-                decompressor.decompress(encodedBuf, 0, decodeBuf, 0, BufferPool.IMAGE_BUFFER_SIZE);
+                decompressor.decompress(encodedBuf.data, 0, decodeBuf.data, 0, BufferPool.IMAGE_BUFFER_SIZE);
                 Profiler.reportOnProcEnd();
+                decodeBuf.size = BufferPool.IMAGE_BUFFER_SIZE;
 
                 // release buffer to network
                 releaseEncodedBuffer(encodedBuf);

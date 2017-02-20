@@ -47,10 +47,10 @@ public class Display implements Disposable{
         // clear flash messages
         StringPool.clearFlashMessages();
         // Get display image
-        byte[] bufData = BufferPool.getInstance().queueDecoderToDisplay.poll();
+        Buffer bufData = BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(bufData != null){
             // upload to GPU!
-            injectImageData(bufData);
+            injectImageData(bufData.data);
             Profiler.reportOnDisplay();
             // release buffer
             if(!BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){

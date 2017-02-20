@@ -151,10 +151,11 @@ public class StreamingPrototype extends ApplicationAdapter
                 break;
             case MsgImage:
                 // acquire new buffer
-                byte[] bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
                 // start receiving image data
                 Profiler.reportOnRecvStart();
-                network.getConnection().readn(bufData, msg.getImageMsg().getByteSize());
+                network.getConnection().readn(bufData.data, msg.getImageMsg().getByteSize());
+                bufData.size = msg.getImageMsg().getByteSize();
                 Profiler.reportOnRecvEnd();
                 StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber() ,msg.getImageMsg().getByteSize()));
                 Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));

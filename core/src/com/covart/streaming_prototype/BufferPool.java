@@ -18,16 +18,16 @@ public class BufferPool {
     public static final int IMAGE_BUFFER_SIZE = 718200;
     public static final int DECODER_BUFFER_SIZE = 718200;
 
-    public BlockingQueue<byte[]> queueNetworkToDecoder;
-    public BlockingQueue<byte[]> queueDecoderToNetwork;
-    public BlockingQueue<byte[]> queueDecoderToDisplay;
-    public BlockingQueue<byte[]> queueDisplayToDecoder;
+    public BlockingQueue<Buffer> queueNetworkToDecoder;
+    public BlockingQueue<Buffer> queueDecoderToNetwork;
+    public BlockingQueue<Buffer> queueDecoderToDisplay;
+    public BlockingQueue<Buffer> queueDisplayToDecoder;
 
     private BufferPool() {
-        queueNetworkToDecoder = new ArrayBlockingQueue<byte[]>(QUEUE_SIZE);
-        queueDecoderToNetwork = new ArrayBlockingQueue<byte[]>(QUEUE_SIZE);
-        queueDecoderToDisplay = new ArrayBlockingQueue<byte[]>(QUEUE_SIZE);
-        queueDisplayToDecoder = new ArrayBlockingQueue<byte[]>(QUEUE_SIZE);
+        queueNetworkToDecoder = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
+        queueDecoderToNetwork = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
+        queueDecoderToDisplay = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
+        queueDisplayToDecoder = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
         reset();
     }
 
@@ -42,13 +42,13 @@ public class BufferPool {
 
     private void createDecoderDisplayBuffer() {
         for(int i=0;i<QUEUE_SIZE;i++){
-            queueDisplayToDecoder.add(new byte[IMAGE_BUFFER_SIZE]);
+            queueDisplayToDecoder.add(new Buffer(IMAGE_BUFFER_SIZE));
         }
     }
 
     private void createNetworkDecoderBuffer() {
         for(int i=0;i<QUEUE_SIZE;i++){
-            queueDecoderToNetwork.add(new byte[DECODER_BUFFER_SIZE]);
+            queueDecoderToNetwork.add(new Buffer(DECODER_BUFFER_SIZE));
         }
     }
 }

@@ -12,19 +12,19 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
 
     private Thread worker = null;
 
-    protected void sendImageResult(byte[] buf) throws InterruptedException {
+    protected void sendImageResult(Buffer buf) throws InterruptedException {
         BufferPool.getInstance().queueDecoderToDisplay.put(buf);
     }
 
-    protected byte[] acquireImageBuffer() throws InterruptedException {
+    protected Buffer acquireImageBuffer() throws InterruptedException {
         return BufferPool.getInstance().queueDisplayToDecoder.take();
     }
 
-    public byte[] acquireEncodedResult() throws InterruptedException {
+    public Buffer acquireEncodedResult() throws InterruptedException {
         return BufferPool.getInstance().queueNetworkToDecoder.take();
     }
 
-    public void releaseEncodedBuffer(byte[] buf) throws  InterruptedException {
+    public void releaseEncodedBuffer(Buffer buf) throws  InterruptedException {
         BufferPool.getInstance().queueDecoderToNetwork.put(buf);
     }
 
@@ -38,6 +38,7 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
 
     @Override
     public void stop() {
+        cleanup();
         if(worker != null){
             Gdx.app.log("Decoder","stopping");
             worker.interrupt();
@@ -56,5 +57,9 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
     @Override
     public void dispose(){
         stop();
+    }
+
+    protected void cleanup(){
+
     }
 }
