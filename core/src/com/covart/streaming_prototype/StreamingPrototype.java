@@ -75,6 +75,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 return true; // return true to indicate the event was handled
             }
         });
+        StringPool.addField("App", "Ready for start");
     }
 
     @Override
