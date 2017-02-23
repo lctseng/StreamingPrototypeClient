@@ -29,7 +29,8 @@ set_target_properties( # Specifies the target library.
 include_directories(cpp)
 
 file(GLOB NATIVE_SRC
-    "cpp/jni_decoder.c"
+    cpp/decoder.c
+    cpp/jni_decoder.c
 )
 
 add_library( # Specifies the name of the library.
@@ -41,4 +42,4 @@ add_library( # Specifies the name of the library.
              # Provides a relative path to your source file(s).
              ${NATIVE_SRC} )
 
-target_link_libraries( native-lib ffmpeg ${log-lib} )
+target_link_libraries( native-lib ffmpeg log)
