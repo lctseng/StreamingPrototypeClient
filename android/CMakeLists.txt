@@ -27,6 +27,7 @@ set_target_properties( # Specifies the target library.
 
 
 include_directories(cpp)
+include_directories(cpp/${ANDROID_ABI})
 
 file(GLOB NATIVE_SRC
     cpp/decoder.c
