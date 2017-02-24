@@ -1,0 +1,140 @@
+package com.covart.streaming_prototype;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
+
+import java.util.Locale;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import StreamingFormat.Message;
+
+/**
+ * Created by lctseng on 2017/2/12.
+ * NTU COV-ART Lab, for NCP project
+ */
+
+public class Sensor implements Runnable, Component {
+
+    private Thread worker = null;
+    private SensorDataListener listener;
+
+    private Vector3 initDirection;
+
+    private Vector3 tempVector3;
+    private Matrix4 tempMatrix;
+    private Quaternion tempQuaternion;
+
+    private final Lock lock = new ReentrantLock();
+    private final Condition defaultPosReady = lock.newCondition();
+
+    private int serialNumber;
+
+    Sensor(SensorDataListener listener){
+        this.listener = listener;
+        initDirection = new Vector3(0,0,1);
+        tempVector3 = new Vector3();
+        tempMatrix = new Matrix4();
+        tempQuaternion = new Quaternion();
+        serialNumber = 0;
+    }
+
+    @Override
+    public void start() {
+        stop();
+        Gdx.app.log("Sensor","starting");
+        worker = new Thread(this);
+        worker.start();
+    }
+
+    @Override
+    public void stop() {
+        if(worker != null){
+            Gdx.app.log("Sensor","stopping");
+            worker.interrupt();
+            if(Thread.currentThread() != worker){
+                try {
+                    worker.join();
+                    Gdx.app.log("Sensor","Worker stopped");
+                } catch (InterruptedException e) {
+                    Gdx.app.error("Sensor", "Cannot join worker: interrupted");
+                    e.printStackTrace();
+                }
+            }
+            worker = null;
+        }
+    }
+
+    @Override
+    public void run() {
+        // wait for default position
+        Gdx.app.log("Sensor Worker", "Start waiting for default position...");
+        lock.lock();
+        try {
+            defaultPosReady.await();
+        } catch (InterruptedException e) {
+            Gdx.app.error("Sensor Worker", "Waiting for default position is interrupted. Worker terminated");
+            return;
+        } finally {
+            lock.unlock();
+        }
+        // start sending
+        serialNumber = 0;
+        while(true){
+            if(Thread.currentThread().isInterrupted()){
+                break;
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                break;
+            }
+            serialNumber += 1;
+            Message.StreamingMessage msg = makeSensorPacket();
+            if(msg != null){
+                listener.onSensorMessageReady(msg);
+            }
+        }
+    }
+
+    public void setInitialDirection(float vx, float vy, float vz){
+        lock.lock();
+        initDirection.set(vx, vy, vz);
+        defaultPosReady.signal();
+        lock.unlock();
+    }
+
+
+    private Message.StreamingMessage makeSensorPacket() {
+        // TODO: For debug use
+        float accelX = Gdx.input.getAccelerometerX();
+        float accelY = Gdx.input.getAccelerometerY();
+        float accelZ = Gdx.input.getAccelerometerZ();
+        StringPool.addField("Accel:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", accelX, accelY, accelZ));
+
+        // generate the current rotation matrix
+        Gdx.input.getRotationMatrix(tempMatrix.val);
+        tempQuaternion.setFromMatrix(true, tempMatrix);
+        tempVector3.set(initDirection);
+        tempQuaternion.transform(tempVector3);
+        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", tempQuaternion.getYaw(), tempQuaternion.getPitch(), tempQuaternion.getRoll()));
+        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", tempVector3.x, tempVector3.y, tempVector3.z));
+
+        // crafting packet
+        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgCameraInfo)
+                .setCameraMsg(
+                        Message.Camera.newBuilder()
+                                .setDeltaVx(tempVector3.x - initDirection.x)
+                                .setDeltaVy(tempVector3.y - initDirection.y)
+                                .setDeltaVz(tempVector3.y - initDirection.z)
+                                .setSerialNumber(serialNumber)
+                                .build()
+
+                ).build();
+        return msg;
+    }
+}

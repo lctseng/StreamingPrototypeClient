@@ -1,5 +1,6 @@
 package com.covart.streaming_prototype;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.Protocol;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
@@ -13,6 +14,7 @@ import static com.badlogic.gdx.Gdx.net;
 
 /**
  * Created by lctseng on 2017/1/22.
+ * NTU COV-ART Lab, for NCP project
  */
 
 public class Connection {
@@ -21,18 +23,29 @@ public class Connection {
         Disconnected, Connecting, Connected
     }
 
-    private State state;
+    private volatile State state;
     private Socket socket;
 
-    public InputStream recvStream;
-    public OutputStream sendStream;
+    private InputStream recvStream;
+    private OutputStream sendStream;
+
+    private ConnectionListener listener;
+
+    private boolean writable;
+    private boolean readable;
 
 
-    Connection(){
+    Connection(ConnectionListener listener)
+    {
         state = State.Disconnected;
+        this.listener = listener;
+        recvStream = null;
+        sendStream = null;
+        writable = false;
+        readable = false;
     }
 
-    synchronized public void connect(){
+    public void connect(){
         // only issue a connection when disconnected
         if(state == State.Disconnected){
             if(socket  != null){
@@ -41,23 +54,24 @@ public class Connection {
                 socket = null;
             }
             state = State.Connecting;
-            new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        SocketHints hints = new SocketHints();
-                        try {
-                            socket = net.newClientSocket(Protocol.TCP, "covart.csie.org", 3333, hints);
-                            recvStream = socket.getInputStream();
-                            sendStream = socket.getOutputStream();
-                            state = State.Connected;
-                        }
-                        catch (GdxRuntimeException e){
-                            state = State.Disconnected;
-                        }
-                    }
-                }
-            ).start();
+            listener.onConnectionStarted();
+            Gdx.app.log("Connection", "Connecting...");
+            SocketHints hints = new SocketHints();
+            try {
+                socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3333, hints);
+                recvStream = socket.getInputStream();
+                sendStream = socket.getOutputStream();
+                state = State.Connected;
+                writable = true;
+                readable = true;
+                listener.onConnectionReady();
+                Gdx.app.log("Connection", "Connected");
+            }
+            catch (GdxRuntimeException e){
+                Gdx.app.log("Connection", "Disconnected");
+                e.printStackTrace();
+                close();
+            }
          }
     }
 
@@ -70,15 +84,16 @@ public class Connection {
     }
 
     public String getStateText(){
+        String rw_state = ": R: " + Boolean.toString(readable) + ", W: " + Boolean.toString(writable);
         switch(getState()){
             case Disconnected:
-                return "Disconnected";
+                return "Disconnected" + rw_state;
             case Connected:
-                return "Connected";
+                return "Connected" + rw_state;
             case Connecting:
-                return "Connecting";
+                return "Connecting" + rw_state;
             default:
-                return "Unknown";
+                return "Unknown" + rw_state;
         }
     }
 
@@ -86,39 +101,84 @@ public class Connection {
         close();
     }
 
+    synchronized public void closeRead(){
+        if(readable){
+            readable = false;
+            try {
+                recvStream.close();
+            } catch (IOException e) {
+                Gdx.app.error("Connection", "Error when closing read end");
+                e.printStackTrace();
+            }
+        }
+        if(!writable){
+            disposeSocket();
+        }
+    }
+
+    synchronized public void closeWrite(){
+        if(writable){
+            writable = false;
+            try {
+                sendStream.close();
+            } catch (IOException e) {
+                Gdx.app.error("Connection", "Error when closing write end");
+                e.printStackTrace();
+            }
+        }
+        if(!readable){
+            disposeSocket();
+        }
+    }
+
     synchronized public void close(){
+        closeRead();
+        closeWrite();
+        if(state != State.Disconnected){
+            state = State.Disconnected;
+            listener.onConnectionClose();
+        }
+    }
+
+    private void disposeSocket(){
         if(socket != null){
             socket.dispose();
             socket = null;
-            recvStream = null;
-            sendStream = null;
-            state = State.Disconnected;
         }
     }
 
     public int read(byte[] array){
+        if(state != State.Connected || !readable){
+            return -1;
+        }
         try{
             int nRead = recvStream.read(array);
             if(nRead < 0){
                 // EOF
-                close();
+                Gdx.app.error("Connection", "Read closed due to nRead < 0");
+                closeRead();
             }
             return nRead;
         }
         catch (IOException e){
-            close();
+            Gdx.app.error("Connection", "Read closed due to IOException");
+            closeRead();
             return 0;
         }
     }
 
     public int readn(byte[] array, int n){
+        if(state != State.Connected || !readable){
+            return -1;
+        }
         try{
             int total_read_n = 0;
             while(total_read_n < n){
                 int nRead = recvStream.read(array, total_read_n, n - total_read_n);
-                if(nRead <= 0){
+                if(nRead < 0){
                     // EOF
-                    close();
+                    Gdx.app.error("Connection", "Read closed due to nRead < 0");
+                    closeRead();
                     return -1;
                 }
                 else{
@@ -128,7 +188,8 @@ public class Connection {
             return total_read_n;
         }
         catch (IOException e){
-            close();
+            Gdx.app.error("Connection", "Read closed due to IOException");
+            closeRead();
             return -1;
         }
     }
@@ -139,26 +200,35 @@ public class Connection {
 
 
     public int read(byte[] array, int offset, int len){
+        if(state != State.Connected || !readable){
+            return -1;
+        }
         try{
             int nRead = recvStream.read(array, offset, len);
             if(nRead < 0){
                 // EOF
-                close();
+                Gdx.app.error("Connection", "Read closed due to nRead < 0");
+                closeRead();
             }
             return nRead;
         }
         catch (IOException e){
-            close();
+            Gdx.app.error("Connection", "Read closed due to IOException");
+            closeRead();
             return 0;
         }
     }
 
     public boolean write(byte[] array){
+        if(state != State.Connected || !writable){
+            return false;
+        }
         try {
             sendStream.write(array);
             return true;
         } catch (IOException e) {
-            close();
+            Gdx.app.error("Connection", "Write closed due to IOException");
+            closeWrite();
             return false;
         }
     }
