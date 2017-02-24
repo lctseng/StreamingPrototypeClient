@@ -9,6 +9,9 @@
 
 #include "decoder.h"
 
+
+#define LOG_INFO(tag, msg) (__android_log_write(ANDROID_LOG_INFO, tag, msg))
+
 static struct {
     JNIEnv *env;
     jobject instance;
@@ -74,11 +77,13 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv 
     jfieldID sizeField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "size", "I");
     jint size = (*decoder_data.env)->GetIntField(decoder_data.env, buffer, sizeField);
 
+
     /*
     char buf[100] = {0};
     sprintf(buf, "Size to decode: %d", size);
-    __android_log_write(ANDROID_LOG_INFO, "NativeH264", buf);
-    */
+    LOG_INFO("NativeH264", buf);
+
+     */
 
     (*decoder_data.env)->ReleaseByteArrayElements(decoder_data.env, dataArray, data, 0);
 
