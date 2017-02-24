@@ -38,7 +38,6 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
 
     @Override
     public void stop() {
-        cleanup();
         if(worker != null){
             Gdx.app.log("Decoder","stopping");
             worker.interrupt();
@@ -59,7 +58,4 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
         stop();
     }
 
-    protected void cleanup(){
-
-    }
 }

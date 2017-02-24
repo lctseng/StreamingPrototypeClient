@@ -26,11 +26,11 @@ public class ImageDecoderH264 extends ImageDecoderBase {
         super();
         System.loadLibrary("ffmpeg");
         System.loadLibrary("native-lib");
-        nativeDecoderReady = nativeDecoderInit();
     }
 
     @Override
     public void run() {
+        nativeDecoderReady = nativeDecoderInit();
         if(nativeDecoderReady){
             Gdx.app.log("H264", "Native decoder ready!");
         }
@@ -54,6 +54,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
                 releaseEncodedBuffer(encodedBuf);
             } catch (InterruptedException e) {
                 Gdx.app.error("Decoder", "Worker interrupted");
+                cleanup();
                 break;
             }
         }
@@ -79,8 +80,8 @@ public class ImageDecoderH264 extends ImageDecoderBase {
         }
     }
 
-    @Override
     protected void cleanup(){
+        Gdx.app.log("H264", "Worker cleaning up...");
         if(nativeDecoderReady) {
             nativeDecoderCleanup();
         }

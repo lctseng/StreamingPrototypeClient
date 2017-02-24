@@ -53,6 +53,7 @@ void decoder_cleanup(){
 }
 
 int decoder_init(){
+  decoder_data.pCodec = NULL;
   decoder_data.pCodecCtx = NULL;
   decoder_data.pCodecParserCtx=NULL;
   decoder_data.codec_id=AV_CODEC_ID_H264;

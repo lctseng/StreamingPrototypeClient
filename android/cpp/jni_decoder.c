@@ -19,6 +19,7 @@ static struct {
 } decoder_data;
 
 static void on_frame_ready(uint8_t* frame_buf, int frame_size){
+    /*
     // require a image buffer space
     // call: getDisplayBuffer
     jclass clazz = (*decoder_data.env)->GetObjectClass(decoder_data.env, decoder_data.instance);
@@ -27,6 +28,7 @@ static void on_frame_ready(uint8_t* frame_buf, int frame_size){
     if (displayBuffer != NULL) {
 
     }
+     */
 }
 
 
@@ -39,6 +41,7 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderInit(JNIEnv *
     }
     else {
         decoder_set_frame_ready_handler(on_frame_ready);
+        LOG_INFO("NativeH264", "Initialized!");
         return JNI_TRUE;
     }
 }
@@ -63,7 +66,7 @@ JNIEXPORT jboolean JNICALL
 Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv *env,
                                                                          jobject instance,
                                                                          jobject buffer) {
-    jboolean  res = JNI_FALSE;
+    jboolean  res = JNI_TRUE;
     // set JNI env data
     decoder_data.env = env;
     decoder_data.instance = instance;
@@ -76,17 +79,22 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv 
     // get the data size
     jfieldID sizeField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "size", "I");
     jint size = (*decoder_data.env)->GetIntField(decoder_data.env, buffer, sizeField);
-
+    // inject into decoder
+    if(decoder_parse((uint8_t*)data, size) < 0){
+        LOG_INFO("NativeH264", "Parse Error!");
+        res = JNI_FALSE;
+    }
 
     /*
-    char buf[100] = {0};
-    sprintf(buf, "Size to decode: %d", size);
-    LOG_INFO("NativeH264", buf);
+    if(data){
+        char buf[100] = {0};
+        sprintf(buf, "Size to decode: %d", size);
 
-     */
+    }
+    */
+
 
     (*decoder_data.env)->ReleaseByteArrayElements(decoder_data.env, dataArray, data, 0);
-
      return res;
 }
 
