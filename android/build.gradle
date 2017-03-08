@@ -1,6 +1,6 @@
 android {
     buildToolsVersion "25.0.2"
-    compileSdkVersion 19
+    compileSdkVersion 22
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -20,7 +20,7 @@ android {
     defaultConfig {
         applicationId "com.covart.streaming_prototype"
         minSdkVersion 19
-        targetSdkVersion 19
+        targetSdkVersion 22
 
         ndk {
             // Specifies the ABI configurations of your native
