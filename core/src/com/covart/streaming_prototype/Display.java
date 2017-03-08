@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
@@ -25,7 +26,9 @@ public class Display implements Disposable{
     private Pixmap image;
     private ByteBuffer imageBuf;
     private Texture texture;
-    // string pool
+
+    ShaderProgram shaderProgram;
+
 
     Display(){
 
@@ -36,6 +39,11 @@ public class Display implements Disposable{
         image = new Pixmap(399, 600, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
+
+        String vertexShader = Gdx.files.internal("shaders/grayscale.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
+        shaderProgram = new ShaderProgram(vertexShader,fragmentShader);
+        batch.setShader(shaderProgram);
     }
 
     public void updateStart(){
@@ -43,6 +51,7 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
+
 
         // clear flash messages
         StringPool.clearFlashMessages();
