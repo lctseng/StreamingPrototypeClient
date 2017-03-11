@@ -28,10 +28,13 @@ public class DisplayLightField implements DisplayAdapter{
 
 
     private ShaderProgram shaderProgram;
-    private Buffer images[];
     private int lf_counter;
 
-    final int TOTAL_IMAGES = 64;
+    final static int GRID_WIDTH = 8;
+    final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
+    final static int DIMENSION = 512;
+
+    final static boolean SHOW_SOURCE = true;
 
     DisplayLightField(){
 
@@ -39,7 +42,7 @@ public class DisplayLightField implements DisplayAdapter{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        image = new Pixmap(512, 512, Pixmap.Format.RGB888);
+        image = new Pixmap(DIMENSION * GRID_WIDTH, DIMENSION * GRID_WIDTH, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
 
@@ -47,11 +50,6 @@ public class DisplayLightField implements DisplayAdapter{
         String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
 
-        images = new Buffer[TOTAL_IMAGES];
-        for(int i=0;i<TOTAL_IMAGES;i++){
-            Gdx.app.log("LightField Display", "Creating LF buffer:" + i);
-            images[i] = new Buffer(BufferPool.IMAGE_BUFFER_SIZE);
-        }
         lf_counter = 0;
     }
 
@@ -65,21 +63,39 @@ public class DisplayLightField implements DisplayAdapter{
             Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
             if(src != null){
                 // copy images from buffer
-                Buffer dst = images[lf_counter];
-                dst.size = src.size;
-                System.arraycopy(src.data, 0, dst.data, 0, BufferPool.IMAGE_BUFFER_SIZE);
+                int row = lf_counter / GRID_WIDTH;
+                int col = lf_counter % GRID_WIDTH;
+                // store one row at a time
+                for(int row_idx=0;row_idx < DIMENSION;row_idx++){
+                    int global_row_offset = row *  GRID_WIDTH * DIMENSION * DIMENSION * 3;
+                    int global_col_offset = col * DIMENSION * 3;
+                    int local_row_offset = row_idx *  GRID_WIDTH * DIMENSION * 3;
+                    imageBuf.position(global_row_offset + local_row_offset + global_col_offset);
+                    imageBuf.put(src.data, row_idx * DIMENSION * 3, DIMENSION * 3);
+                }
+                //imageBuf.put(src.data,0,BufferPool.IMAGE_BUFFER_SIZE);
                 // end of copy
                 Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
+                if(lf_counter == TOTAL_IMAGES){
+                    // done, create texture
+                    imageBuf.rewind();
+                    texture = new Texture(image);
+                    Gdx.app.log("LightField Display", "Tile image created");
+                }
             }
-
         }
 
         batch.begin();
         // clear flash messages
         StringPool.clearFlashMessages();
+        if(SHOW_SOURCE) {
+            if (texture != null) {
+                batch.draw(texture, 0, 250, 700, 700);
+            }
+        }
     }
 
 
