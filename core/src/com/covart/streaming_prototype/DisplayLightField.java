@@ -84,7 +84,7 @@ public class DisplayLightField implements DisplayAdapter{
         float width,height; // Mesh width and height
 
         x = y = -1.0f;
-        width = height = 2.0f;
+        width = height = 2f;
 
         //Top Left Vertex Triangle 1
         verts[i++] = x;   //X
@@ -177,6 +177,43 @@ public class DisplayLightField implements DisplayAdapter{
             }
         }
 
+       /*
+        if(lf_ready && !SHOW_SOURCE && texture != null){
+            // interpolate LF
+            texture.bind();
+            shaderProgram.begin();
+            Matrix4 modelviewMatrix = new Matrix4();
+            Matrix4 projectionMatrix = new Matrix4();
+            projectionMatrix.setToOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+            // set matrix
+            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
+            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+            // set camera params
+            shaderProgram.setUniformf("focusPoint", focus);
+            shaderProgram.setUniformf("apertureSize", aperture);
+            shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
+            shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
+            // draw!
+            Gdx.app.log("LightField Display", "Draw!");
+            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+            shaderProgram.end();
+        }
+        */
+
+        // interpolate LF
+        shaderProgram.begin();
+        Matrix4 modelviewMatrix = new Matrix4();
+        Matrix4 projectionMatrix = new Matrix4();
+        //projectionMatrix = batch.getProjectionMatrix();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // draw!
+        Gdx.app.log("LightField Display", "Draw!");
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        shaderProgram.end();
+
+
         batch.begin();
         // clear flash messages
         StringPool.clearFlashMessages();
@@ -207,26 +244,8 @@ public class DisplayLightField implements DisplayAdapter{
         // end batch
         batch.end();
 
-        if(lf_ready && !SHOW_SOURCE && texture != null){
-            // interpolate LF
-            texture.bind();
-            shaderProgram.begin();
-            Matrix4 modelviewMatrix = new Matrix4();
-            Matrix4 projectionMatrix = new Matrix4();
-            projectionMatrix.setToOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-            // set matrix
-            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-            // set camera params
-            shaderProgram.setUniformf("focusPoint", focus);
-            shaderProgram.setUniformf("apertureSize", aperture);
-            shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
-            shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
-            // draw!
-            Gdx.app.log("LightField Display", "Draw!");
-            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-            shaderProgram.end();
-        }
+
+
 
     }
 
