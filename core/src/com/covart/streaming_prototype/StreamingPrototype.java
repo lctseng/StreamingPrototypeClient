@@ -26,7 +26,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private volatile boolean stopRequired = false;
 
     // major component
-    private Display display;
+    private DisplayAdapter display;
     private Network network;
     private ImageDecoderBase decoder;
     private Sensor sensor;
@@ -41,7 +41,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	public void create () {
         StringPool.addField("App", "Initializing");
         network = new Network(this);
-        display = new Display();
+        display = new DisplaySource();
         sensor  = new Sensor(this);
 
         if(decoder == null){

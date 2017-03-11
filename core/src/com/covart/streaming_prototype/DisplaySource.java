@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
 
@@ -16,7 +15,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class Display implements Disposable{
+public class DisplaySource implements DisplayAdapter{
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -28,7 +27,7 @@ public class Display implements Disposable{
     private Texture texture;
 
 
-    Display(){
+    DisplaySource(){
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -44,6 +43,7 @@ public class Display implements Disposable{
         //batch.setShader(shaderProgram);
     }
 
+    @Override
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -69,6 +69,8 @@ public class Display implements Disposable{
         }
     }
 
+
+    @Override
     public void updateEnd(){
         // record FPS
         StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
@@ -84,6 +86,7 @@ public class Display implements Disposable{
         batch.end();
     }
 
+    @Override
     public void injectImageData(byte[] bufData){
         disposeExistingTexture();
         imageBuf.rewind();
@@ -100,6 +103,7 @@ public class Display implements Disposable{
         disposeExistingTexture();
     }
 
+    @Override
     public void disposeExistingTexture(){
         if (texture != null){
             texture.dispose();
