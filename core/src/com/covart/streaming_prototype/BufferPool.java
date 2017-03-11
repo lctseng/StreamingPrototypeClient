@@ -15,8 +15,8 @@ public class BufferPool {
     }
 
     public static final int QUEUE_SIZE = 3;
-    public static final int IMAGE_BUFFER_SIZE = 718200;
-    public static final int DECODER_BUFFER_SIZE = 718200;
+    public static final int IMAGE_BUFFER_SIZE = 786432;
+    public static final int DECODER_BUFFER_SIZE = 786432;
 
     public BlockingQueue<Buffer> queueNetworkToDecoder;
     public BlockingQueue<Buffer> queueDecoderToNetwork;

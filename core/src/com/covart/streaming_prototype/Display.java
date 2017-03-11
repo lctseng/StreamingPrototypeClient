@@ -27,8 +27,6 @@ public class Display implements Disposable{
     private ByteBuffer imageBuf;
     private Texture texture;
 
-    ShaderProgram shaderProgram;
-
 
     Display(){
 
@@ -36,14 +34,14 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        image = new Pixmap(399, 600, Pixmap.Format.RGB888);
+        image = new Pixmap(512, 512, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
 
         String vertexShader = Gdx.files.internal("shaders/grayscale.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
-        shaderProgram = new ShaderProgram(vertexShader,fragmentShader);
-        batch.setShader(shaderProgram);
+        ShaderProgram shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+        //batch.setShader(shaderProgram);
     }
 
     public void updateStart(){
@@ -67,7 +65,7 @@ public class Display implements Disposable{
             }
         }
         if(texture != null){
-            batch.draw(texture, 0, 150);
+            batch.draw(texture, 0, 250);
         }
     }
 
