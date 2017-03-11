@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import java.nio.ByteBuffer;
 
@@ -14,7 +15,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplaySource implements DisplayAdapter{
+public class DisplayLightField implements DisplayAdapter{
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -26,7 +27,7 @@ public class DisplaySource implements DisplayAdapter{
     private Texture texture;
 
 
-    DisplaySource(){
+    DisplayLightField(){
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -35,6 +36,11 @@ public class DisplaySource implements DisplayAdapter{
         image = new Pixmap(512, 512, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
+
+        String vertexShader = Gdx.files.internal("shaders/grayscale.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
+        ShaderProgram shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+        batch.setShader(shaderProgram);
     }
 
     @Override

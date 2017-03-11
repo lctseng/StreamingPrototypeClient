@@ -41,7 +41,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	public void create () {
         StringPool.addField("App", "Initializing");
         network = new Network(this);
-        display = new DisplaySource();
+        display = new DisplayLightField();
         sensor  = new Sensor(this);
 
         if(decoder == null){
