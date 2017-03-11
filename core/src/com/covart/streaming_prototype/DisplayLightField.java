@@ -177,14 +177,15 @@ public class DisplayLightField implements DisplayAdapter{
             }
         }
 
-       /*
+
+        /*
         if(lf_ready && !SHOW_SOURCE && texture != null){
             // interpolate LF
             texture.bind();
             shaderProgram.begin();
             Matrix4 modelviewMatrix = new Matrix4();
             Matrix4 projectionMatrix = new Matrix4();
-            projectionMatrix.setToOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+            projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
             // set matrix
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
             shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
@@ -200,11 +201,13 @@ public class DisplayLightField implements DisplayAdapter{
         }
         */
 
+
+
         // interpolate LF
         shaderProgram.begin();
         Matrix4 modelviewMatrix = new Matrix4();
         Matrix4 projectionMatrix = new Matrix4();
-        //projectionMatrix = batch.getProjectionMatrix();
+        projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
         // set matrix
         shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
         shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
