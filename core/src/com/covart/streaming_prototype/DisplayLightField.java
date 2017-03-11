@@ -27,6 +27,12 @@ public class DisplayLightField implements DisplayAdapter{
     private Texture texture;
 
 
+    private ShaderProgram shaderProgram;
+    private Buffer images[];
+    private int lf_counter;
+
+    final int TOTAL_IMAGES = 64;
+
     DisplayLightField(){
 
         batch = new SpriteBatch();
@@ -39,8 +45,14 @@ public class DisplayLightField implements DisplayAdapter{
 
         String vertexShader = Gdx.files.internal("shaders/grayscale.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
-        ShaderProgram shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-        batch.setShader(shaderProgram);
+        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+
+        images = new Buffer[TOTAL_IMAGES];
+        for(int i=0;i<TOTAL_IMAGES;i++){
+            Gdx.app.log("LightField Display", "Creating LF buffer:" + i);
+            images[i] = new Buffer(BufferPool.IMAGE_BUFFER_SIZE);
+        }
+        lf_counter = 0;
     }
 
     @Override
@@ -48,25 +60,26 @@ public class DisplayLightField implements DisplayAdapter{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // collect images
+        if(lf_counter < TOTAL_IMAGES){
+            Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
+            if(src != null){
+                // copy images from buffer
+                Buffer dst = images[lf_counter];
+                dst.size = src.size;
+                System.arraycopy(src.data, 0, dst.data, 0, BufferPool.IMAGE_BUFFER_SIZE);
+                // end of copy
+                Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
+                if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
+                    Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
+                }
+            }
+
+        }
+
         batch.begin();
-
-
         // clear flash messages
         StringPool.clearFlashMessages();
-        // Get display image
-        Buffer bufData = BufferPool.getInstance().queueDecoderToDisplay.poll();
-        if(bufData != null){
-            // upload to GPU!
-            injectImageData(bufData.data);
-            Profiler.reportOnDisplay();
-            // release buffer
-            if(!BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){
-                Gdx.app.error("Display", "Cannot return the buffer to pool");
-            }
-        }
-        if(texture != null){
-            batch.draw(texture, 0, 250);
-        }
     }
 
 
@@ -109,6 +122,7 @@ public class DisplayLightField implements DisplayAdapter{
             texture.dispose();
             texture = null;
         }
+        lf_counter = 0;
     }
 
 }
