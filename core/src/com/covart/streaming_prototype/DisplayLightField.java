@@ -2,11 +2,15 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 
 import java.nio.ByteBuffer;
 
@@ -16,6 +20,13 @@ import java.nio.ByteBuffer;
  */
 
 public class DisplayLightField implements DisplayAdapter{
+
+
+    final static int GRID_WIDTH = 8;
+    final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
+    final static int DIMENSION = 512;
+
+    final static boolean SHOW_SOURCE = false;
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -30,11 +41,15 @@ public class DisplayLightField implements DisplayAdapter{
     private ShaderProgram shaderProgram;
     private int lf_counter;
 
-    final static int GRID_WIDTH = 8;
-    final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
-    final static int DIMENSION = 512;
+    private Mesh mesh;
 
-    final static boolean SHOW_SOURCE = true;
+    private boolean lf_ready;
+
+    private float focus = 0.0f;
+    private float aperture = 5.0f;
+    private float cameraPositionX =0.5f;
+    private float cameraPositionY =0.5f;
+
 
     DisplayLightField(){
 
@@ -46,11 +61,85 @@ public class DisplayLightField implements DisplayAdapter{
         imageBuf = image.getPixels();
         texture = null;
 
-        String vertexShader = Gdx.files.internal("shaders/grayscale.vert").readString();
-        String fragmentShader = Gdx.files.internal("shaders/grayscale.frag").readString();
+        String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+        Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
+        Gdx.app.error("GLSL", shaderProgram.getLog());
+        for(String str : shaderProgram.getUniforms()){
+            Gdx.app.error("GLSL", "Uniform:" + str);
+        }
+        shaderProgram.setUniformf("focusPoint", focus);
+        shaderProgram.setUniformf("apertureSize", aperture);
+        shaderProgram.setUniformi("rows", GRID_WIDTH);
+        shaderProgram.setUniformi("cols", GRID_WIDTH);
+
 
         lf_counter = 0;
+        lf_ready = false;
+
+        float[] verts = new float[36];
+        int i = 0;
+        float x,y; // Mesh location in the world
+        float width,height; // Mesh width and height
+
+        x = y = -1.0f;
+        width = height = 2.0f;
+
+        //Top Left Vertex Triangle 1
+        verts[i++] = x;   //X
+        verts[i++] = y + height; //Y
+        verts[i++] = 0;    //Z
+        verts[i++] = 1.0f; // W
+        verts[i++] = 0f;   //U
+        verts[i++] = 0f;   //V
+
+        //Top Right Vertex Triangle 1
+        verts[i++] = x + width;
+        verts[i++] = y + height;
+        verts[i++] = 0;
+        verts[i++] = 1.0f;
+        verts[i++] = 1f;
+        verts[i++] = 0f;
+
+        //Bottom Left Vertex Triangle 1
+        verts[i++] = x;
+        verts[i++] = y;
+        verts[i++] = 0;
+        verts[i++] = 1.0f;
+        verts[i++] = 0f;
+        verts[i++] = 1f;
+
+        //Top Right Vertex Triangle 2
+        verts[i++] = x + width;
+        verts[i++] = y + height;
+        verts[i++] = 0;
+        verts[i++] = 1.0f;
+        verts[i++] = 1f;
+        verts[i++] = 0f;
+
+        //Bottom Right Vertex Triangle 2
+        verts[i++] = x + width;
+        verts[i++] = y;
+        verts[i++] = 0;
+        verts[i++] = 1.0f;
+        verts[i++] = 1f;
+        verts[i++] = 1f;
+
+        //Bottom Left Vertex Triangle 2
+        verts[i++] = x;
+        verts[i++] = y;
+        verts[i++] = 0;
+        verts[i++] = 1.0f;
+        verts[i++] = 0f;
+        verts[i] = 1f;
+
+        // Create a mesh out of two triangles rendered clockwise without indices
+        mesh = new Mesh( true, 6, 0,
+                new VertexAttribute( VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE ),
+                new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
+
+        mesh.setVertices(verts);
     }
 
     @Override
@@ -59,7 +148,7 @@ public class DisplayLightField implements DisplayAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // collect images
-        if(lf_counter < TOTAL_IMAGES){
+        if(!lf_ready && lf_counter < TOTAL_IMAGES){
             Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
             if(src != null){
                 // copy images from buffer
@@ -73,7 +162,6 @@ public class DisplayLightField implements DisplayAdapter{
                     imageBuf.position(global_row_offset + local_row_offset + global_col_offset);
                     imageBuf.put(src.data, row_idx * DIMENSION * 3, DIMENSION * 3);
                 }
-                //imageBuf.put(src.data,0,BufferPool.IMAGE_BUFFER_SIZE);
                 // end of copy
                 Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
@@ -84,6 +172,7 @@ public class DisplayLightField implements DisplayAdapter{
                     imageBuf.rewind();
                     texture = new Texture(image);
                     Gdx.app.log("LightField Display", "Tile image created");
+                    lf_ready = true;
                 }
             }
         }
@@ -91,10 +180,14 @@ public class DisplayLightField implements DisplayAdapter{
         batch.begin();
         // clear flash messages
         StringPool.clearFlashMessages();
-        if(SHOW_SOURCE) {
-            if (texture != null) {
-                batch.draw(texture, 0, 250, 700, 700);
+        if(lf_ready) {
+            // draw raw texture on batch if needed
+            if (SHOW_SOURCE) {
+                if (texture != null) {
+                    batch.draw(texture, 0, 250, 700, 700);
+                }
             }
+
         }
     }
 
@@ -113,6 +206,28 @@ public class DisplayLightField implements DisplayAdapter{
 
         // end batch
         batch.end();
+
+        if(lf_ready && !SHOW_SOURCE && texture != null){
+            // interpolate LF
+            texture.bind();
+            shaderProgram.begin();
+            Matrix4 modelviewMatrix = new Matrix4();
+            Matrix4 projectionMatrix = new Matrix4();
+            projectionMatrix.setToOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+            // set matrix
+            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
+            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+            // set camera params
+            shaderProgram.setUniformf("focusPoint", focus);
+            shaderProgram.setUniformf("apertureSize", aperture);
+            shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
+            shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
+            // draw!
+            Gdx.app.log("LightField Display", "Draw!");
+            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+            shaderProgram.end();
+        }
+
     }
 
     @Override
@@ -139,6 +254,7 @@ public class DisplayLightField implements DisplayAdapter{
             texture = null;
         }
         lf_counter = 0;
+        lf_ready = false;
     }
 
 }

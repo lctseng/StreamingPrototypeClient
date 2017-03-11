@@ -35,7 +35,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     // blocking return to network
                     BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
                 }
-                Thread.sleep(10);
+                Thread.sleep(1);
                 FileHandle file = null;
                 if(count >= max_size){
                     if(loop){
