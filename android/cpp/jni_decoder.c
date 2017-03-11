@@ -75,6 +75,14 @@ JNIEXPORT jboolean JNICALL
 Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderFlush(JNIEnv *env,
                                                                          jobject instance) {
 
+    // set JNI env data
+    decoder_data.env = env;
+    decoder_data.instance = instance;
+    // flushing
+    if(decoder_parse(NULL, 0) < 0){
+        LOG_ERROR("NativeH264", "Flush Error!");
+        return JNI_FALSE;
+    }
     if(decoder_flush() < 0){
         LOG_ERROR("NativeH264", "Flush Error!");
         return JNI_FALSE;
@@ -107,14 +115,4 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv 
     }
     (*decoder_data.env)->ReleaseByteArrayElements(decoder_data.env, dataArray, data, 0);
      return res;
-}
-
-JNIEXPORT jboolean JNICALL
-Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoder(JNIEnv *env, jobject instance,
-                                                                    jbyteArray b_) {
-    jbyte *b = (*env)->GetByteArrayElements(env, b_, NULL);
-
-    // TODO
-
-    (*env)->ReleaseByteArrayElements(env, b_, b, 0);
 }
