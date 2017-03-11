@@ -15,6 +15,8 @@ import java.util.Collections;
 
 public class ImageDecoderStaticFiles extends ImageDecoderBase {
 
+    private boolean loop = false;
+
     @Override
     public void run() {
         // open all files
@@ -34,11 +36,19 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
                 }
                 Thread.sleep(10);
+                FileHandle file = null;
                 if(count >= max_size){
-                    count = 0;
+                    if(loop){
+                        count = 0;
+                        file = files.get(count);
+                        count += 1;
+                    }
+                    // otherwise, do not load images
                 }
-                FileHandle file = files.get(count);
-                count += 1;
+                else{
+                    file = files.get(count);
+                    count += 1;
+                }
                 if(file != null){
                     Pixmap img = new Pixmap(file);
                     ByteBuffer pixels = img.getPixels();
