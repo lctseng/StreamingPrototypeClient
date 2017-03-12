@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by lctseng on 2017/2/11.
@@ -23,6 +24,13 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
         FileHandle dirHandle = Gdx.files.internal("lightfield");;
         ArrayList<FileHandle> files = new ArrayList<FileHandle>();
         Collections.addAll(files, dirHandle.list());
+        Collections.sort(files, new Comparator<FileHandle>() {
+            @Override
+            public int compare(FileHandle file1, FileHandle file2)
+            {
+                return  file1.nameWithoutExtension().compareTo(file2.nameWithoutExtension());
+            }
+        });
         int max_size = files.size();
         int count = 0;
 
