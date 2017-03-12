@@ -52,27 +52,32 @@ public class StreamingPrototype extends ApplicationAdapter
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown (int x, int y, int pointer, int button) {
-                if(StreamingPrototype.this.state == Stopped){
-                    StringPool.addField("App", "Starting");
-                    requireStart();
-                }
-                else if(StreamingPrototype.this.state == Running){
-                    StringPool.addField("App", "Shutting Down...");
-                    sendEndingMessage();
-                    state = ShuttingDown;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
+                if(x <= 135 && y <= 135) {
+                    if (StreamingPrototype.this.state == Stopped) {
+                        StringPool.addField("App", "Starting");
+                        requireStart();
+                    } else if (StreamingPrototype.this.state == Running) {
+                        StringPool.addField("App", "Shutting Down...");
+                        sendEndingMessage();
+                        state = ShuttingDown;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                requireStop();
                             }
-                            requireStop();
-                        }
-                    }).start();
+                        }).start();
+                    }
+                    return true; // return true to indicate the event was handled
                 }
-                return true; // return true to indicate the event was handled
+                else{
+                    return false;
+                }
             }
         });
         StringPool.addField("App", "Ready for start");
