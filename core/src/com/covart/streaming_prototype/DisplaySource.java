@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplaySource implements DisplayAdapter{
+public class DisplaySource extends DisplayBase{
 
     // gdx basic drawing
     private SpriteBatch batch;

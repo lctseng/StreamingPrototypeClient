@@ -15,7 +15,6 @@ uniform float focusPoint;
 uniform float apertureSize;
 
 void main(void) {
-		
 		float spanX = 1.0 / float(cols);
 		float spanY = 1.0 / float(rows);
 		float cameraIndexX = cameraPositionX * float(cols - 1);
@@ -31,9 +30,10 @@ void main(void) {
 		float centerCameraX = initCameraX + cameraIndexX * cameraGapX;
 		float centerCameraY = initCameraY + cameraIndexY * cameraGapY;
 		float focusPointRatio = 1.0 + focusPoint / focusRatio;
-		
+
 		vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 		int  validPixelCount = 0;
+		
 		for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < cols; j++) {
 						float cameraX = initCameraX + float(j) * cameraGapX;
@@ -57,7 +57,12 @@ void main(void) {
 					  }
 				}
 		}
-		//gl_FragColor = color / float(validPixelCount);
 		
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);
+		
+		if(validPixelCount == 0){
+			gl_FragColor = vec4(0.5, 0.0, 0.0, 0.0);
+		}
+		else{
+			gl_FragColor = color / float(validPixelCount);
+		}
 }

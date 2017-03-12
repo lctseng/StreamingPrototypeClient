@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplayLightField implements DisplayAdapter{
+public class DisplayLightField extends DisplayBase{
 
 
     final static int GRID_WIDTH = 8;
@@ -46,9 +46,12 @@ public class DisplayLightField implements DisplayAdapter{
     private boolean lf_ready;
 
     private float focus = 0.0f;
-    private float aperture = 5.0f;
+    private float aperture = 15.0f;
     private float cameraPositionX =0.5f;
     private float cameraPositionY =0.5f;
+
+
+    private Texture tex_control;
 
 
     DisplayLightField(){
@@ -60,6 +63,8 @@ public class DisplayLightField implements DisplayAdapter{
         image = new Pixmap(DIMENSION * GRID_WIDTH, DIMENSION * GRID_WIDTH, Pixmap.Format.RGB888);
         imageBuf = image.getPixels();
         texture = null;
+
+        tex_control = new Texture("badlogic.jpg");
 
         String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
@@ -140,6 +145,7 @@ public class DisplayLightField implements DisplayAdapter{
                 new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
 
         mesh.setVertices(verts);
+
     }
 
     @Override
@@ -178,7 +184,7 @@ public class DisplayLightField implements DisplayAdapter{
         }
 
 
-        /*
+
         if(lf_ready && !SHOW_SOURCE && texture != null){
             // interpolate LF
             texture.bind();
@@ -190,34 +196,21 @@ public class DisplayLightField implements DisplayAdapter{
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
             shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
             // set camera params
+            shaderProgram.setUniformi("rows", GRID_WIDTH);
+            shaderProgram.setUniformi("cols", GRID_WIDTH);
             shaderProgram.setUniformf("focusPoint", focus);
             shaderProgram.setUniformf("apertureSize", aperture);
             shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
             shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
+            Gdx.app.debug("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
             // draw!
-            Gdx.app.log("LightField Display", "Draw!");
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             shaderProgram.end();
         }
-        */
-
-
-
-        // interpolate LF
-        shaderProgram.begin();
-        Matrix4 modelviewMatrix = new Matrix4();
-        Matrix4 projectionMatrix = new Matrix4();
-        projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-        // set matrix
-        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-        // draw!
-        Gdx.app.log("LightField Display", "Draw!");
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-        shaderProgram.end();
-
 
         batch.begin();
+        // draw control
+        batch.draw(tex_control, 0, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
         StringPool.clearFlashMessages();
         if(lf_ready) {
@@ -229,6 +222,7 @@ public class DisplayLightField implements DisplayAdapter{
             }
 
         }
+
     }
 
 
@@ -266,6 +260,7 @@ public class DisplayLightField implements DisplayAdapter{
         batch.dispose();
         font.dispose();
         image.dispose();
+        tex_control.dispose();
         disposeExistingTexture();
     }
 
@@ -278,5 +273,22 @@ public class DisplayLightField implements DisplayAdapter{
         lf_counter = 0;
         lf_ready = false;
     }
+
+    @Override
+    boolean touchDragged (int screenX, int screenY, int pointer){
+        Gdx.app.debug("Drag:", "X:" + screenX + " , Y:" + screenY);
+        screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
+        screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
+        cameraPositionX = (float)(screenX) / (float)(Gdx.graphics.getWidth());
+        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getWidth());
+        return false;
+    }
+
+    private static <T extends Comparable<T>> T clamp(T val, T min, T max){
+        if (val.compareTo(min) < 0) return min;
+        else if (val.compareTo(max) > 0) return max;
+        else return val;
+    }
+
 
 }

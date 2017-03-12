@@ -26,7 +26,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private volatile boolean stopRequired = false;
 
     // major component
-    private DisplayAdapter display;
+    private DisplayBase display;
     private Network network;
     private ImageDecoderBase decoder;
     private Sensor sensor;
@@ -79,6 +79,11 @@ public class StreamingPrototype extends ApplicationAdapter
                     return false;
                 }
             }
+            @Override
+            public boolean touchDragged (int screenX, int screenY, int pointer) {
+                return display.touchDragged(screenX, screenY, pointer);
+            }
+
         });
         StringPool.addField("App", "Ready for start");
     }
