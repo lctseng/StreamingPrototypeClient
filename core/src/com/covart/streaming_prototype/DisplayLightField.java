@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int GRID_WIDTH = 8;
+    final static int GRID_WIDTH = 16;
     final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
     final static int DIMENSION = 512;
 
@@ -46,7 +46,7 @@ public class DisplayLightField extends DisplayBase{
     private boolean lf_ready;
 
     private float focus = 0.0f;
-    private float aperture = 15.0f;
+    private float aperture = 5.0f;
     private float cameraPositionX =0.5f;
     private float cameraPositionY =0.5f;
 
@@ -202,7 +202,7 @@ public class DisplayLightField extends DisplayBase{
             shaderProgram.setUniformf("apertureSize", aperture);
             shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
             shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
-            Gdx.app.debug("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
+            Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
             // draw!
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             shaderProgram.end();
@@ -276,11 +276,11 @@ public class DisplayLightField extends DisplayBase{
 
     @Override
     boolean touchDragged (int screenX, int screenY, int pointer){
-        Gdx.app.debug("Drag:", "X:" + screenX + " , Y:" + screenY);
+        Gdx.app.log("Drag:", "X:" + screenX + " , Y:" + screenY);
         screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
         screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
         cameraPositionX = (float)(screenX) / (float)(Gdx.graphics.getWidth());
-        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getWidth());
+        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getHeight());
         return false;
     }
 
