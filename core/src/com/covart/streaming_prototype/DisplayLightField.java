@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int GRID_WIDTH = 16;
+    final static int GRID_WIDTH = 8;
     final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
     final static int DIMENSION = 512;
 

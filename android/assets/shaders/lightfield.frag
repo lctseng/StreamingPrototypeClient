@@ -19,7 +19,7 @@ void main(void) {
 		float spanY = 1.0 / float(rows);
 		float cameraIndexX = cameraPositionX * float(cols - 1);
 		float cameraIndexY = cameraPositionY * float(rows - 1);
-		float gapRatio = 24.0;
+		float gapRatio = 8.0;
 
 		float cameraGapX = gapRatio / float(cols - 1);
 		float cameraGapY = gapRatio / float(rows - 1);
