@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 
 import java.nio.ByteBuffer;
 
@@ -26,16 +25,16 @@ public class DisplayLightField extends DisplayBase{
     final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
     final static int DIMENSION = 512;
 
-    final static boolean SHOW_SOURCE = false;
+    final static boolean SHOW_SOURCE = true;
 
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
 
-    // buffers
-    private Pixmap image;
-    private ByteBuffer imageBuf;
-    private Texture texture;
+    // multi-texture
+    private Texture[] texture_slots;
+    private Pixmap slotImage;
+    private ByteBuffer slotImageBuf;
 
 
     private ShaderProgram shaderProgram;
@@ -60,11 +59,12 @@ public class DisplayLightField extends DisplayBase{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        image = new Pixmap(DIMENSION * GRID_WIDTH, DIMENSION * GRID_WIDTH, Pixmap.Format.RGB888);
-        imageBuf = image.getPixels();
-        texture = null;
-
         tex_control = new Texture("badlogic.jpg");
+
+        // multi-texture
+        texture_slots = new Texture[GRID_WIDTH];
+        slotImage = new Pixmap(DIMENSION, DIMENSION * GRID_WIDTH, Pixmap.Format.RGB888);
+        slotImageBuf = slotImage.getPixels();
 
         String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
@@ -158,8 +158,12 @@ public class DisplayLightField extends DisplayBase{
             Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
             if(src != null){
                 // copy images from buffer
-                int row = lf_counter / GRID_WIDTH;
-                int col = lf_counter % GRID_WIDTH;
+                int col = lf_counter / GRID_WIDTH;
+                int row = lf_counter % GRID_WIDTH;
+                // just concat all images
+                slotImageBuf.put(src.data, 0, src.size);
+
+                /*
                 // store one row at a time
                 for(int row_idx=0;row_idx < DIMENSION;row_idx++){
                     int global_row_offset = row *  GRID_WIDTH * DIMENSION * DIMENSION * 3;
@@ -169,14 +173,22 @@ public class DisplayLightField extends DisplayBase{
                     imageBuf.put(src.data, row_idx * DIMENSION * 3, DIMENSION * 3);
                 }
                 // end of copy
+                */
                 Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
+
+
+
+                // if last row, rewind the buffer and submit the texture
+                if(row == 7){
+                    slotImageBuf.rewind();
+                    texture_slots[col] = new Texture(slotImage);
+                    slotImageBuf.rewind();
+                }
                 if(lf_counter == TOTAL_IMAGES){
-                    // done, create texture
-                    imageBuf.rewind();
-                    texture = new Texture(image);
+                    // done
                     Gdx.app.log("LightField Display", "Tile image created");
                     lf_ready = true;
                 }
@@ -185,6 +197,7 @@ public class DisplayLightField extends DisplayBase{
 
 
 
+        /*
         if(lf_ready && !SHOW_SOURCE && texture != null){
             // interpolate LF
             texture.bind();
@@ -207,6 +220,7 @@ public class DisplayLightField extends DisplayBase{
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             shaderProgram.end();
         }
+        */
 
         batch.begin();
         // draw control
@@ -216,9 +230,14 @@ public class DisplayLightField extends DisplayBase{
         if(lf_ready) {
             // draw raw texture on batch if needed
             if (SHOW_SOURCE) {
-                if (texture != null) {
-                    batch.draw(texture, 0, 250, 700, 700);
+                int dx = 0;
+                for(Texture tex : texture_slots){
+                    if (tex != null) {
+                        batch.draw(tex, dx, 250, 80, 80*8);
+                        dx += 90;
+                    }
                 }
+
             }
 
         }
@@ -248,27 +267,30 @@ public class DisplayLightField extends DisplayBase{
 
     @Override
     public void injectImageData(byte[] bufData){
-        disposeExistingTexture();
-        imageBuf.rewind();
-        imageBuf.put(bufData);
-        imageBuf.rewind();
-        texture = new Texture(image);
     }
 
     @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
-        image.dispose();
         tex_control.dispose();
         disposeExistingTexture();
+        slotImage.dispose();
+        for(Texture tex : texture_slots){
+            if(tex != null){
+                tex.dispose();
+            }
+        }
     }
 
     @Override
     public void disposeExistingTexture(){
-        if (texture != null){
-            texture.dispose();
-            texture = null;
+        for(int i = 0 ; i<texture_slots.length ; i++){
+            Texture tex = texture_slots[i];
+            if(tex != null){
+                tex.dispose();
+            }
+            texture_slots[i] = null;
         }
         lf_counter = 0;
         lf_ready = false;
