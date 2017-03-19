@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 
 /**
  * Created by lctseng on 2017/2/11.
@@ -17,6 +18,7 @@ import java.util.Comparator;
 public class ImageDecoderStaticFiles extends ImageDecoderBase {
 
     private boolean loop = false;
+    public final boolean ROW_MAJOR = false;
 
     @Override
     public void run() {
@@ -28,7 +30,21 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
             @Override
             public int compare(FileHandle file1, FileHandle file2)
             {
-                return  file1.nameWithoutExtension().compareTo(file2.nameWithoutExtension());
+                if(ROW_MAJOR){
+                    return file1.nameWithoutExtension().compareTo(file2.nameWithoutExtension());
+                }
+                else{
+                    // column major
+                    Scanner s1 = new Scanner(file1.nameWithoutExtension()).useDelimiter("[^0-9]+");
+                    Scanner s2 = new Scanner(file2.nameWithoutExtension()).useDelimiter("[^0-9]+");
+                    int row1 = s1.nextInt();
+                    int col1 = s1.nextInt();
+                    int row2 = s2.nextInt();
+                    int col2 = s2.nextInt();
+                    Integer val1 = col1 * 100 + row1;
+                    Integer val2 = col2 * 100 + row2;
+                    return  val1.compareTo(val2);
+                }
             }
         });
         int max_size = files.size();
