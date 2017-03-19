@@ -29,6 +29,8 @@ public class DisplayLightField extends DisplayBase{
 
     final static boolean SHOW_SOURCE = false;
 
+    final static int HALF_COL_SPAN = 1;
+
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
@@ -166,14 +168,14 @@ public class DisplayLightField extends DisplayBase{
                 int row = lf_counter % ROW_WIDTH;
                 // just concat all images
                 slotImageBuf.put(src.data, 0, src.size);
-
-                Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
+                ++lf_counter;
+                Gdx.app.log("LightField Display", "Loading light field:" + lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
 
                 // if last row, rewind the buffer and submit the texture
-                if(row == 7){
+                if(row == ROW_WIDTH - 1){
                     slotImageBuf.rewind();
                     texture_slots[col] = new Texture(slotImage);
                     slotImageBuf.rewind();
@@ -210,6 +212,15 @@ public class DisplayLightField extends DisplayBase{
             shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
             shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
             Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
+            // compute column start/end
+            int cameraIdxX = (int)(cameraPositionX * COL_WIDTH);
+            int col_start = cameraIdxX - HALF_COL_SPAN;
+            int col_end = cameraIdxX + HALF_COL_SPAN + 1;
+            if(col_start < 0) col_start = 0;
+            if(col_end > COL_WIDTH) col_end = COL_WIDTH ;
+            shaderProgram.setUniformi("col_start", col_start);
+            shaderProgram.setUniformi("col_end", col_end);
+            Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
             // draw!
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);

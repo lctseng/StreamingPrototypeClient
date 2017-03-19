@@ -31,6 +31,8 @@ uniform float cameraPositionX;
 uniform float cameraPositionY;
 uniform float focusPoint;
 uniform float apertureSize;
+uniform int col_start;
+uniform int col_end;
 
 void main(void) {
 	float spanX = 1.0 / float(cols);
@@ -52,8 +54,9 @@ void main(void) {
 	vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 	int  validPixelCount = 0;
 	
+	
 	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
+		for (int j = col_start; j < col_end; j++) {
 			float cameraX = initCameraX + float(j) * cameraGapX;
 			float cameraY = initCameraY + float(i) * cameraGapY;
 			float dx = cameraX - centerCameraX;
