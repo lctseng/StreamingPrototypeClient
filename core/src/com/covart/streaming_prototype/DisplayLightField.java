@@ -217,6 +217,7 @@ public class DisplayLightField extends DisplayBase{
             int col_start = cameraIdxX - HALF_COL_SPAN;
             int col_end = cameraIdxX + HALF_COL_SPAN + 1;
             if(col_start < 0) col_start = 0;
+            if(col_start >= COL_WIDTH) col_start = COL_WIDTH - 1;
             if(col_end > COL_WIDTH) col_end = COL_WIDTH ;
             shaderProgram.setUniformi("col_start", col_start);
             shaderProgram.setUniformi("col_end", col_end);
