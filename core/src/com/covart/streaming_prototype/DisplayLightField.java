@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 
 import java.nio.ByteBuffer;
 
@@ -21,12 +22,12 @@ import java.nio.ByteBuffer;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 16;
+    final static int COL_WIDTH = 4;
     final static int ROW_WIDTH = 8;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
-    final static boolean SHOW_SOURCE = true;
+    final static boolean SHOW_SOURCE = false;
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -75,10 +76,12 @@ public class DisplayLightField extends DisplayBase{
         for(String str : shaderProgram.getUniforms()){
             Gdx.app.error("GLSL", "Uniform:" + str);
         }
+        ShaderProgram.pedantic = false;
         shaderProgram.setUniformf("focusPoint", focus);
         shaderProgram.setUniformf("apertureSize", aperture);
         shaderProgram.setUniformi("rows", ROW_WIDTH);
         shaderProgram.setUniformi("cols", COL_WIDTH);
+
 
 
         lf_counter = 0;
@@ -164,23 +167,10 @@ public class DisplayLightField extends DisplayBase{
                 // just concat all images
                 slotImageBuf.put(src.data, 0, src.size);
 
-                /*
-                // store one row at a time
-                for(int row_idx=0;row_idx < DIMENSION;row_idx++){
-                    int global_row_offset = row *  GRID_WIDTH * DIMENSION * DIMENSION * 3;
-                    int global_col_offset = col * DIMENSION * 3;
-                    int local_row_offset = row_idx *  GRID_WIDTH * DIMENSION * 3;
-                    imageBuf.position(global_row_offset + local_row_offset + global_col_offset);
-                    imageBuf.put(src.data, row_idx * DIMENSION * 3, DIMENSION * 3);
-                }
-                // end of copy
-                */
                 Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
-
-
 
                 // if last row, rewind the buffer and submit the texture
                 if(row == 7){
@@ -198,11 +188,14 @@ public class DisplayLightField extends DisplayBase{
 
 
 
-        /*
-        if(lf_ready && !SHOW_SOURCE && texture != null){
-            // interpolate LF
-            texture.bind();
+
+        if(lf_ready && !SHOW_SOURCE){
             shaderProgram.begin();
+            // interpolate LF
+            for(int i=0;i<COL_WIDTH;i++){
+                texture_slots[i].bind(i);
+                shaderProgram.setUniformi("u_custom_texture" + i, i);
+            }
             Matrix4 modelviewMatrix = new Matrix4();
             Matrix4 projectionMatrix = new Matrix4();
             projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
@@ -210,8 +203,8 @@ public class DisplayLightField extends DisplayBase{
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
             shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
             // set camera params
-            shaderProgram.setUniformi("rows", GRID_WIDTH);
-            shaderProgram.setUniformi("cols", GRID_WIDTH);
+            shaderProgram.setUniformi("rows", ROW_WIDTH);
+            shaderProgram.setUniformi("cols", COL_WIDTH);
             shaderProgram.setUniformf("focusPoint", focus);
             shaderProgram.setUniformf("apertureSize", aperture);
             shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
@@ -219,9 +212,12 @@ public class DisplayLightField extends DisplayBase{
             Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
             // draw!
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
             shaderProgram.end();
+
         }
-        */
+
+
 
         batch.begin();
         // draw control

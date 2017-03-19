@@ -7,6 +7,16 @@ varying vec4 position;
 varying vec2 textureCoords;
 
 uniform sampler2D u_texture;
+uniform sampler2D u_custom_texture0;
+uniform sampler2D u_custom_texture1;
+uniform sampler2D u_custom_texture2;
+uniform sampler2D u_custom_texture3;
+uniform sampler2D u_custom_texture4;
+uniform sampler2D u_custom_texture5;
+uniform sampler2D u_custom_texture6;
+uniform sampler2D u_custom_texture7;
+
+
 uniform int rows;
 uniform int cols;
 uniform float cameraPositionX;
@@ -51,18 +61,38 @@ void main(void) {
 										vec2 V;
 										V.x = float(j) * spanX + px * spanX;
 										V.y = float(i) * spanY + py * spanY;
-										color = color + texture2D(u_texture, V);
+										//color = color + texture2D(u_texture, V);
 										validPixelCount++;
 								}
 					  }
 				}
 		}
-		
-		
+		int tex_index = int(textureCoords.s / spanX);
+		float remainX = (textureCoords.s - spanX * float(tex_index)) / spanX;
+		vec2 V;
+		V.x = remainX;
+		V.y = textureCoords.t;
+		if(tex_index == 0){
+			gl_FragColor = texture2D(u_custom_texture0, V);
+		}
+		else if(tex_index == 1){
+			gl_FragColor = texture2D(u_custom_texture1, V);
+		}
+		else if(tex_index == 2){
+			gl_FragColor = texture2D(u_custom_texture2, V);
+		}
+		else if(tex_index == 3){
+			gl_FragColor = texture2D(u_custom_texture3, V);
+		}
+		else{
+			gl_FragColor = vec4(0.5, 0.0, 0.0, 0.0);
+		}
+		/*
 		if(validPixelCount == 0){
 			gl_FragColor = vec4(0.5, 0.0, 0.0, 0.0);
 		}
 		else{
 			gl_FragColor = color / float(validPixelCount);
 		}
+		*/
 }
