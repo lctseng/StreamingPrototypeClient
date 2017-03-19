@@ -21,8 +21,9 @@ import java.nio.ByteBuffer;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int GRID_WIDTH = 8;
-    final static int TOTAL_IMAGES = GRID_WIDTH * GRID_WIDTH;
+    final static int COL_WIDTH = 16;
+    final static int ROW_WIDTH = 8;
+    final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
     final static boolean SHOW_SOURCE = true;
@@ -62,8 +63,8 @@ public class DisplayLightField extends DisplayBase{
         tex_control = new Texture("badlogic.jpg");
 
         // multi-texture
-        texture_slots = new Texture[GRID_WIDTH];
-        slotImage = new Pixmap(DIMENSION, DIMENSION * GRID_WIDTH, Pixmap.Format.RGB888);
+        texture_slots = new Texture[COL_WIDTH];
+        slotImage = new Pixmap(DIMENSION, DIMENSION * ROW_WIDTH, Pixmap.Format.RGB888);
         slotImageBuf = slotImage.getPixels();
 
         String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
@@ -76,8 +77,8 @@ public class DisplayLightField extends DisplayBase{
         }
         shaderProgram.setUniformf("focusPoint", focus);
         shaderProgram.setUniformf("apertureSize", aperture);
-        shaderProgram.setUniformi("rows", GRID_WIDTH);
-        shaderProgram.setUniformi("cols", GRID_WIDTH);
+        shaderProgram.setUniformi("rows", ROW_WIDTH);
+        shaderProgram.setUniformi("cols", COL_WIDTH);
 
 
         lf_counter = 0;
@@ -158,8 +159,8 @@ public class DisplayLightField extends DisplayBase{
             Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
             if(src != null){
                 // copy images from buffer
-                int col = lf_counter / GRID_WIDTH;
-                int row = lf_counter % GRID_WIDTH;
+                int col = lf_counter / ROW_WIDTH;
+                int row = lf_counter % ROW_WIDTH;
                 // just concat all images
                 slotImageBuf.put(src.data, 0, src.size);
 
@@ -233,8 +234,8 @@ public class DisplayLightField extends DisplayBase{
                 int dx = 0;
                 for(Texture tex : texture_slots){
                     if (tex != null) {
-                        batch.draw(tex, dx, 250, 80, 80*8);
-                        dx += 90;
+                        batch.draw(tex, dx, 250, 40, 80*8);
+                        dx += 45;
                     }
                 }
 
