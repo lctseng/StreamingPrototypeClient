@@ -66,8 +66,8 @@ public class DisplayLightFieldSingle extends DisplayBase{
 
         tex_control = new Texture("badlogic.jpg");
 
-        String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
-        String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
+        String vertexShader = Gdx.files.internal("shaders/lightfield_single.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/lightfield_single.frag").readString();
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
         Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
         Gdx.app.error("GLSL", shaderProgram.getLog());
