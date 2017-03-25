@@ -5,12 +5,11 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import StreamingFormat.Message;
 
 /**
  * Created by lctseng on 2017/2/12.
@@ -20,7 +19,7 @@ import StreamingFormat.Message;
 public class Sensor implements Runnable, Component {
 
     private Thread worker = null;
-    private SensorDataListener listener;
+    private ArrayList<SensorDataListener> listeners;
 
     private Vector3 initDirection;
 
@@ -33,13 +32,17 @@ public class Sensor implements Runnable, Component {
 
     private int serialNumber;
 
-    Sensor(SensorDataListener listener){
-        this.listener = listener;
+    Sensor(){
+        listeners = new ArrayList<SensorDataListener>();
         initDirection = new Vector3(0,0,1);
         tempVector3 = new Vector3();
         tempMatrix = new Matrix4();
         tempQuaternion = new Quaternion();
         serialNumber = 0;
+    }
+
+    public void addListener(SensorDataListener listener){
+        listeners.add(listener);
     }
 
     @Override
@@ -88,15 +91,12 @@ public class Sensor implements Runnable, Component {
                 break;
             }
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 break;
             }
             serialNumber += 1;
-            Message.StreamingMessage msg = makeSensorPacket();
-            if(msg != null){
-                listener.onSensorMessageReady(msg);
-            }
+            sendSensorData();
         }
     }
 
@@ -108,7 +108,7 @@ public class Sensor implements Runnable, Component {
     }
 
 
-    private Message.StreamingMessage makeSensorPacket() {
+    private void sendSensorData(){
         // TODO: For debug use
         float accelX = Gdx.input.getAccelerometerX();
         float accelY = Gdx.input.getAccelerometerY();
@@ -123,18 +123,18 @@ public class Sensor implements Runnable, Component {
         StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", tempQuaternion.getYaw(), tempQuaternion.getPitch(), tempQuaternion.getRoll()));
         StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", tempVector3.x, tempVector3.y, tempVector3.z));
 
-        // crafting packet
-        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
-                .setType(Message.MessageType.MsgCameraInfo)
-                .setCameraMsg(
-                        Message.Camera.newBuilder()
-                                .setDeltaVx(tempVector3.x - initDirection.x)
-                                .setDeltaVy(tempVector3.y - initDirection.y)
-                                .setDeltaVz(tempVector3.y - initDirection.z)
-                                .setSerialNumber(serialNumber)
-                                .build()
-
-                ).build();
-        return msg;
+        for (SensorDataListener listener : listeners) {
+            listener.onSensorDataReady(tempVector3, tempQuaternion);
+        }
     }
+
+    public Vector3 getInitDirection(){
+        return initDirection;
+    }
+
+    public int getSerialNumber(){
+        return serialNumber;
+    }
+
+
 }

@@ -44,7 +44,8 @@ public class StreamingPrototype extends ApplicationAdapter
         StringPool.addField("App", "Initializing");
         network = new Network(this);
         display = new DisplayLightField();
-        sensor  = new Sensor(this);
+        sensor  = new Sensor();
+        sensor.addListener(this);
 
         if(decoder == null){
             Gdx.app.error("App", "No platform decoder specified! Use simple decoder instead!");
