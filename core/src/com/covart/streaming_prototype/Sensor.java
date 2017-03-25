@@ -11,6 +11,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.badlogic.gdx.math.MathUtils.clamp;
+
 /**
  * Created by lctseng on 2017/2/12.
  * NTU COV-ART Lab, for NCP project
@@ -31,6 +33,11 @@ public class Sensor implements Runnable, Component {
     private final Condition defaultPosReady = lock.newCondition();
 
     private int serialNumber;
+
+    public static final boolean USE_FAKE_INPUT = true;
+    private float screenX;
+    private float screenY;
+
 
     Sensor(){
         listeners = new ArrayList<SensorDataListener>();
@@ -107,19 +114,53 @@ public class Sensor implements Runnable, Component {
         lock.unlock();
     }
 
+    boolean touchDragged (int screenX, int screenY, int pointer){
+        this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
+        this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
+        return true;
+    }
+
+    /*
+    @Override
+    boolean touchDragged (int screenX, int screenY, int pointer){
+        Gdx.app.log("Drag:", "X:" + screenX + " , Y:" + screenY);
+        screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
+        screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
+        cameraPositionX = (float)(screenX) / (float)(Gdx.graphics.getWidth());
+        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getHeight());
+        return false;
+    }
+    */
+
+    public void updateSensorData(){
+        if(USE_FAKE_INPUT){
+            tempQuaternion.setEulerAngles(10,0,0);
+            tempVector3.set(initDirection);
+            tempQuaternion.transform(tempVector3);
+            float cx = (float)(screenX) / (float)(Gdx.graphics.getWidth());
+            float cy = (float)(screenY) / (float)(Gdx.graphics.getHeight());
+            tempVector3.set(cx, cy, 1);
+        }
+        else{
+            // TODO: For debug use
+            float accelX = Gdx.input.getAccelerometerX();
+            float accelY = Gdx.input.getAccelerometerY();
+            float accelZ = Gdx.input.getAccelerometerZ();
+            StringPool.addField("Accel:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", accelX, accelY, accelZ));
+
+            // generate the current rotation matrix
+            Gdx.input.getRotationMatrix(tempMatrix.val);
+            tempQuaternion.setFromMatrix(true, tempMatrix);
+            tempVector3.set(initDirection);
+            tempQuaternion.transform(tempVector3);
+        }
+    }
+
 
     private void sendSensorData(){
-        // TODO: For debug use
-        float accelX = Gdx.input.getAccelerometerX();
-        float accelY = Gdx.input.getAccelerometerY();
-        float accelZ = Gdx.input.getAccelerometerZ();
-        StringPool.addField("Accel:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", accelX, accelY, accelZ));
 
-        // generate the current rotation matrix
-        Gdx.input.getRotationMatrix(tempMatrix.val);
-        tempQuaternion.setFromMatrix(true, tempMatrix);
-        tempVector3.set(initDirection);
-        tempQuaternion.transform(tempVector3);
+        updateSensorData();
+
         StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", tempQuaternion.getYaw(), tempQuaternion.getPitch(), tempQuaternion.getRoll()));
         StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", tempVector3.x, tempVector3.y, tempVector3.z));
 

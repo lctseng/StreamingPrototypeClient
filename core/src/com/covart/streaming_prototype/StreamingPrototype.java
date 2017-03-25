@@ -85,7 +85,7 @@ public class StreamingPrototype extends ApplicationAdapter
             }
             @Override
             public boolean touchDragged (int screenX, int screenY, int pointer) {
-                return display.touchDragged(screenX, screenY, pointer);
+                return sensor.touchDragged(screenX, screenY, pointer);
             }
 
         });

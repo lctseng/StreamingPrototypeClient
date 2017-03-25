@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 
 import java.nio.ByteBuffer;
 
@@ -305,21 +307,20 @@ public class DisplayLightField extends DisplayBase{
         lf_ready = false;
     }
 
-    @Override
-    boolean touchDragged (int screenX, int screenY, int pointer){
-        Gdx.app.log("Drag:", "X:" + screenX + " , Y:" + screenY);
-        screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
-        screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
-        cameraPositionX = (float)(screenX) / (float)(Gdx.graphics.getWidth());
-        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getHeight());
-        return false;
-    }
-
     private static <T extends Comparable<T>> T clamp(T val, T min, T max){
         if (val.compareTo(min) < 0) return min;
         else if (val.compareTo(max) > 0) return max;
         else return val;
     }
+
+    @Override
+    public void onSensorDataReady(Vector3 direction, Quaternion rotation){
+        // map direction into cx cy
+        cameraPositionX = direction.x;
+        cameraPositionY = direction.y;
+    }
+
+
 
 
 }

@@ -15,9 +15,6 @@ public abstract class DisplayBase implements Disposable, SensorDataListener {
     abstract void updateEnd();
     abstract void injectImageData(byte[] bufData);
     abstract void disposeExistingTexture();
-    boolean touchDragged (int screenX, int screenY, int pointer){
-        return false;
-    }
 
     @Override
     public void onSensorDataReady(Vector3 direction, Quaternion rotation){
