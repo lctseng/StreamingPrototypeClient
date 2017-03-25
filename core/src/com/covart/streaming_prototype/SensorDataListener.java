@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype;
 
-import StreamingFormat.Message;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 
 /**
  * Created by lctseng on 2017/2/12.
@@ -8,5 +9,5 @@ import StreamingFormat.Message;
  */
 
 public interface SensorDataListener {
-    public void onSensorMessageReady(Message.StreamingMessage msg);
+    void onSensorDataReady(Vector3 direction, Quaternion rotation);
 }

@@ -3,6 +3,8 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.Locale;
 
@@ -147,9 +149,31 @@ public class StreamingPrototype extends ApplicationAdapter
         network.dispose();
 	}
 
+
+    private Message.StreamingMessage makeSensorPacket(Vector3 direction, Quaternion rotation) {
+
+        Vector3 initDirection = sensor.getInitDirection();
+        // crafting packet
+        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgCameraInfo)
+                .setCameraMsg(
+                        Message.Camera.newBuilder()
+                                .setDeltaVx(direction.x - initDirection.x)
+                                .setDeltaVy(direction.y - initDirection.y)
+                                .setDeltaVz(direction.y - initDirection.z)
+                                .setSerialNumber(sensor.getSerialNumber())
+                                .build()
+
+                ).build();
+        return msg;
+    }
+
     @Override
-    public void onSensorMessageReady(Message.StreamingMessage msg) {
-        network.sendMessageProtobufAsync(msg);
+    public void onSensorDataReady(Vector3 direction, Quaternion rotation) {
+        Message.StreamingMessage msg = makeSensorPacket(direction, rotation);
+        if(msg != null){
+            network.sendMessageProtobufAsync(msg);
+        }
     }
 
     @Override
