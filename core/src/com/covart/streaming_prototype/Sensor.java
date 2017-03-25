@@ -23,17 +23,26 @@ public class Sensor implements Runnable, Component {
     private Thread worker = null;
     private ArrayList<SensorDataListener> listeners;
 
+    // init settings
     private Vector3 initDirection;
+    private Vector3 initUp;
 
-    private Vector3 tempVector3;
+    // current status
+    private Vector3 crossDir;
+    private Vector3 directon;
+    private Quaternion rotation;
+
+    // temp data for computation
     private Matrix4 tempMatrix;
     private Quaternion tempQuaternion;
 
+    // wait for init direction
     private final Lock lock = new ReentrantLock();
     private final Condition defaultPosReady = lock.newCondition();
 
     private int serialNumber;
 
+    // for fake data generation
     public static final boolean USE_FAKE_INPUT = true;
     private float screenX;
     private float screenY;
@@ -42,7 +51,10 @@ public class Sensor implements Runnable, Component {
     Sensor(){
         listeners = new ArrayList<SensorDataListener>();
         initDirection = new Vector3(0,0,1);
-        tempVector3 = new Vector3();
+        initUp = Vector3.Y;
+        crossDir = new Vector3(1,0,0);
+        directon = new Vector3(initDirection);
+        rotation = new Quaternion();
         tempMatrix = new Matrix4();
         tempQuaternion = new Quaternion();
         serialNumber = 0;
@@ -120,26 +132,19 @@ public class Sensor implements Runnable, Component {
         return true;
     }
 
-    /*
-    @Override
-    boolean touchDragged (int screenX, int screenY, int pointer){
-        Gdx.app.log("Drag:", "X:" + screenX + " , Y:" + screenY);
-        screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
-        screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
-        cameraPositionX = (float)(screenX) / (float)(Gdx.graphics.getWidth());
-        cameraPositionY = (float)(screenY) / (float)(Gdx.graphics.getHeight());
-        return false;
-    }
-    */
-
     public void updateSensorData(){
         if(USE_FAKE_INPUT){
-            tempQuaternion.setEulerAngles(10,0,0);
-            tempVector3.set(initDirection);
-            tempQuaternion.transform(tempVector3);
-            float cx = (float)(screenX) / (float)(Gdx.graphics.getWidth());
-            float cy = (float)(screenY) / (float)(Gdx.graphics.getHeight());
-            tempVector3.set(cx, cy, 1);
+            // apply horz rotation
+            float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 350 - 175;
+            tempQuaternion.set(Vector3.Y, angleHorz);
+            directon.set(initDirection);
+            tempQuaternion.transform(directon);
+            // apply vert rotation
+            float angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 170 - 85;
+            crossDir.set(directon);
+            crossDir.crs(initUp);
+            tempQuaternion.set(crossDir, angleVert);
+            tempQuaternion.transform(directon);
         }
         else{
             // TODO: For debug use
@@ -147,12 +152,11 @@ public class Sensor implements Runnable, Component {
             float accelY = Gdx.input.getAccelerometerY();
             float accelZ = Gdx.input.getAccelerometerZ();
             StringPool.addField("Accel:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", accelX, accelY, accelZ));
-
             // generate the current rotation matrix
             Gdx.input.getRotationMatrix(tempMatrix.val);
             tempQuaternion.setFromMatrix(true, tempMatrix);
-            tempVector3.set(initDirection);
-            tempQuaternion.transform(tempVector3);
+            directon.set(initDirection);
+            tempQuaternion.transform(directon);
         }
     }
 
@@ -161,11 +165,13 @@ public class Sensor implements Runnable, Component {
 
         updateSensorData();
 
-        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", tempQuaternion.getYaw(), tempQuaternion.getPitch(), tempQuaternion.getRoll()));
-        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", tempVector3.x, tempVector3.y, tempVector3.z));
+        rotation.setFromCross(initDirection, directon);
+
+        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = % 6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
+        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = % 6.4f", directon.x, directon.y, directon.z));
 
         for (SensorDataListener listener : listeners) {
-            listener.onSensorDataReady(tempVector3, tempQuaternion);
+            listener.onSensorDataReady(directon, rotation);
         }
     }
 

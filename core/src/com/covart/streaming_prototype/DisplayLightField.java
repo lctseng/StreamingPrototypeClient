@@ -316,8 +316,11 @@ public class DisplayLightField extends DisplayBase{
     @Override
     public void onSensorDataReady(Vector3 direction, Quaternion rotation){
         // map direction into cx cy
-        cameraPositionX = direction.x;
-        cameraPositionY = direction.y;
+        cameraPositionX = (float) (rotation.getYaw() / 360.0 + 0.5);
+        cameraPositionY = (float) (rotation.getPitch() / -180.0 + 0.5);
+        //float cx = (float)(screenX) / (float)(Gdx.graphics.getWidth());
+        //float cy = (float)(screenY) / (float)(Gdx.graphics.getHeight());
+        //tempVector3.set(cx, cy, 1);
     }
 
 
