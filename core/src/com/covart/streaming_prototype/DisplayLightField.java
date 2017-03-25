@@ -22,14 +22,14 @@ import java.nio.ByteBuffer;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 16;
-    final static int ROW_WIDTH = 8;
+    final static int COL_WIDTH = 6;
+    final static int ROW_WIDTH = 2;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
     final static boolean SHOW_SOURCE = false;
 
-    final static int HALF_COL_SPAN = 1;
+    final static int HALF_COL_SPAN = 10;
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -200,7 +200,7 @@ public class DisplayLightField extends DisplayBase{
             }
             Matrix4 modelviewMatrix = new Matrix4();
             Matrix4 projectionMatrix = new Matrix4();
-            projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+            projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
             // set matrix
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
             shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
