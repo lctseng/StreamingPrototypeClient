@@ -1,5 +1,7 @@
 package com.covart.streaming_prototype;
 
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -7,12 +9,18 @@ import com.badlogic.gdx.utils.Disposable;
  * NTU COV-ART Lab, for NCP project
  */
 
-public abstract class DisplayBase implements Disposable {
+public abstract class DisplayBase implements Disposable, SensorDataListener {
+
     abstract void updateStart();
     abstract void updateEnd();
     abstract void injectImageData(byte[] bufData);
     abstract void disposeExistingTexture();
     boolean touchDragged (int screenX, int screenY, int pointer){
         return false;
+    }
+
+    @Override
+    public void onSensorDataReady(Vector3 direction, Quaternion rotation){
+        //Gdx.app.log("DisplayBase", "Sensor data received");
     }
 }
