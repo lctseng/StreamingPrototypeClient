@@ -72,7 +72,7 @@ void main(void) {
 					validPixelCount++;
 					float global_y = (float(i) + py)*spanY;
 					
-					int tex_index = j;
+					int tex_index = j - col_start;
 					float remainX = px;
 					vec2 V;
 					V.x = remainX;

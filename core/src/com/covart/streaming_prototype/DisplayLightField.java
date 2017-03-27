@@ -201,11 +201,7 @@ public class DisplayLightField extends DisplayBase{
 
         if(lf_ready && !SHOW_SOURCE){
             shaderProgram.begin();
-            // interpolate LF
-            for(int i=0;i<COL_WIDTH;i++){
-                textureManager.getTextures()[i].bind(i);
-                shaderProgram.setUniformi("u_custom_texture" + i, i);
-            }
+
 
             // set matrix
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
@@ -227,7 +223,13 @@ public class DisplayLightField extends DisplayBase{
             if(col_end > COL_WIDTH) col_end = COL_WIDTH ;
             shaderProgram.setUniformi("col_start", col_start);
             shaderProgram.setUniformi("col_end", col_end);
-            //Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
+            Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
+            // binding texture
+            for(int i=col_start;i<col_end;i++){
+                int textureIndex = i - col_start;
+                textureManager.getTextures()[i].bind(textureIndex);
+                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
+            }
             // draw!
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
