@@ -3,7 +3,6 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -11,8 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created by lctseng on 2017/2/6.
@@ -35,10 +32,8 @@ public class DisplayLightField extends DisplayBase{
     private SpriteBatch batch;
     private BitmapFont font;
 
-    // multi-texture
-    private Texture[] texture_slots;
-    private Pixmap slotImage;
-    private ByteBuffer slotImageBuf;
+    // texture manager
+    private TextureManager textureManager;
 
 
     private ShaderProgram shaderProgram;
@@ -56,8 +51,8 @@ public class DisplayLightField extends DisplayBase{
 
     private Texture tex_control;
 
-    Matrix4 modelviewMatrix;
-    Matrix4 projectionMatrix;
+    private Matrix4 modelviewMatrix;
+    private Matrix4 projectionMatrix;
 
 
     DisplayLightField(){
@@ -69,9 +64,8 @@ public class DisplayLightField extends DisplayBase{
         tex_control = new Texture("badlogic.jpg");
 
         // multi-texture
-        texture_slots = new Texture[COL_WIDTH];
-        slotImage = new Pixmap(DIMENSION, DIMENSION * ROW_WIDTH, Pixmap.Format.RGB888);
-        slotImageBuf = slotImage.getPixels();
+        textureManager = new TextureManager(this);
+
 
         String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
@@ -167,6 +161,13 @@ public class DisplayLightField extends DisplayBase{
     }
 
     @Override
+    void start(){
+        disposeExistingTexture();
+        textureManager.createTextureSlots(COL_WIDTH);
+    }
+
+
+    @Override
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -178,20 +179,15 @@ public class DisplayLightField extends DisplayBase{
                 // copy images from buffer
                 int col = lf_counter / ROW_WIDTH;
                 int row = lf_counter % ROW_WIDTH;
-                // just concat all images
-                slotImageBuf.put(src.data, 0, src.size);
+                src.index = col;
+                textureManager.addImage(src, row);
+
                 ++lf_counter;
                 Gdx.app.log("LightField Display", "Loading light field:" + lf_counter);
                 if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
 
-                // if last row, rewind the buffer and submit the texture
-                if(row == ROW_WIDTH - 1){
-                    slotImageBuf.rewind();
-                    texture_slots[col] = new Texture(slotImage);
-                    slotImageBuf.rewind();
-                }
                 if(lf_counter == TOTAL_IMAGES){
                     // done
                     Gdx.app.log("LightField Display", "Tile image created");
@@ -207,7 +203,7 @@ public class DisplayLightField extends DisplayBase{
             shaderProgram.begin();
             // interpolate LF
             for(int i=0;i<COL_WIDTH;i++){
-                texture_slots[i].bind(i);
+                textureManager.getTextures()[i].bind(i);
                 shaderProgram.setUniformi("u_custom_texture" + i, i);
             }
 
@@ -250,7 +246,7 @@ public class DisplayLightField extends DisplayBase{
             // draw raw texture on batch if needed
             if (SHOW_SOURCE) {
                 int dx = 0;
-                for(Texture tex : texture_slots){
+                for(Texture tex : textureManager.getTextures()){
                     if (tex != null) {
                         batch.draw(tex, dx, 250, 40, 80*8);
                         dx += 45;
@@ -293,24 +289,12 @@ public class DisplayLightField extends DisplayBase{
         batch.dispose();
         font.dispose();
         tex_control.dispose();
-        disposeExistingTexture();
-        slotImage.dispose();
-        for(Texture tex : texture_slots){
-            if(tex != null){
-                tex.dispose();
-            }
-        }
+        textureManager.dispose();
     }
 
     @Override
     public void disposeExistingTexture(){
-        for(int i = 0 ; i<texture_slots.length ; i++){
-            Texture tex = texture_slots[i];
-            if(tex != null){
-                tex.dispose();
-            }
-            texture_slots[i] = null;
-        }
+        textureManager.disposeExistingTextures();
         lf_counter = 0;
         lf_ready = false;
     }

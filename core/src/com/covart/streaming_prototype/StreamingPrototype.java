@@ -101,7 +101,7 @@ public class StreamingPrototype extends ApplicationAdapter
         this.state = Running;
         BufferPool.getInstance().reset();
         Profiler.reset();
-        display.disposeExistingTexture();
+        display.start();
         network.start();
         decoder.start();
         sensor.start();

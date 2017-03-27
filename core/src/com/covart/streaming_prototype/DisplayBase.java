@@ -13,6 +13,7 @@ public abstract class DisplayBase implements Disposable, SensorDataListener {
     abstract void updateEnd();
     abstract void injectImageData(byte[] bufData);
     abstract void disposeExistingTexture();
+    abstract void start();
 
     @Override
     public void onSensorDataReady(Sensor sensor){
