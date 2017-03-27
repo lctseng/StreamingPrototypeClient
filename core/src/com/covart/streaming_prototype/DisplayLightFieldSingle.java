@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
 
 import java.nio.ByteBuffer;
 
@@ -282,12 +280,11 @@ public class DisplayLightFieldSingle extends DisplayBase{
         else return val;
     }
 
+
     @Override
-    public void onSensorDataReady(Vector3 direction, Quaternion rotation){
+    public void onSensorDataReady(Sensor sensor){
         // map direction into cx cy
-        cameraPositionX = direction.x;
-        cameraPositionY = direction.y;
+        cameraPositionX = (float) (sensor.getRotation().getYaw() / 360.0 + 0.5);
+        cameraPositionY = (float) (sensor.getRotation().getPitch() / -180.0 + 0.5);
     }
-
-
 }

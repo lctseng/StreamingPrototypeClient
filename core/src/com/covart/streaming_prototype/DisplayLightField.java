@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
 
 import java.nio.ByteBuffer;
 
@@ -58,6 +56,9 @@ public class DisplayLightField extends DisplayBase{
 
     private Texture tex_control;
 
+    Matrix4 modelviewMatrix;
+    Matrix4 projectionMatrix;
+
 
     DisplayLightField(){
 
@@ -91,6 +92,15 @@ public class DisplayLightField extends DisplayBase{
         lf_counter = 0;
         lf_ready = false;
 
+
+        // create matrix
+        modelviewMatrix = new Matrix4();
+        projectionMatrix = new Matrix4();
+        float ratio = (float)Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
+        projectionMatrix.setToOrtho(-1.0f, 1.0f, ratio * -1, ratio, -1.0f, 1.0f);
+
+
+        // create mesh
         float[] verts = new float[36];
         int i = 0;
         float x,y; // Mesh location in the world
@@ -200,9 +210,7 @@ public class DisplayLightField extends DisplayBase{
                 texture_slots[i].bind(i);
                 shaderProgram.setUniformi("u_custom_texture" + i, i);
             }
-            Matrix4 modelviewMatrix = new Matrix4();
-            Matrix4 projectionMatrix = new Matrix4();
-            projectionMatrix.setToOrtho(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
             // set matrix
             shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
             shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
@@ -213,7 +221,7 @@ public class DisplayLightField extends DisplayBase{
             shaderProgram.setUniformf("apertureSize", aperture);
             shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
             shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
-            Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
+            //Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
             // compute column start/end
             int cameraIdxX = (int)(cameraPositionX * COL_WIDTH);
             int col_start = cameraIdxX - HALF_COL_SPAN;
@@ -223,7 +231,7 @@ public class DisplayLightField extends DisplayBase{
             if(col_end > COL_WIDTH) col_end = COL_WIDTH ;
             shaderProgram.setUniformi("col_start", col_start);
             shaderProgram.setUniformi("col_end", col_end);
-            Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
+            //Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
             // draw!
             mesh.render(shaderProgram, GL20.GL_TRIANGLES);
             Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
@@ -314,13 +322,10 @@ public class DisplayLightField extends DisplayBase{
     }
 
     @Override
-    public void onSensorDataReady(Vector3 direction, Quaternion rotation){
+    public void onSensorDataReady(Sensor sensor){
         // map direction into cx cy
-        cameraPositionX = (float) (rotation.getYaw() / 360.0 + 0.5);
-        cameraPositionY = (float) (rotation.getPitch() / -180.0 + 0.5);
-        //float cx = (float)(screenX) / (float)(Gdx.graphics.getWidth());
-        //float cy = (float)(screenY) / (float)(Gdx.graphics.getHeight());
-        //tempVector3.set(cx, cy, 1);
+        cameraPositionX = (float) (sensor.getTranslationMagnitudeHorz() + 0.5);
+        cameraPositionY = (float) (sensor.getTranslationMagnitudeVert() + 0.5);
     }
 
 

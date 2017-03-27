@@ -171,8 +171,8 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     @Override
-    public void onSensorDataReady(Vector3 direction, Quaternion rotation) {
-        Message.StreamingMessage msg = makeSensorPacket(direction, rotation);
+    public void onSensorDataReady(Sensor sensor) {
+        Message.StreamingMessage msg = makeSensorPacket(sensor.getDirecton(), sensor.getRotation());
         if(msg != null){
             network.sendMessageProtobufAsync(msg);
         }
@@ -184,7 +184,8 @@ public class StreamingPrototype extends ApplicationAdapter
             case MsgDefaultPos:
                 Gdx.app.log("Dispatch", "DefaultPos set");
                 Message.DefaultPos posMsg = msg.getDefaultPosMsg();
-                sensor.setInitialDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
+                sensor.setInitPosition(posMsg.getX(), posMsg.getY(), posMsg.getZ());
+                sensor.setInitDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
                 break;
             case MsgImage:
                 // acquire new buffer

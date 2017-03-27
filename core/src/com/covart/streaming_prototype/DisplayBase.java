@@ -1,7 +1,5 @@
 package com.covart.streaming_prototype;
 
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -17,7 +15,7 @@ public abstract class DisplayBase implements Disposable, SensorDataListener {
     abstract void disposeExistingTexture();
 
     @Override
-    public void onSensorDataReady(Vector3 direction, Quaternion rotation){
+    public void onSensorDataReady(Sensor sensor){
         //Gdx.app.log("DisplayBase", "Sensor data received");
     }
 }
