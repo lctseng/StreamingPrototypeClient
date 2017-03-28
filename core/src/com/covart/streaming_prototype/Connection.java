@@ -58,7 +58,8 @@ public class Connection {
             Gdx.app.log("Connection", "Connecting...");
             SocketHints hints = new SocketHints();
             try {
-                socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3333, hints);
+                //socket = net.newClientSocket(Protocol.TCP, "140.112.90.86", 8051, hints);
+                socket = net.newClientSocket(Protocol.TCP, "140.112.90.95", 3087, hints);
                 recvStream = socket.getInputStream();
                 sendStream = socket.getOutputStream();
                 state = State.Connected;
