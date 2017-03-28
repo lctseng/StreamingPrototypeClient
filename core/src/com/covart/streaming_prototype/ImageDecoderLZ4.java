@@ -34,6 +34,7 @@ public class ImageDecoderLZ4 extends ImageDecoderBase {
                 decompressor.decompress(encodedBuf.data, 0, decodeBuf.data, 0, BufferPool.IMAGE_BUFFER_SIZE);
                 Profiler.reportOnProcEnd();
                 decodeBuf.size = BufferPool.IMAGE_BUFFER_SIZE;
+                decodeBuf.index = encodedBuf.index;
 
                 // release buffer to network
                 releaseEncodedBuffer(encodedBuf);

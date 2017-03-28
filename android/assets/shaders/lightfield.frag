@@ -24,6 +24,22 @@ uniform sampler2D u_custom_texture13;
 uniform sampler2D u_custom_texture14;
 uniform sampler2D u_custom_texture15;
 
+uniform int u_texture_valid0;
+uniform int u_texture_valid1;
+uniform int u_texture_valid2;
+uniform int u_texture_valid3;
+uniform int u_texture_valid4;
+uniform int u_texture_valid5;
+uniform int u_texture_valid6;
+uniform int u_texture_valid7;
+uniform int u_texture_valid8;
+uniform int u_texture_valid9;
+uniform int u_texture_valid10;
+uniform int u_texture_valid11;
+uniform int u_texture_valid12;
+uniform int u_texture_valid13;
+uniform int u_texture_valid14;
+uniform int u_texture_valid15;
 
 uniform int rows;
 uniform int cols;
@@ -69,7 +85,7 @@ void main(void) {
 				float px = 0.5 * pixelX + 0.5;
 				float py = 0.5 * pixelY + 0.5;
 				if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {
-					validPixelCount++;
+					
 					float global_y = (float(i) + py)*spanY;
 					
 					int tex_index = j - col_start;
@@ -77,21 +93,29 @@ void main(void) {
 					vec2 V;
 					V.x = remainX;
 					V.y = global_y;
-					if(tex_index == 0){
+					
+					
+					if(tex_index == 0 && u_texture_valid0 > 0){
+						validPixelCount++;
 						color = color + texture2D(u_custom_texture0, V);
 					}
-					else if(tex_index == 1){
+					else if(tex_index == 1 && u_texture_valid1 > 0){
+						validPixelCount++;
 						color = color + texture2D(u_custom_texture1, V);
 					}
-					else if(tex_index == 2){
+					else if(tex_index == 2 && u_texture_valid2 > 0){
+						validPixelCount++;
 						color = color + texture2D(u_custom_texture2, V);
 					}
-					else if(tex_index == 3){
+					else if(tex_index == 3 && u_texture_valid3 > 0){
+						validPixelCount++;
 						color = color + texture2D(u_custom_texture3, V);
 					}
-					else if(tex_index == 4){
+					else if(tex_index == 4 && u_texture_valid4 > 0){
+						validPixelCount++;
 						color = color + texture2D(u_custom_texture4, V);
 					}
+					/*
 					else if(tex_index == 5){
 						color = color + texture2D(u_custom_texture5, V);
 					}
@@ -125,6 +149,7 @@ void main(void) {
 					else if(tex_index == 15){
 						color = color + texture2D(u_custom_texture15, V);
 					}
+					*/
 				}
 			}
 		}

@@ -21,6 +21,7 @@ public class ImageDecoderSimple extends ImageDecoderBase {
                 System.arraycopy(encodedBuf.data, 0, decodeBuf.data, 0, Math.min(encodedBuf.data.length, decodeBuf.data.length));
                 Profiler.reportOnProcEnd();
                 decodeBuf.size = encodedBuf.size;
+                decodeBuf.index = encodedBuf.index;
                 // release buffer to network
                 releaseEncodedBuffer(encodedBuf);
                 // send to display

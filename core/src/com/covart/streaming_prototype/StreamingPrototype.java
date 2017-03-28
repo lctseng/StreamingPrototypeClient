@@ -193,9 +193,10 @@ public class StreamingPrototype extends ApplicationAdapter
                 // start receiving image data
                 Profiler.reportOnRecvStart();
                 network.getConnection().readn(bufData.data, msg.getImageMsg().getByteSize());
-                bufData.size = msg.getImageMsg().getByteSize();
                 Profiler.reportOnRecvEnd();
-                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber() ,msg.getImageMsg().getByteSize()));
+                bufData.size = msg.getImageMsg().getByteSize();
+                bufData.index = msg.getImageMsg().getStatus();
+                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(),  msg.getImageMsg().getStatus() ,msg.getImageMsg().getByteSize()));
                 Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));
                 // send data to decoder
                 BufferPool.getInstance().queueNetworkToDecoder.put(bufData);

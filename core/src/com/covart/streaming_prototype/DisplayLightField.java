@@ -19,14 +19,12 @@ import com.badlogic.gdx.math.Matrix4;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 6;
-    final static int ROW_WIDTH = 2;
+    final static int COL_WIDTH = 16;
+    final static int ROW_WIDTH = 8;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
-    final static boolean SHOW_SOURCE = false;
-
-    final static int HALF_COL_SPAN = 10;
+    final static int HALF_COL_SPAN = 1;
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -37,16 +35,11 @@ public class DisplayLightField extends DisplayBase{
 
 
     private ShaderProgram shaderProgram;
-    private int lf_counter;
 
     private Mesh mesh;
 
-    private boolean lf_ready;
-
     private float focus = 0.0f;
     private float aperture = 5.0f;
-    private float cameraPositionX =0.5f;
-    private float cameraPositionY =0.5f;
 
 
     private Texture tex_control;
@@ -80,11 +73,6 @@ public class DisplayLightField extends DisplayBase{
         shaderProgram.setUniformf("apertureSize", aperture);
         shaderProgram.setUniformi("rows", ROW_WIDTH);
         shaderProgram.setUniformi("cols", COL_WIDTH);
-
-
-
-        lf_counter = 0;
-        lf_ready = false;
 
 
         // create matrix
@@ -167,75 +155,52 @@ public class DisplayLightField extends DisplayBase{
     }
 
 
+    public void collectImages(){
+        Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
+        if(src != null){
+            // copy images from buffer
+            textureManager.addImage(src);
+
+            if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
+                Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
+            }
+        }
+    }
+
     @Override
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // collect images
-        if(!lf_ready && lf_counter < TOTAL_IMAGES){
-            Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
-            if(src != null){
-                // copy images from buffer
-                int col = lf_counter / ROW_WIDTH;
-                int row = lf_counter % ROW_WIDTH;
-                src.index = col;
-                textureManager.addImage(src, row);
-
-                ++lf_counter;
-                Gdx.app.log("LightField Display", "Loading light field:" + lf_counter);
-                if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
-                    Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
-                }
-
-                if(lf_counter == TOTAL_IMAGES){
-                    // done
-                    Gdx.app.log("LightField Display", "Tile image created");
-                    lf_ready = true;
-                }
-            }
-        }
+        collectImages();
 
 
 
 
-        if(lf_ready && !SHOW_SOURCE){
-            shaderProgram.begin();
 
 
-            // set matrix
-            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-            // set camera params
-            shaderProgram.setUniformi("rows", ROW_WIDTH);
-            shaderProgram.setUniformi("cols", COL_WIDTH);
-            shaderProgram.setUniformf("focusPoint", focus);
-            shaderProgram.setUniformf("apertureSize", aperture);
-            shaderProgram.setUniformf("cameraPositionX", cameraPositionX);
-            shaderProgram.setUniformf("cameraPositionY", cameraPositionY);
-            //Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
-            // compute column start/end
-            int cameraIdxX = (int)(cameraPositionX * COL_WIDTH);
-            int col_start = cameraIdxX - HALF_COL_SPAN;
-            int col_end = cameraIdxX + HALF_COL_SPAN + 1;
-            if(col_start < 0) col_start = 0;
-            if(col_start >= COL_WIDTH) col_start = COL_WIDTH - 1;
-            if(col_end > COL_WIDTH) col_end = COL_WIDTH ;
-            shaderProgram.setUniformi("col_start", col_start);
-            shaderProgram.setUniformi("col_end", col_end);
-            Gdx.app.log("LightField Display", "Effective col: " + col_start + "-" + (col_end-1));
-            // binding texture
-            for(int i=col_start;i<col_end;i++){
-                int textureIndex = i - col_start;
-                textureManager.getTextures()[i].bind(textureIndex);
-                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
-            }
-            // draw!
-            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            shaderProgram.end();
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ROW_WIDTH);
+        shaderProgram.setUniformi("cols", COL_WIDTH);
+        shaderProgram.setUniformf("focusPoint", focus);
+        shaderProgram.setUniformf("apertureSize", aperture);
+        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        //Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
 
-        }
+
 
 
 
@@ -244,21 +209,6 @@ public class DisplayLightField extends DisplayBase{
         batch.draw(tex_control, 0, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
         StringPool.clearFlashMessages();
-        if(lf_ready) {
-            // draw raw texture on batch if needed
-            if (SHOW_SOURCE) {
-                int dx = 0;
-                for(Texture tex : textureManager.getTextures()){
-                    if (tex != null) {
-                        batch.draw(tex, dx, 250, 40, 80*8);
-                        dx += 45;
-                    }
-                }
-
-            }
-
-        }
-
     }
 
 
@@ -297,8 +247,6 @@ public class DisplayLightField extends DisplayBase{
     @Override
     public void disposeExistingTexture(){
         textureManager.disposeExistingTextures();
-        lf_counter = 0;
-        lf_ready = false;
     }
 
     private static <T extends Comparable<T>> T clamp(T val, T min, T max){
@@ -309,9 +257,7 @@ public class DisplayLightField extends DisplayBase{
 
     @Override
     public void onSensorDataReady(Sensor sensor){
-        // map direction into cx cy
-        cameraPositionX = (float) (sensor.getTranslationMagnitudeHorz() + 0.5);
-        cameraPositionY = (float) (sensor.getTranslationMagnitudeVert() + 0.5);
+        textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
     }
 
 

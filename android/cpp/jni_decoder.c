@@ -16,11 +16,12 @@
 static struct {
     JNIEnv *env;
     jobject instance;
+    void* last_user_data;
 
 } decoder_data;
 
 
-static void on_frame_ready(uint8_t* frame_buf, int frame_size){
+static void on_frame_ready(uint8_t* frame_buf, int frame_size, void* index){
     // require a image buffer space
     // call: getDisplayBuffer
     jclass clazz = (*decoder_data.env)->GetObjectClass(decoder_data.env, decoder_data.instance);
@@ -41,6 +42,9 @@ static void on_frame_ready(uint8_t* frame_buf, int frame_size){
         // set size
         jfieldID sizeField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "size", "I");
         (*decoder_data.env)->SetIntField(decoder_data.env, displayBuffer, sizeField, frame_size);
+        // set index
+        jfieldID indexField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "index", "I");
+        (*decoder_data.env)->SetIntField(decoder_data.env, displayBuffer, indexField, (int)index); // set to new buffer
         // return this buffer
         (*decoder_data.env)->CallVoidMethod(decoder_data.env, decoder_data.instance, onFrameReady, displayBuffer);
     }
@@ -79,7 +83,7 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderFlush(JNIEnv 
     decoder_data.env = env;
     decoder_data.instance = instance;
     // flushing
-    if(decoder_parse(NULL, 0) < 0){
+    if(decoder_parse(NULL, 0, decoder_data.last_user_data) < 0){
         LOG_ERROR("NativeH264", "Flush Error!");
         return JNI_FALSE;
     }
@@ -108,8 +112,12 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv 
     // get the data size
     jfieldID sizeField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "size", "I");
     jint size = (*decoder_data.env)->GetIntField(decoder_data.env, buffer, sizeField);
+    // get index
+    jfieldID indexField = (*decoder_data.env)->GetFieldID(decoder_data.env, clazz, "index", "I");
+    jint index = (*decoder_data.env)->GetIntField(decoder_data.env, buffer, indexField);
+    decoder_data.last_user_data = (void*)index;
     // inject into decoder
-    if(decoder_parse((uint8_t*)data, size) < 0){
+    if(decoder_parse((uint8_t*)data, size, (void*)index) < 0){
         LOG_ERROR("NativeH264", "Parse Error!");
         res = JNI_FALSE;
     }

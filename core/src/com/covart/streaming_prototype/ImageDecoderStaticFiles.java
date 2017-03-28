@@ -61,6 +61,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                 }
                 Thread.sleep(1);
                 FileHandle file = null;
+                int index = count / DisplayLightField.ROW_WIDTH;
                 if(count >= max_size){
                     if(loop){
                         count = 0;
@@ -80,6 +81,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     // copy to buffer
                     decodeBuf.size = pixels.remaining();
                     pixels.get(decodeBuf.data, 0, decodeBuf.size);
+                    decodeBuf.index = index;
                     // send back
                     sendImageResult(decodeBuf);
                 }
