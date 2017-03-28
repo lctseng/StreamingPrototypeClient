@@ -160,6 +160,8 @@ public class StreamingPrototype extends ApplicationAdapter
                 .setType(Message.MessageType.MsgCameraInfo)
                 .setCameraMsg(
                         Message.Camera.newBuilder()
+                                .setDeltaX(sensor.getTranslationMagnitudeHorz())
+                                .setDeltaY(sensor.getTranslationMagnitudeVert())
                                 .setDeltaVx(direction.x - initDirection.x)
                                 .setDeltaVy(direction.y - initDirection.y)
                                 .setDeltaVz(direction.y - initDirection.z)
