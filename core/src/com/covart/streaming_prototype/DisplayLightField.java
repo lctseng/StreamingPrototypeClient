@@ -179,6 +179,7 @@ public class DisplayLightField extends DisplayBase{
 
 
 
+
         shaderProgram.begin();
         // set matrix
         shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
@@ -199,6 +200,7 @@ public class DisplayLightField extends DisplayBase{
         mesh.render(shaderProgram, GL20.GL_TRIANGLES);
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
+        Profiler.reportOnDisplay();
 
 
 
