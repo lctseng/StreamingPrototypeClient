@@ -75,6 +75,9 @@ public class TextureManager implements Disposable {
         rowIndex += 1;
         if(rowIndex == DisplayLightField.ROW_WIDTH){
             slotImageBuf.rewind();
+            if(textures[buffer.index] != null){
+                textures[buffer.index].dispose();
+            }
             textures[buffer.index] = new Texture(slotImage);
             slotImageBuf.rewind();
             Gdx.app.log("TextureManager", "End of column: " + buffer.index);
@@ -85,7 +88,7 @@ public class TextureManager implements Disposable {
     private void freeUnusedTextures(){
         for(int i=0;i<nSlots;i++){
             if(textures[i] != null) {
-                if (Math.abs(lastColumnIndex - i) > 5) {
+                if (Math.abs(lastColumnIndex - i) > 9) {
                     // i-th texture is too far
                     textures[i].dispose();
                     textures[i] = null;
