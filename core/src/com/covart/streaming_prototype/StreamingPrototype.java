@@ -190,18 +190,35 @@ public class StreamingPrototype extends ApplicationAdapter
                 sensor.setInitDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
                 break;
             case MsgImage:
-                // acquire new buffer
-                Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
-                // start receiving image data
+                //Gdx.app.log("App","Receiving new column:" + msg.getImageMsg().getStatus());
+                //Gdx.app.log("App","Receiving bytesize:" + msg.getImageMsg().getByteSize());
+                int size =  msg.getImageMsg().getByteSize();
                 Profiler.reportOnRecvStart();
-                network.getConnection().readn(bufData.data, msg.getImageMsg().getByteSize());
+                while(size > 0){
+                    int expectSize;
+                    if(size > BufferPool.DECODER_BUFFER_SIZE){
+                        expectSize = BufferPool.DECODER_BUFFER_SIZE;
+                    }
+                    else{
+                        // not enough
+                        expectSize = size;
+                    }
+                    size -= expectSize;
+                    // acquire new buffer
+                    Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                    // fill-in content
+                    network.getConnection().readn(bufData.data, expectSize);
+                    // fill meta data
+                    bufData.size = expectSize;
+                    bufData.index = msg.getImageMsg().getStatus();
+                    // start receiving image data
+                    BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
+                }
                 Profiler.reportOnRecvEnd();
-                bufData.size = msg.getImageMsg().getByteSize();
-                bufData.index = msg.getImageMsg().getStatus();
                 StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(),  msg.getImageMsg().getStatus() ,msg.getImageMsg().getByteSize()));
                 Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));
                 // send data to decoder
-                BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
+
                 break;
             case MsgEnding:
                 Gdx.app.log("Dispatch","Ending message received");
