@@ -44,10 +44,15 @@ public class ImageDecoderH264 extends ImageDecoderBase {
                 Buffer encodedBuf = acquireEncodedResult();
                 Profiler.reportOnProcStart();
                 // send to native decoder
-                if(!nativeDecoderParse(encodedBuf)){
-                    Gdx.app.log("H264", "Parse Error!");
+
+                if(encodedBuf.size > 0){
+                    if(!nativeDecoderParse(encodedBuf)){
+                        Gdx.app.log("H264", "Parse Error!");
+                    }
                 }
-                nativeDecoderFlush();
+                else{
+                    nativeDecoderFlush();
+                }
                 // release buffer to network
                 Profiler.reportOnProcEnd();
                 releaseEncodedBuffer(encodedBuf);
