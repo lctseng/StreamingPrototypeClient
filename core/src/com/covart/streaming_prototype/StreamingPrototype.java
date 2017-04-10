@@ -3,6 +3,7 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -37,7 +38,6 @@ public class StreamingPrototype extends ApplicationAdapter
     private boolean sceneChanged = true;
     private int sceneIndex = 0;
 
-
     StreamingPrototype(ImageDecoderBase platform_decoder){
         if(platform_decoder != null){
             decoder = platform_decoder;
@@ -47,18 +47,24 @@ public class StreamingPrototype extends ApplicationAdapter
 	@Override
 	public void create () {
         StringPool.addField("App", "Initializing");
+        IPSelectorUI.initialize();
         network = new Network(this);
         display = new DisplayLightField();
         sensor  = new Sensor();
         sensor.addListener(this);
         sensor.addListener(display);
 
+
+
         if(decoder == null){
             Gdx.app.error("App", "No platform decoder specified! Use simple decoder instead!");
             decoder = new ImageDecoderSimple();
         }
 
-        Gdx.input.setInputProcessor(new InputAdapter() {
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(IPSelectorUI.getInstance().getInputProcessor());
+
+        InputAdapter localInput = new InputAdapter() {
             @Override
             public boolean touchDown (int x, int y, int pointer, int button) {
                 Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
@@ -103,7 +109,9 @@ public class StreamingPrototype extends ApplicationAdapter
                 return sensor.touchDragged(screenX, screenY, pointer);
             }
 
-        });
+        };
+        inputMultiplexer.addProcessor(localInput);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         StringPool.addField("App", "Ready for start");
     }
 
@@ -162,6 +170,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if(state == Running){
             updateControlFrame();
         }
+        IPSelectorUI.getInstance().draw();
 
 	}
 
@@ -197,6 +206,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
 	public void dispose () {
+        IPSelectorUI.cleanup();
         decoder.dispose();
         display.dispose();
         network.dispose();
