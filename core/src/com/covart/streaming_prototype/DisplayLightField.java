@@ -44,7 +44,8 @@ public class DisplayLightField extends DisplayBase{
     private float aperture = 5.0f;
 
 
-    private Texture tex_control;
+    private Texture textureStartStop;
+    private Texture textureChangeScene;
 
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
@@ -58,7 +59,8 @@ public class DisplayLightField extends DisplayBase{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
-        tex_control = new Texture("badlogic.jpg");
+        textureStartStop = new Texture("start-stop.png");
+        textureChangeScene = new Texture("change-scene.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -214,8 +216,8 @@ public class DisplayLightField extends DisplayBase{
 
         batch.begin();
         // draw control
-        batch.draw(tex_control, 0, Gdx.graphics.getHeight() - 150, 150, 150);
-        batch.draw(tex_control, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150, 150, 150);
+        batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 150, 150, 150);
+        batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
@@ -249,7 +251,8 @@ public class DisplayLightField extends DisplayBase{
     public void dispose() {
         batch.dispose();
         font.dispose();
-        tex_control.dispose();
+        textureStartStop.dispose();
+        textureChangeScene.dispose();
         textureManager.dispose();
     }
 
@@ -278,9 +281,4 @@ public class DisplayLightField extends DisplayBase{
     public boolean checkControlFrameRequired(){
         return textureManager.checkControlFrameRequired();
     }
-
-
-
-
-
 }
