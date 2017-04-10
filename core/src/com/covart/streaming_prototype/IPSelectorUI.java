@@ -56,10 +56,10 @@ public class IPSelectorUI implements Disposable {
         skin.addRegions(buttonAtlas);
 
         selectFont = new BitmapFont();
-        selectFont.getData().setScale(2f);
+        selectFont.getData().setScale(4f);
 
         labelFont = new BitmapFont();
-        labelFont.getData().setScale(2f);
+        labelFont.getData().setScale(4f);
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
