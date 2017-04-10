@@ -33,6 +33,11 @@ public class StreamingPrototype extends ApplicationAdapter
     private ImageDecoderBase decoder;
     private Sensor sensor;
 
+    // change scene
+    private boolean sceneChanged = true;
+    private int sceneIndex = 0;
+
+
     StreamingPrototype(ImageDecoderBase platform_decoder){
         if(platform_decoder != null){
             decoder = platform_decoder;
@@ -79,6 +84,16 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     return true; // return true to indicate the event was handled
                 }
+                else if(x >= Gdx.graphics.getWidth() - 135 && y <= 135){
+                    if(state == Running) {
+                        sceneChanged = true;
+                        sceneIndex = (sceneIndex + 1) % 10;
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
                 else{
                     return false;
                 }
@@ -96,6 +111,8 @@ public class StreamingPrototype extends ApplicationAdapter
     public void start() {
         stopRequired = false;
         startRequired = false;
+        sceneChanged = true;
+        sceneIndex = 0;
         app.log("App","starting");
         StringPool.addField("App", "Component started");
         this.state = Running;
@@ -141,15 +158,20 @@ public class StreamingPrototype extends ApplicationAdapter
         display.updateStart();
         Profiler.generateProfilingStrings();
         display.updateEnd();
-        // control frame update
-        updateControlFrame();
+        // control frame update if started
+        if(state == Running){
+            updateControlFrame();
+        }
+
 	}
 
     private void updateControlFrame() {
         if(checkControlFrameRequired()){
+            sceneChanged = false;
             // create message builder
             Message.Control.Builder controlBuilder = Message.Control.newBuilder();
             // save change scene
+            controlBuilder.setChangeScene(sceneIndex);
             // save save frame
             // save drop index
             display.attachControlFrameInfo(controlBuilder);
@@ -166,7 +188,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean checkControlFrameRequired() {
         // check drop index
-        if(display.checkControlFrameRequired()){
+        if(display.checkControlFrameRequired() || sceneChanged){
             return true;
         }
         return false;

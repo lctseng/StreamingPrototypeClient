@@ -215,6 +215,7 @@ public class DisplayLightField extends DisplayBase{
         batch.begin();
         // draw control
         batch.draw(tex_control, 0, Gdx.graphics.getHeight() - 150, 150, 150);
+        batch.draw(tex_control, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
