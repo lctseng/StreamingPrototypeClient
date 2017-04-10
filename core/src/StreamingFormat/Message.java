@@ -39,6 +39,10 @@ public final class Message {
      * <code>MsgEnding = 4;</code>
      */
     MsgEnding(4),
+    /**
+     * <code>MsgControl = 5;</code>
+     */
+    MsgControl(5),
     UNRECOGNIZED(-1),
     ;
 
@@ -62,6 +66,10 @@ public final class Message {
      * <code>MsgEnding = 4;</code>
      */
     public static final int MsgEnding_VALUE = 4;
+    /**
+     * <code>MsgControl = 5;</code>
+     */
+    public static final int MsgControl_VALUE = 5;
 
 
     public final int getNumber() {
@@ -87,6 +95,7 @@ public final class Message {
         case 2: return MsgCameraInfo;
         case 3: return MsgImage;
         case 4: return MsgEnding;
+        case 5: return MsgControl;
         default: return null;
       }
     }
@@ -2281,6 +2290,675 @@ public final class Message {
 
   }
 
+  public interface ControlOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:StreamingFormat.Control)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    java.util.List<java.lang.Integer> getDropIndexList();
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    int getDropIndexCount();
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    int getDropIndex(int index);
+
+    /**
+     * <code>uint32 save_frame = 2;</code>
+     */
+    int getSaveFrame();
+
+    /**
+     * <code>uint32 change_scene = 3;</code>
+     */
+    int getChangeScene();
+  }
+  /**
+   * Protobuf type {@code StreamingFormat.Control}
+   */
+  public  static final class Control extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:StreamingFormat.Control)
+      ControlOrBuilder {
+    // Use Control.newBuilder() to construct.
+    private Control(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Control() {
+      dropIndex_ = java.util.Collections.emptyList();
+      saveFrame_ = 0;
+      changeScene_ = 0;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private Control(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                dropIndex_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              dropIndex_.add(input.readUInt32());
+              break;
+            }
+            case 10: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001) && input.getBytesUntilLimit() > 0) {
+                dropIndex_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                dropIndex_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 16: {
+
+              saveFrame_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+
+              changeScene_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          dropIndex_ = java.util.Collections.unmodifiableList(dropIndex_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_Control_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_Control_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              StreamingFormat.Message.Control.class, StreamingFormat.Message.Control.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int DROP_INDEX_FIELD_NUMBER = 1;
+    private java.util.List<java.lang.Integer> dropIndex_;
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getDropIndexList() {
+      return dropIndex_;
+    }
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    public int getDropIndexCount() {
+      return dropIndex_.size();
+    }
+    /**
+     * <code>repeated uint32 drop_index = 1;</code>
+     */
+    public int getDropIndex(int index) {
+      return dropIndex_.get(index);
+    }
+    private int dropIndexMemoizedSerializedSize = -1;
+
+    public static final int SAVE_FRAME_FIELD_NUMBER = 2;
+    private int saveFrame_;
+    /**
+     * <code>uint32 save_frame = 2;</code>
+     */
+    public int getSaveFrame() {
+      return saveFrame_;
+    }
+
+    public static final int CHANGE_SCENE_FIELD_NUMBER = 3;
+    private int changeScene_;
+    /**
+     * <code>uint32 change_scene = 3;</code>
+     */
+    public int getChangeScene() {
+      return changeScene_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (getDropIndexList().size() > 0) {
+        output.writeUInt32NoTag(10);
+        output.writeUInt32NoTag(dropIndexMemoizedSerializedSize);
+      }
+      for (int i = 0; i < dropIndex_.size(); i++) {
+        output.writeUInt32NoTag(dropIndex_.get(i));
+      }
+      if (saveFrame_ != 0) {
+        output.writeUInt32(2, saveFrame_);
+      }
+      if (changeScene_ != 0) {
+        output.writeUInt32(3, changeScene_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < dropIndex_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(dropIndex_.get(i));
+        }
+        size += dataSize;
+        if (!getDropIndexList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        dropIndexMemoizedSerializedSize = dataSize;
+      }
+      if (saveFrame_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, saveFrame_);
+      }
+      if (changeScene_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, changeScene_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof StreamingFormat.Message.Control)) {
+        return super.equals(obj);
+      }
+      StreamingFormat.Message.Control other = (StreamingFormat.Message.Control) obj;
+
+      boolean result = true;
+      result = result && getDropIndexList()
+          .equals(other.getDropIndexList());
+      result = result && (getSaveFrame()
+          == other.getSaveFrame());
+      result = result && (getChangeScene()
+          == other.getChangeScene());
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getDropIndexCount() > 0) {
+        hash = (37 * hash) + DROP_INDEX_FIELD_NUMBER;
+        hash = (53 * hash) + getDropIndexList().hashCode();
+      }
+      hash = (37 * hash) + SAVE_FRAME_FIELD_NUMBER;
+      hash = (53 * hash) + getSaveFrame();
+      hash = (37 * hash) + CHANGE_SCENE_FIELD_NUMBER;
+      hash = (53 * hash) + getChangeScene();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static StreamingFormat.Message.Control parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.Control parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Control parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.Control parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Control parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Control parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Control parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Control parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Control parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Control parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(StreamingFormat.Message.Control prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code StreamingFormat.Control}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:StreamingFormat.Control)
+        StreamingFormat.Message.ControlOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Control_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Control_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                StreamingFormat.Message.Control.class, StreamingFormat.Message.Control.Builder.class);
+      }
+
+      // Construct using StreamingFormat.Message.Control.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        dropIndex_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        saveFrame_ = 0;
+
+        changeScene_ = 0;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Control_descriptor;
+      }
+
+      public StreamingFormat.Message.Control getDefaultInstanceForType() {
+        return StreamingFormat.Message.Control.getDefaultInstance();
+      }
+
+      public StreamingFormat.Message.Control build() {
+        StreamingFormat.Message.Control result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public StreamingFormat.Message.Control buildPartial() {
+        StreamingFormat.Message.Control result = new StreamingFormat.Message.Control(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          dropIndex_ = java.util.Collections.unmodifiableList(dropIndex_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.dropIndex_ = dropIndex_;
+        result.saveFrame_ = saveFrame_;
+        result.changeScene_ = changeScene_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof StreamingFormat.Message.Control) {
+          return mergeFrom((StreamingFormat.Message.Control)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(StreamingFormat.Message.Control other) {
+        if (other == StreamingFormat.Message.Control.getDefaultInstance()) return this;
+        if (!other.dropIndex_.isEmpty()) {
+          if (dropIndex_.isEmpty()) {
+            dropIndex_ = other.dropIndex_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureDropIndexIsMutable();
+            dropIndex_.addAll(other.dropIndex_);
+          }
+          onChanged();
+        }
+        if (other.getSaveFrame() != 0) {
+          setSaveFrame(other.getSaveFrame());
+        }
+        if (other.getChangeScene() != 0) {
+          setChangeScene(other.getChangeScene());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        StreamingFormat.Message.Control parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (StreamingFormat.Message.Control) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<java.lang.Integer> dropIndex_ = java.util.Collections.emptyList();
+      private void ensureDropIndexIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          dropIndex_ = new java.util.ArrayList<java.lang.Integer>(dropIndex_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getDropIndexList() {
+        return java.util.Collections.unmodifiableList(dropIndex_);
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public int getDropIndexCount() {
+        return dropIndex_.size();
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public int getDropIndex(int index) {
+        return dropIndex_.get(index);
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public Builder setDropIndex(
+          int index, int value) {
+        ensureDropIndexIsMutable();
+        dropIndex_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public Builder addDropIndex(int value) {
+        ensureDropIndexIsMutable();
+        dropIndex_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public Builder addAllDropIndex(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureDropIndexIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, dropIndex_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 drop_index = 1;</code>
+       */
+      public Builder clearDropIndex() {
+        dropIndex_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+
+      private int saveFrame_ ;
+      /**
+       * <code>uint32 save_frame = 2;</code>
+       */
+      public int getSaveFrame() {
+        return saveFrame_;
+      }
+      /**
+       * <code>uint32 save_frame = 2;</code>
+       */
+      public Builder setSaveFrame(int value) {
+        
+        saveFrame_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 save_frame = 2;</code>
+       */
+      public Builder clearSaveFrame() {
+        
+        saveFrame_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int changeScene_ ;
+      /**
+       * <code>uint32 change_scene = 3;</code>
+       */
+      public int getChangeScene() {
+        return changeScene_;
+      }
+      /**
+       * <code>uint32 change_scene = 3;</code>
+       */
+      public Builder setChangeScene(int value) {
+        
+        changeScene_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 change_scene = 3;</code>
+       */
+      public Builder clearChangeScene() {
+        
+        changeScene_ = 0;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:StreamingFormat.Control)
+    }
+
+    // @@protoc_insertion_point(class_scope:StreamingFormat.Control)
+    private static final StreamingFormat.Message.Control DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new StreamingFormat.Message.Control();
+    }
+
+    public static StreamingFormat.Message.Control getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Control>
+        PARSER = new com.google.protobuf.AbstractParser<Control>() {
+      public Control parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Control(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Control> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Control> getParserForType() {
+      return PARSER;
+    }
+
+    public StreamingFormat.Message.Control getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface ImageOrBuilder extends
       // @@protoc_insertion_point(interface_extends:StreamingFormat.Image)
       com.google.protobuf.MessageOrBuilder {
@@ -3364,6 +4042,19 @@ public final class Message {
      * <code>.StreamingFormat.Ending endingMsg = 6;</code>
      */
     StreamingFormat.Message.EndingOrBuilder getEndingMsgOrBuilder();
+
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    boolean hasControlMsg();
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    StreamingFormat.Message.Control getControlMsg();
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    StreamingFormat.Message.ControlOrBuilder getControlMsgOrBuilder();
   }
   /**
    * Protobuf type {@code StreamingFormat.StreamingMessage}
@@ -3472,6 +4163,19 @@ public final class Message {
               if (subBuilder != null) {
                 subBuilder.mergeFrom(endingMsg_);
                 endingMsg_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 58: {
+              StreamingFormat.Message.Control.Builder subBuilder = null;
+              if (controlMsg_ != null) {
+                subBuilder = controlMsg_.toBuilder();
+              }
+              controlMsg_ = input.readMessage(StreamingFormat.Message.Control.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(controlMsg_);
+                controlMsg_ = subBuilder.buildPartial();
               }
 
               break;
@@ -3620,6 +4324,27 @@ public final class Message {
       return getEndingMsg();
     }
 
+    public static final int CONTROLMSG_FIELD_NUMBER = 7;
+    private StreamingFormat.Message.Control controlMsg_;
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    public boolean hasControlMsg() {
+      return controlMsg_ != null;
+    }
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    public StreamingFormat.Message.Control getControlMsg() {
+      return controlMsg_ == null ? StreamingFormat.Message.Control.getDefaultInstance() : controlMsg_;
+    }
+    /**
+     * <code>.StreamingFormat.Control controlMsg = 7;</code>
+     */
+    public StreamingFormat.Message.ControlOrBuilder getControlMsgOrBuilder() {
+      return getControlMsg();
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -3649,6 +4374,9 @@ public final class Message {
       }
       if (endingMsg_ != null) {
         output.writeMessage(6, getEndingMsg());
+      }
+      if (controlMsg_ != null) {
+        output.writeMessage(7, getControlMsg());
       }
     }
 
@@ -3680,6 +4408,10 @@ public final class Message {
       if (endingMsg_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, getEndingMsg());
+      }
+      if (controlMsg_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, getControlMsg());
       }
       memoizedSize = size;
       return size;
@@ -3723,6 +4455,11 @@ public final class Message {
         result = result && getEndingMsg()
             .equals(other.getEndingMsg());
       }
+      result = result && (hasControlMsg() == other.hasControlMsg());
+      if (hasControlMsg()) {
+        result = result && getControlMsg()
+            .equals(other.getControlMsg());
+      }
       return result;
     }
 
@@ -3754,6 +4491,10 @@ public final class Message {
       if (hasEndingMsg()) {
         hash = (37 * hash) + ENDINGMSG_FIELD_NUMBER;
         hash = (53 * hash) + getEndingMsg().hashCode();
+      }
+      if (hasControlMsg()) {
+        hash = (37 * hash) + CONTROLMSG_FIELD_NUMBER;
+        hash = (53 * hash) + getControlMsg().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -3905,6 +4646,12 @@ public final class Message {
           endingMsg_ = null;
           endingMsgBuilder_ = null;
         }
+        if (controlMsgBuilder_ == null) {
+          controlMsg_ = null;
+        } else {
+          controlMsg_ = null;
+          controlMsgBuilder_ = null;
+        }
         return this;
       }
 
@@ -3952,6 +4699,11 @@ public final class Message {
           result.endingMsg_ = endingMsg_;
         } else {
           result.endingMsg_ = endingMsgBuilder_.build();
+        }
+        if (controlMsgBuilder_ == null) {
+          result.controlMsg_ = controlMsg_;
+        } else {
+          result.controlMsg_ = controlMsgBuilder_.build();
         }
         onBuilt();
         return result;
@@ -4011,6 +4763,9 @@ public final class Message {
         }
         if (other.hasEndingMsg()) {
           mergeEndingMsg(other.getEndingMsg());
+        }
+        if (other.hasControlMsg()) {
+          mergeControlMsg(other.getControlMsg());
         }
         onChanged();
         return this;
@@ -4666,6 +5421,123 @@ public final class Message {
         }
         return endingMsgBuilder_;
       }
+
+      private StreamingFormat.Message.Control controlMsg_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          StreamingFormat.Message.Control, StreamingFormat.Message.Control.Builder, StreamingFormat.Message.ControlOrBuilder> controlMsgBuilder_;
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public boolean hasControlMsg() {
+        return controlMsgBuilder_ != null || controlMsg_ != null;
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public StreamingFormat.Message.Control getControlMsg() {
+        if (controlMsgBuilder_ == null) {
+          return controlMsg_ == null ? StreamingFormat.Message.Control.getDefaultInstance() : controlMsg_;
+        } else {
+          return controlMsgBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public Builder setControlMsg(StreamingFormat.Message.Control value) {
+        if (controlMsgBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          controlMsg_ = value;
+          onChanged();
+        } else {
+          controlMsgBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public Builder setControlMsg(
+          StreamingFormat.Message.Control.Builder builderForValue) {
+        if (controlMsgBuilder_ == null) {
+          controlMsg_ = builderForValue.build();
+          onChanged();
+        } else {
+          controlMsgBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public Builder mergeControlMsg(StreamingFormat.Message.Control value) {
+        if (controlMsgBuilder_ == null) {
+          if (controlMsg_ != null) {
+            controlMsg_ =
+              StreamingFormat.Message.Control.newBuilder(controlMsg_).mergeFrom(value).buildPartial();
+          } else {
+            controlMsg_ = value;
+          }
+          onChanged();
+        } else {
+          controlMsgBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public Builder clearControlMsg() {
+        if (controlMsgBuilder_ == null) {
+          controlMsg_ = null;
+          onChanged();
+        } else {
+          controlMsg_ = null;
+          controlMsgBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public StreamingFormat.Message.Control.Builder getControlMsgBuilder() {
+        
+        onChanged();
+        return getControlMsgFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      public StreamingFormat.Message.ControlOrBuilder getControlMsgOrBuilder() {
+        if (controlMsgBuilder_ != null) {
+          return controlMsgBuilder_.getMessageOrBuilder();
+        } else {
+          return controlMsg_ == null ?
+              StreamingFormat.Message.Control.getDefaultInstance() : controlMsg_;
+        }
+      }
+      /**
+       * <code>.StreamingFormat.Control controlMsg = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          StreamingFormat.Message.Control, StreamingFormat.Message.Control.Builder, StreamingFormat.Message.ControlOrBuilder> 
+          getControlMsgFieldBuilder() {
+        if (controlMsgBuilder_ == null) {
+          controlMsgBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              StreamingFormat.Message.Control, StreamingFormat.Message.Control.Builder, StreamingFormat.Message.ControlOrBuilder>(
+                  getControlMsg(),
+                  getParentForChildren(),
+                  isClean());
+          controlMsg_ = null;
+        }
+        return controlMsgBuilder_;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return this;
@@ -4731,6 +5603,11 @@ public final class Message {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StreamingFormat_Camera_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StreamingFormat_Control_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StreamingFormat_Control_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StreamingFormat_Image_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -4761,19 +5638,23 @@ public final class Message {
       "\022\n\n\002vz\030\007 \001(\002\"\207\001\n\006Camera\022\024\n\014serialNumber\030" +
       "\002 \001(\r\022\017\n\007delta_x\030\003 \001(\002\022\017\n\007delta_y\030\004 \001(\002\022" +
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
-      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"R\n\005Image\022" +
-      "\024\n\014serialNumber\030\002 \001(\r\022\016\n\006status\030\003 \001(\r\022\020\n" +
-      "\010byteSize\030\004 \001(\r\022\021\n\timageData\030\005 \001(\014\"\010\n\006En",
-      "ding\"\234\002\n\020StreamingMessage\022*\n\004type\030\001 \001(\0162" +
-      "\034.StreamingFormat.MessageType\022&\n\007initMsg" +
-      "\030\002 \001(\0132\025.StreamingFormat.Init\0222\n\rdefault" +
-      "PosMsg\030\003 \001(\0132\033.StreamingFormat.DefaultPo" +
-      "s\022*\n\tcameraMsg\030\004 \001(\0132\027.StreamingFormat.C" +
-      "amera\022(\n\010imageMsg\030\005 \001(\0132\026.StreamingForma" +
-      "t.Image\022*\n\tendingMsg\030\006 \001(\0132\027.StreamingFo" +
-      "rmat.Ending*]\n\013MessageType\022\013\n\007MsgInit\020\000\022" +
-      "\021\n\rMsgDefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n" +
-      "\010MsgImage\020\003\022\r\n\tMsgEnding\020\004b\006proto3"
+      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"G\n\007Contro" +
+      "l\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave_frame\030\002 \001(" +
+      "\r\022\024\n\014change_scene\030\003 \001(\r\"R\n\005Image\022\024\n\014seri",
+      "alNumber\030\002 \001(\r\022\016\n\006status\030\003 \001(\r\022\020\n\010byteSi" +
+      "ze\030\004 \001(\r\022\021\n\timageData\030\005 \001(\014\"\010\n\006Ending\"\312\002" +
+      "\n\020StreamingMessage\022*\n\004type\030\001 \001(\0162\034.Strea" +
+      "mingFormat.MessageType\022&\n\007initMsg\030\002 \001(\0132" +
+      "\025.StreamingFormat.Init\0222\n\rdefaultPosMsg\030" +
+      "\003 \001(\0132\033.StreamingFormat.DefaultPos\022*\n\tca" +
+      "meraMsg\030\004 \001(\0132\027.StreamingFormat.Camera\022(" +
+      "\n\010imageMsg\030\005 \001(\0132\026.StreamingFormat.Image" +
+      "\022*\n\tendingMsg\030\006 \001(\0132\027.StreamingFormat.En" +
+      "ding\022,\n\ncontrolMsg\030\007 \001(\0132\030.StreamingForm",
+      "at.Control*m\n\013MessageType\022\013\n\007MsgInit\020\000\022\021" +
+      "\n\rMsgDefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010" +
+      "MsgImage\020\003\022\r\n\tMsgEnding\020\004\022\016\n\nMsgControl\020" +
+      "\005b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4805,24 +5686,30 @@ public final class Message {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Camera_descriptor,
         new java.lang.String[] { "SerialNumber", "DeltaX", "DeltaY", "DeltaZ", "DeltaVx", "DeltaVy", "DeltaVz", });
-    internal_static_StreamingFormat_Image_descriptor =
+    internal_static_StreamingFormat_Control_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_StreamingFormat_Control_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StreamingFormat_Control_descriptor,
+        new java.lang.String[] { "DropIndex", "SaveFrame", "ChangeScene", });
+    internal_static_StreamingFormat_Image_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_StreamingFormat_Image_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Image_descriptor,
         new java.lang.String[] { "SerialNumber", "Status", "ByteSize", "ImageData", });
     internal_static_StreamingFormat_Ending_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_StreamingFormat_Ending_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Ending_descriptor,
         new java.lang.String[] { });
     internal_static_StreamingFormat_StreamingMessage_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_StreamingFormat_StreamingMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_StreamingMessage_descriptor,
-        new java.lang.String[] { "Type", "InitMsg", "DefaultPosMsg", "CameraMsg", "ImageMsg", "EndingMsg", });
+        new java.lang.String[] { "Type", "InitMsg", "DefaultPosMsg", "CameraMsg", "ImageMsg", "EndingMsg", "ControlMsg", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

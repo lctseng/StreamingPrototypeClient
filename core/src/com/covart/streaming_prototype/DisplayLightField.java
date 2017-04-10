@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 
+import StreamingFormat.Message;
+
 /**
  * Created by lctseng on 2017/2/6.
  * NTU COV-ART Lab, for NCP project
@@ -48,6 +50,8 @@ public class DisplayLightField extends DisplayBase{
     private Matrix4 projectionMatrix;
 
 
+
+
     DisplayLightField(){
 
         batch = new SpriteBatch();
@@ -58,6 +62,8 @@ public class DisplayLightField extends DisplayBase{
 
         // multi-texture
         textureManager = new TextureManager(this);
+
+
 
 
         String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
@@ -261,6 +267,17 @@ public class DisplayLightField extends DisplayBase{
     public void onSensorDataReady(Sensor sensor){
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
     }
+
+    @Override
+    public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
+        textureManager.attachControlFrameInfo(controlBuilder);
+    }
+
+    @Override
+    public boolean checkControlFrameRequired(){
+        return textureManager.checkControlFrameRequired();
+    }
+
 
 
 

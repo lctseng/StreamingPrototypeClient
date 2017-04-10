@@ -8,6 +8,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import StreamingFormat.Message;
 
 /**
  * Created by lctseng on 2017/3/27.
@@ -40,10 +44,13 @@ public class TextureManager implements Disposable {
     private int columnStart = 0;
     private int columnEnd = 0;
 
+    private final List<Integer> droppedIndex;
+
     TextureManager(DisplayLightField display){
         this.display = display;
         slotImage = new Pixmap(DisplayLightField.DIMENSION, DisplayLightField.DIMENSION * DisplayLightField.ROW_WIDTH, Pixmap.Format.RGB888);
         slotImageBuf = slotImage.getPixels();
+        droppedIndex = new ArrayList<Integer>();
 
     }
 
@@ -90,15 +97,30 @@ public class TextureManager implements Disposable {
     private void freeUnusedTextures(){
         for(int i=0;i<nSlots;i++){
             if(textures[i] != null) {
-                if (Math.abs(lastColumnIndex - i) > 9) {
+                if (Math.abs(lastColumnIndex - i) > 3) {
                     // i-th texture is too far
                     textures[i].dispose();
                     textures[i] = null;
+                    synchronized (droppedIndex) {
+                        droppedIndex.add(i);
+                    }
                 }
             }
         }
     }
 
+    public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
+        synchronized (droppedIndex) {
+            controlBuilder.addAllDropIndex(droppedIndex);
+            droppedIndex.clear();
+        }
+    }
+
+    public boolean checkControlFrameRequired(){
+        synchronized (droppedIndex) {
+            return !droppedIndex.isEmpty();
+        }
+    }
 
     @Override
     public void dispose() {
@@ -114,6 +136,9 @@ public class TextureManager implements Disposable {
             }
             textures = null;
             nSlots = 0;
+            synchronized (droppedIndex) {
+                droppedIndex.clear();
+            }
         }
     }
 

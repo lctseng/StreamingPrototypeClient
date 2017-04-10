@@ -141,7 +141,36 @@ public class StreamingPrototype extends ApplicationAdapter
         display.updateStart();
         Profiler.generateProfilingStrings();
         display.updateEnd();
+        // control frame update
+        updateControlFrame();
 	}
+
+    private void updateControlFrame() {
+        if(checkControlFrameRequired()){
+            // create message builder
+            Message.Control.Builder controlBuilder = Message.Control.newBuilder();
+            // save change scene
+            // save save frame
+            // save drop index
+            display.attachControlFrameInfo(controlBuilder);
+            // create message
+            Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                    .setType(Message.MessageType.MsgControl)
+                    .setControlMsg(controlBuilder.build()
+                    ).build();
+            // send!
+            network.sendMessageProtobufAsync(msg);
+        }
+    }
+
+
+    private boolean checkControlFrameRequired() {
+        // check drop index
+        if(display.checkControlFrameRequired()){
+            return true;
+        }
+        return false;
+    }
 
 
     @Override
@@ -155,18 +184,19 @@ public class StreamingPrototype extends ApplicationAdapter
     private Message.StreamingMessage makeSensorPacket(Vector3 direction, Quaternion rotation) {
 
         Vector3 initDirection = sensor.getInitDirection();
+        // setup builder
+        Message.Camera.Builder cameraBuilder = Message.Camera.newBuilder()
+                .setDeltaX(sensor.getTranslationMagnitudeHorz())
+                .setDeltaY(sensor.getTranslationMagnitudeVert())
+                .setDeltaVx(direction.x - initDirection.x)
+                .setDeltaVy(direction.y - initDirection.y)
+                .setDeltaVz(direction.y - initDirection.z)
+                .setSerialNumber(sensor.getSerialNumber());
+
         // crafting packet
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
                 .setType(Message.MessageType.MsgCameraInfo)
-                .setCameraMsg(
-                        Message.Camera.newBuilder()
-                                .setDeltaX(sensor.getTranslationMagnitudeHorz())
-                                .setDeltaY(sensor.getTranslationMagnitudeVert())
-                                .setDeltaVx(direction.x - initDirection.x)
-                                .setDeltaVy(direction.y - initDirection.y)
-                                .setDeltaVz(direction.y - initDirection.z)
-                                .setSerialNumber(sensor.getSerialNumber())
-                                .build()
+                .setCameraMsg(cameraBuilder.build()
 
                 ).build();
         return msg;
