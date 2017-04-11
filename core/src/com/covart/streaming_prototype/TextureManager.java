@@ -89,7 +89,7 @@ public class TextureManager implements Disposable {
             slotImageBuf.rewind();
             Gdx.app.log("TextureManager", "End of column: " + buffer.index);
             rowIndex = 0;
-            freeUnusedTextures();
+            //freeUnusedTextures();
 
         }
     }
