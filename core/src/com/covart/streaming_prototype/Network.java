@@ -61,7 +61,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         Gdx.app.log("Network","Connection Closed");
         updateConnectionStateText();
         state = NotReady;
-        this.app.requireStop();
+        //this.app.requireStop();
     }
 
     @Override

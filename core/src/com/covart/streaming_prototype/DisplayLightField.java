@@ -22,7 +22,7 @@ public class DisplayLightField extends DisplayBase{
 
 
     final static int COL_WIDTH = 8;
-    final static int ROW_WIDTH = 2;
+    final static int ROW_WIDTH = 8;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 

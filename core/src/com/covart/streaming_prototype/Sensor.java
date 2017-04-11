@@ -119,6 +119,7 @@ public class Sensor implements Runnable, Component {
     public void run() {
         // wait for default position
         Gdx.app.log("Sensor Worker", "Start waiting for default position...");
+        /*
         lock.lock();
         try {
             defaultPosReady.await();
@@ -128,6 +129,7 @@ public class Sensor implements Runnable, Component {
         } finally {
             lock.unlock();
         }
+        */
         // start sending
         serialNumber = 0;
         while(true){

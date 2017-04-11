@@ -59,7 +59,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     // blocking return to network
                     BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
                 }
-                Thread.sleep(200);
+                //Thread.sleep(200);
                 FileHandle file = null;
                 int index = count / DisplayLightField.ROW_WIDTH;
                 if(count >= max_size){
