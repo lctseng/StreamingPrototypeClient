@@ -25,8 +25,8 @@ static void on_frame_ready(uint8_t* frame_buf, int frame_size, void* index){
     // require a image buffer space
     // call: getDisplayBuffer
     jclass clazz = (*decoder_data.env)->GetObjectClass(decoder_data.env, decoder_data.instance);
-    jmethodID getDisplayBuffer = (*decoder_data.env)->GetMethodID(decoder_data.env, clazz, "getDisplayBuffer", "()Lcom/covart/streaming_prototype/Buffer;");
-    jmethodID onFrameReady = (*decoder_data.env)->GetMethodID(decoder_data.env, clazz, "onFrameReady", "(Lcom/covart/streaming_prototype/Buffer;)V");
+    jmethodID getDisplayBuffer = (*decoder_data.env)->GetMethodID(decoder_data.env, clazz, "getDisplayBuffer", "()Lcom/covart/streaming_prototype_v16x16/Buffer;");
+    jmethodID onFrameReady = (*decoder_data.env)->GetMethodID(decoder_data.env, clazz, "onFrameReady", "(Lcom/covart/streaming_prototype_v16x16/Buffer;)V");
     jobject displayBuffer = (*decoder_data.env)->CallObjectMethod(decoder_data.env, decoder_data.instance, getDisplayBuffer);
     if (displayBuffer != NULL) {
         // write data into display buffer
@@ -56,7 +56,7 @@ static void on_frame_ready(uint8_t* frame_buf, int frame_size, void* index){
 
 
 JNIEXPORT jboolean JNICALL
-Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderInit(JNIEnv *env,
+Java_com_covart_streaming_1prototype_1v16x16_ImageDecoderH264_nativeDecoderInit(JNIEnv *env,
                                                                         jobject instance) {
     if(decoder_init()<0){
         return JNI_FALSE;
@@ -68,7 +68,7 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderInit(JNIEnv *
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderCleanup(JNIEnv *env,
+Java_com_covart_streaming_1prototype_1v16x16_ImageDecoderH264_nativeDecoderCleanup(JNIEnv *env,
                                                                            jobject instance) {
     decoder_cleanup();
     return JNI_TRUE;
@@ -76,7 +76,7 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderCleanup(JNIEn
 
 
 JNIEXPORT jboolean JNICALL
-Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderFlush(JNIEnv *env,
+Java_com_covart_streaming_1prototype_1v16x16_ImageDecoderH264_nativeDecoderFlush(JNIEnv *env,
                                                                          jobject instance) {
 
     // set JNI env data
@@ -96,7 +96,7 @@ Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderFlush(JNIEnv 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_covart_streaming_1prototype_ImageDecoderH264_nativeDecoderParse(JNIEnv *env,
+Java_com_covart_streaming_1prototype_1v16x16_ImageDecoderH264_nativeDecoderParse(JNIEnv *env,
                                                                          jobject instance,
                                                                          jobject buffer) {
     jboolean  res = JNI_TRUE;

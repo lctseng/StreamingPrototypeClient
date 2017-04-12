@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -12,12 +12,12 @@ import java.util.Locale;
 import StreamingFormat.Message;
 
 import static com.badlogic.gdx.Gdx.app;
-import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
-import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDown;
-import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
+import static com.covart.streaming_prototype_v16x16.StreamingPrototype.State.Running;
+import static com.covart.streaming_prototype_v16x16.StreamingPrototype.State.ShuttingDown;
+import static com.covart.streaming_prototype_v16x16.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter, SensorDataListener {
+        implements MasterComponentAdapter, com.covart.streaming_prototype_v16x16.SensorDataListener {
 
 
     enum State {
@@ -29,16 +29,16 @@ public class StreamingPrototype extends ApplicationAdapter
     private volatile boolean stopRequired = false;
 
     // major component
-    private DisplayBase display;
-    private Network network;
-    private ImageDecoderBase decoder;
-    private Sensor sensor;
+    private com.covart.streaming_prototype_v16x16.DisplayBase display;
+    private com.covart.streaming_prototype_v16x16.Network network;
+    private com.covart.streaming_prototype_v16x16.ImageDecoderBase decoder;
+    private com.covart.streaming_prototype_v16x16.Sensor sensor;
 
     // change scene
     private boolean sceneChanged = true;
     private int sceneIndex = 0;
 
-    StreamingPrototype(ImageDecoderBase platform_decoder){
+    StreamingPrototype(com.covart.streaming_prototype_v16x16.ImageDecoderBase platform_decoder){
         if(platform_decoder != null){
             decoder = platform_decoder;
         }
@@ -46,11 +46,11 @@ public class StreamingPrototype extends ApplicationAdapter
 
 	@Override
 	public void create () {
-        StringPool.addField("App", "Initializing");
+        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Initializing");
         IPSelectorUI.initialize();
-        network = new Network(this);
-        display = new DisplayLightField();
-        sensor  = new Sensor();
+        network = new com.covart.streaming_prototype_v16x16.Network(this);
+        display = new com.covart.streaming_prototype_v16x16.DisplayLightField();
+        sensor  = new com.covart.streaming_prototype_v16x16.Sensor();
         sensor.addListener(this);
         sensor.addListener(display);
 
@@ -58,7 +58,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
         if(decoder == null){
             Gdx.app.error("App", "No platform decoder specified! Use simple decoder instead!");
-            decoder = new ImageDecoderSimple();
+            decoder = new com.covart.streaming_prototype_v16x16.ImageDecoderSimple();
         }
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -70,10 +70,10 @@ public class StreamingPrototype extends ApplicationAdapter
                 Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
                 if(x <= 135 && y <= 135) {
                     if (StreamingPrototype.this.state == Stopped) {
-                        StringPool.addField("App", "Starting");
+                        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Starting");
                         requireStart();
                     } else if (StreamingPrototype.this.state == Running) {
-                        StringPool.addField("App", "Shutting Down...");
+                        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Shutting Down...");
                         sendEndingMessage();
                         state = ShuttingDown;
                         new Thread(new Runnable() {
@@ -112,7 +112,7 @@ public class StreamingPrototype extends ApplicationAdapter
         };
         inputMultiplexer.addProcessor(localInput);
         Gdx.input.setInputProcessor(inputMultiplexer);
-        StringPool.addField("App", "Ready for start");
+        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Ready for start");
     }
 
     @Override
@@ -122,15 +122,15 @@ public class StreamingPrototype extends ApplicationAdapter
         sceneChanged = true;
         sceneIndex = 0;
         app.log("App","starting");
-        StringPool.addField("App", "Component started");
+        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Component started");
         this.state = Running;
-        BufferPool.getInstance().reset();
-        Profiler.reset();
+        com.covart.streaming_prototype_v16x16.BufferPool.getInstance().reset();
+        com.covart.streaming_prototype_v16x16.Profiler.reset();
         display.start();
         network.start();
         decoder.start();
         sensor.start();
-        StringPool.addField("App", "Running. Touch the screen to stop");
+        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Running. Touch the screen to stop");
     }
 
     @Override
@@ -142,7 +142,7 @@ public class StreamingPrototype extends ApplicationAdapter
         sensor.stop();
         decoder.stop();
         network.stop();
-        StringPool.addField("App", "Stopped. Touch the screen to start the components");
+        com.covart.streaming_prototype_v16x16.StringPool.addField("App", "Stopped. Touch the screen to start the components");
     }
 
     @Override
@@ -164,7 +164,7 @@ public class StreamingPrototype extends ApplicationAdapter
             stop();
         }
         display.updateStart();
-        Profiler.generateProfilingStrings();
+        com.covart.streaming_prototype_v16x16.Profiler.generateProfilingStrings();
         display.updateEnd();
         // control frame update if started
         if(state == Running){
@@ -235,7 +235,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     @Override
-    public void onSensorDataReady(Sensor sensor) {
+    public void onSensorDataReady(com.covart.streaming_prototype_v16x16.Sensor sensor) {
         Message.StreamingMessage msg = makeSensorPacket(sensor.getDirecton(), sensor.getRotation());
         if(msg != null){
             network.sendMessageProtobufAsync(msg);
@@ -255,11 +255,11 @@ public class StreamingPrototype extends ApplicationAdapter
                 //Gdx.app.log("App","Receiving new column:" + msg.getImageMsg().getStatus());
                 //Gdx.app.log("App","Receiving bytesize:" + msg.getImageMsg().getByteSize());
                 int size =  msg.getImageMsg().getByteSize();
-                Profiler.reportOnRecvStart();
+                com.covart.streaming_prototype_v16x16.Profiler.reportOnRecvStart();
                 while(size > 0){
                     int expectSize;
-                    if(size > BufferPool.DECODER_BUFFER_SIZE){
-                        expectSize = BufferPool.DECODER_BUFFER_SIZE;
+                    if(size > com.covart.streaming_prototype_v16x16.BufferPool.DECODER_BUFFER_SIZE){
+                        expectSize = com.covart.streaming_prototype_v16x16.BufferPool.DECODER_BUFFER_SIZE;
                     }
                     else{
                         // not enough
@@ -267,24 +267,24 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     size -= expectSize;
                     // acquire new buffer
-                    Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                    com.covart.streaming_prototype_v16x16.Buffer bufData = com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToNetwork.take();
                     // fill-in content
                     network.getConnection().readn(bufData.data, expectSize);
                     // fill meta data
                     bufData.size = expectSize;
                     bufData.index = msg.getImageMsg().getStatus();
                     // start receiving image data
-                    BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
+                    com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 }
                 // send ending buffer
                 // acquire new buffer
-                Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
+                com.covart.streaming_prototype_v16x16.Buffer bufData = com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToNetwork.take();
                 bufData.size = 0;
                 bufData.index = msg.getImageMsg().getStatus();
-                BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
+                com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 // report
-                Profiler.reportOnRecvEnd();
-                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(),  msg.getImageMsg().getStatus() ,msg.getImageMsg().getByteSize()));
+                com.covart.streaming_prototype_v16x16.Profiler.reportOnRecvEnd();
+                com.covart.streaming_prototype_v16x16.StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(),  msg.getImageMsg().getStatus() ,msg.getImageMsg().getByteSize()));
                 Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));
                 // send data to decoder
 
@@ -292,7 +292,7 @@ public class StreamingPrototype extends ApplicationAdapter
             case MsgEnding:
                 Gdx.app.log("Dispatch","Ending message received");
                 requireStop();
-                StringPool.removeField("Image Data");
+                com.covart.streaming_prototype_v16x16.StringPool.removeField("Image Data");
                 break;
             default:
                 Gdx.app.error("Dispatch", "Unknown message!");

@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -54,14 +54,14 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
             try {
                 // does not care about data from network
                 // non-blocking read from network
-                Buffer encodedBuf = BufferPool.getInstance().queueNetworkToDecoder.poll();
+                com.covart.streaming_prototype_v16x16.Buffer encodedBuf = com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueNetworkToDecoder.poll();
                 if(encodedBuf != null){
                     // blocking return to network
-                    BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
+                    com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
                 }
                 Thread.sleep(200);
                 FileHandle file = null;
-                int index = count / DisplayLightField.ROW_WIDTH;
+                int index = count / com.covart.streaming_prototype_v16x16.DisplayLightField.ROW_WIDTH;
                 if(count >= max_size){
                     if(loop){
                         count = 0;
@@ -77,7 +77,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                 if(file != null){
                     Pixmap img = new Pixmap(file);
                     ByteBuffer pixels = img.getPixels();
-                    Buffer decodeBuf = acquireImageBuffer();
+                    com.covart.streaming_prototype_v16x16.Buffer decodeBuf = acquireImageBuffer();
                     // copy to buffer
                     decodeBuf.size = pixels.remaining();
                     pixels.get(decodeBuf.data, 0, decodeBuf.size);

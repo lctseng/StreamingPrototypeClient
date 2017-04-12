@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
@@ -13,19 +13,19 @@ public abstract class ImageDecoderBase implements Runnable, Disposable, Componen
     private Thread worker = null;
 
     protected void sendImageResult(Buffer buf) throws InterruptedException {
-        BufferPool.getInstance().queueDecoderToDisplay.put(buf);
+        com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToDisplay.put(buf);
     }
 
     protected Buffer acquireImageBuffer() throws InterruptedException {
-        return BufferPool.getInstance().queueDisplayToDecoder.take();
+        return com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDisplayToDecoder.take();
     }
 
     public Buffer acquireEncodedResult() throws InterruptedException {
-        return BufferPool.getInstance().queueNetworkToDecoder.take();
+        return com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueNetworkToDecoder.take();
     }
 
     public void releaseEncodedBuffer(Buffer buf) throws  InterruptedException {
-        BufferPool.getInstance().queueDecoderToNetwork.put(buf);
+        com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToNetwork.put(buf);
     }
 
     @Override

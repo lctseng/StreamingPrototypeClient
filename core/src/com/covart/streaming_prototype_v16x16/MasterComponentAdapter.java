@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import StreamingFormat.Message;
 

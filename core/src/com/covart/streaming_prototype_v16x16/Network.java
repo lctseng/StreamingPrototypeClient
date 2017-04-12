@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
@@ -6,8 +6,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import StreamingFormat.Message;
 
-import static com.covart.streaming_prototype.Network.State.NotReady;
-import static com.covart.streaming_prototype.Network.State.Ready;
+import static com.covart.streaming_prototype_v16x16.Network.State.NotReady;
+import static com.covart.streaming_prototype_v16x16.Network.State.Ready;
 
 /**
  * Created by lctseng on 2017/2/11.
@@ -22,7 +22,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
 
     private volatile State state = NotReady;
     private Thread worker = null;
-    private Connection connection;
+    private com.covart.streaming_prototype_v16x16.Connection connection;
 
     private MasterComponentAdapter app;
 
@@ -38,7 +38,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
     public Network(MasterComponentAdapter app){
         bufSendingHeader = new byte[4];
         bufReceivngHeader = new byte[4];
-        connection = new Connection(this);
+        connection = new com.covart.streaming_prototype_v16x16.Connection(this);
         sender = new NetworkAsyncSender(this);
         updateConnectionStateText();
         this.app = app;
@@ -147,7 +147,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         this.state = state;
     }
 
-    public Connection getConnection() {
+    public com.covart.streaming_prototype_v16x16.Connection getConnection() {
         return connection;
     }
 

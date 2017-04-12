@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;

@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,22 +18,22 @@ import StreamingFormat.Message;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplayLightField extends DisplayBase{
+public class DisplayLightField extends DisplayBase {
 
 
-    final static int COL_WIDTH = 8;
-    final static int ROW_WIDTH = 2;
+    final static int COL_WIDTH = 16;
+    final static int ROW_WIDTH = 16;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
-    final static int HALF_COL_SPAN = 0;
+    final static int HALF_COL_SPAN = 1;
 
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
 
     // texture manager
-    private TextureManager textureManager;
+    private com.covart.streaming_prototype_v16x16.TextureManager textureManager;
 
 
     private ShaderProgram shaderProgram;
@@ -63,7 +63,7 @@ public class DisplayLightField extends DisplayBase{
         textureChangeScene = new Texture("change-scene.png");
 
         // multi-texture
-        textureManager = new TextureManager(this);
+        textureManager = new com.covart.streaming_prototype_v16x16.TextureManager(this);
 
 
 
@@ -164,7 +164,7 @@ public class DisplayLightField extends DisplayBase{
 
 
     public void collectImages(){
-        Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
+        com.covart.streaming_prototype_v16x16.Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(src != null){
             // copy images from buffer
             textureManager.addImage(src);
@@ -219,18 +219,18 @@ public class DisplayLightField extends DisplayBase{
         batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 150, 150, 150);
         batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
-        StringPool.clearFlashMessages();
+        com.covart.streaming_prototype_v16x16.StringPool.clearFlashMessages();
     }
 
 
     @Override
     public void updateEnd(){
         // record FPS
-        StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
+        com.covart.streaming_prototype_v16x16.StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
 
         int dy = 20;
-        for(String text : StringPool.getAllText()){
+        for(String text : com.covart.streaming_prototype_v16x16.StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy += 20;
         }
@@ -268,7 +268,7 @@ public class DisplayLightField extends DisplayBase{
     }
 
     @Override
-    public void onSensorDataReady(Sensor sensor){
+    public void onSensorDataReady(com.covart.streaming_prototype_v16x16.Sensor sensor){
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
     }
 

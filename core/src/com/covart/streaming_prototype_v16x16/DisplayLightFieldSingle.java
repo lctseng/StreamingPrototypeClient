@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplayLightFieldSingle extends DisplayBase{
+public class DisplayLightFieldSingle extends DisplayBase {
 
 
     final static int GRID_WIDTH = 8;
@@ -155,7 +155,7 @@ public class DisplayLightFieldSingle extends DisplayBase{
 
         // collect images
         if(!lf_ready && lf_counter < TOTAL_IMAGES){
-            Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
+            com.covart.streaming_prototype_v16x16.Buffer src = com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToDisplay.poll();
             if(src != null){
                 // copy images from buffer
                 int row = lf_counter / GRID_WIDTH;
@@ -170,7 +170,7 @@ public class DisplayLightFieldSingle extends DisplayBase{
                 }
                 // end of copy
                 Gdx.app.log("LightField Display", "Loading light field:" + ++lf_counter);
-                if(!BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
+                if(!com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDisplayToDecoder.offer(src)){
                     Gdx.app.error("LightField Display", "Cannot return the buffer to pool");
                 }
                 if(lf_counter == TOTAL_IMAGES){
@@ -212,7 +212,7 @@ public class DisplayLightFieldSingle extends DisplayBase{
         // draw control
         batch.draw(tex_control, 0, Gdx.graphics.getHeight() - 150, 150, 150);
         // clear flash messages
-        StringPool.clearFlashMessages();
+        com.covart.streaming_prototype_v16x16.StringPool.clearFlashMessages();
         if(lf_ready) {
             // draw raw texture on batch if needed
             if (SHOW_SOURCE) {
@@ -229,11 +229,11 @@ public class DisplayLightFieldSingle extends DisplayBase{
     @Override
     public void updateEnd(){
         // record FPS
-        StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
+        com.covart.streaming_prototype_v16x16.StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
 
         int dy = 20;
-        for(String text : StringPool.getAllText()){
+        for(String text : com.covart.streaming_prototype_v16x16.StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy += 20;
         }
@@ -288,7 +288,7 @@ public class DisplayLightFieldSingle extends DisplayBase{
 
 
     @Override
-    public void onSensorDataReady(Sensor sensor){
+    public void onSensorDataReady(com.covart.streaming_prototype_v16x16.Sensor sensor){
         // map direction into cx cy
         cameraPositionX = (float) (sensor.getRotation().getYaw() / 360.0 + 0.5);
         cameraPositionY = (float) (sensor.getRotation().getPitch() / -180.0 + 0.5);

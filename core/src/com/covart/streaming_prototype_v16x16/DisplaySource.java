@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplaySource extends DisplayBase{
+public class DisplaySource extends DisplayBase {
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -51,15 +51,15 @@ public class DisplaySource extends DisplayBase{
 
 
         // clear flash messages
-        StringPool.clearFlashMessages();
+        com.covart.streaming_prototype_v16x16.StringPool.clearFlashMessages();
         // Get display image
-        Buffer bufData = BufferPool.getInstance().queueDecoderToDisplay.poll();
+        com.covart.streaming_prototype_v16x16.Buffer bufData = com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(bufData != null){
             // upload to GPU!
             injectImageData(bufData.data);
-            Profiler.reportOnDisplay();
+            com.covart.streaming_prototype_v16x16.Profiler.reportOnDisplay();
             // release buffer
-            if(!BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){
+            if(!com.covart.streaming_prototype_v16x16.BufferPool.getInstance().queueDisplayToDecoder.offer(bufData)){
                 Gdx.app.error("Display", "Cannot return the buffer to pool");
             }
         }
@@ -72,11 +72,11 @@ public class DisplaySource extends DisplayBase{
     @Override
     public void updateEnd(){
         // record FPS
-        StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
+        com.covart.streaming_prototype_v16x16.StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
         // draw all text
 
         int dy = 20;
-        for(String text : StringPool.getAllText()){
+        for(String text : com.covart.streaming_prototype_v16x16.StringPool.getAllText()){
             font.draw(batch, text, 0, dy);
             dy += 20;
         }

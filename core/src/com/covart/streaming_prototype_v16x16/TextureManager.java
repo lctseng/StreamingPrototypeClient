@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype_v16x16;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -202,7 +202,7 @@ public class TextureManager implements Disposable {
                 status += "+";
             }
         }
-        StringPool.addField("Visible Status T", status);
+        com.covart.streaming_prototype_v16x16.StringPool.addField("Visible Status T", status);
     }
 
     public void visualizeVisibleColumn(){
@@ -216,7 +216,7 @@ public class TextureManager implements Disposable {
         for(int i=columnEnd;i<nSlots;i++){
             status += "=";
         }
-        StringPool.addField("Visible Status V", status);
+        com.covart.streaming_prototype_v16x16.StringPool.addField("Visible Status V", status);
     }
 
     public float getCameraPositionX(){
