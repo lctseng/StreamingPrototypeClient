@@ -21,12 +21,12 @@ import StreamingFormat.Message;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 8;
-    final static int ROW_WIDTH = 2;
+    final static int COL_WIDTH = 2;
+    final static int ROW_WIDTH = 4;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
-    final static int HALF_COL_SPAN = 0;
+    final static int HALF_COL_SPAN = 1;
 
     // gdx basic drawing
     private SpriteBatch batch;
@@ -41,7 +41,7 @@ public class DisplayLightField extends DisplayBase{
     private Mesh mesh;
 
     private float focus = 0.0f;
-    private float aperture = 5.0f;
+    private float aperture = 50.0f;
 
 
     private Texture textureStartStop;
@@ -51,6 +51,8 @@ public class DisplayLightField extends DisplayBase{
     private Matrix4 projectionMatrix;
 
 
+
+    private int displayCount = 0;
 
 
     DisplayLightField(){
@@ -185,6 +187,14 @@ public class DisplayLightField extends DisplayBase{
 
 
 
+        focus = textureManager.getCameraPositionY()*0.01f;
+
+        displayCount += 1;
+        if(displayCount >= 30){
+            displayCount = 0;
+            Gdx.app.log("LightField", "Ratio:" + focus);
+        }
+
 
 
 
@@ -198,8 +208,8 @@ public class DisplayLightField extends DisplayBase{
         shaderProgram.setUniformf("focusPoint", focus);
         shaderProgram.setUniformf("apertureSize", aperture);
         shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        //Gdx.app.log("LightField Display", "X: " + cameraPositionX + " , Y: " + cameraPositionY);
+        shaderProgram.setUniformf("cameraPositionY", 0.5f);
+        //Gdx.app.log("LightField Display", "X: " + textureManager.getCameraPositionX() + " , Y: " + textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
         // binding texture

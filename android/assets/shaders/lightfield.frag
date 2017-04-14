@@ -1,6 +1,6 @@
 
 #ifdef GL_ES
-precision mediump float;
+precision highp float;
 #endif
 
 varying vec4 position;
@@ -59,8 +59,8 @@ void main(void) {
 
 	float cameraGapX = gapRatio / float(cols - 1);
 	float cameraGapY = gapRatio / float(rows - 1);
-	float initCameraX = -cameraGapX * float(cols - 1) * 0.5;
-	float initCameraY = -cameraGapY * float(rows - 1) * 0.5;
+	float initCameraX = -gapRatio * 0.5;
+	float initCameraY = -gapRatio * 0.5;
 	float focusRatio = 10.0 * gapRatio;
 
 	float centerCameraX = initCameraX + cameraIndexX * cameraGapX;
@@ -80,8 +80,8 @@ void main(void) {
 			if (dx * dx + dy * dy < apertureSize) {
 				float projX   = 2.0 * textureCoords.s - 1.0;
 				float projY   = 2.0 * textureCoords.t - 1.0;
-				float pixelX = cameraX + (projX - cameraX) * focusPointRatio;
-				float pixelY = cameraY + (projY - cameraY) * focusPointRatio;
+				float pixelX = projX + dx * focusPoint;
+				float pixelY = projY; //- dy * focusPoint;
 				float px = 0.5 * pixelX + 0.5;
 				float py = 0.5 * pixelY + 0.5;
 				if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {
