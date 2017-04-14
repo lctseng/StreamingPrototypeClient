@@ -21,12 +21,12 @@ import StreamingFormat.Message;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 8;
-    final static int ROW_WIDTH = 8;
+    final static int COL_WIDTH = 16;
+    final static int ROW_WIDTH = 16;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
 
-    final static int HALF_COL_SPAN = 0;
+    final static int HALF_COL_SPAN = 1;
 
     // gdx basic drawing
     private SpriteBatch batch;
