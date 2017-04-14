@@ -35,8 +35,10 @@ public class StreamingPrototype extends ApplicationAdapter
     private Sensor sensor;
 
     // change scene
-    private boolean sceneChanged = true;
+    private boolean sceneChanged = false;
     private int sceneIndex = 0;
+
+    private boolean saveFrameRequested = false;
 
     StreamingPrototype(ImageDecoderBase platform_decoder){
         if(platform_decoder != null){
@@ -90,10 +92,19 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     return true; // return true to indicate the event was handled
                 }
-                else if(x >= Gdx.graphics.getWidth() - 135 && y <= 135){
+                else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
                     if(state == Running) {
                         sceneChanged = true;
                         sceneIndex = (sceneIndex + 1) % 10;
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
+                else if(x >= Gdx.graphics.getWidth() - 100 && y >= 150  && y <= 250){
+                    if(state == Running) {
+                        saveFrameRequested = true;
                         return true;
                     }
                     else{
@@ -182,6 +193,10 @@ public class StreamingPrototype extends ApplicationAdapter
             // save change scene
             controlBuilder.setChangeScene(sceneIndex);
             // save save frame
+            if(saveFrameRequested){
+                controlBuilder.setSaveFrame(1);
+                saveFrameRequested = false;
+            }
             // save drop index
             display.attachControlFrameInfo(controlBuilder);
             // create message
@@ -197,7 +212,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean checkControlFrameRequired() {
         // check drop index
-        if(display.checkControlFrameRequired() || sceneChanged){
+        if(display.checkControlFrameRequired() || sceneChanged || saveFrameRequested){
             return true;
         }
         return false;
