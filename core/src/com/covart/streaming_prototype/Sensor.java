@@ -159,7 +159,7 @@ public class Sensor implements Runnable, Component {
     boolean touchDragged (int screenX, int screenY, int pointer){
         this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
         this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight()-100);
-        this.screenY = ((int)(this.screenY) / 100) * 100;
+        //this.screenY = ((int)(this.screenY) / 100) * 100;
         return true;
     }
 

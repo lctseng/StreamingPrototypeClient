@@ -21,7 +21,7 @@ import StreamingFormat.Message;
 public class DisplayLightField extends DisplayBase{
 
 
-    final static int COL_WIDTH = 2;
+    final static int COL_WIDTH = 4;
     final static int ROW_WIDTH = 4;
     final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
     final static int DIMENSION = 512;
@@ -207,10 +207,14 @@ public class DisplayLightField extends DisplayBase{
         // set camera params
         shaderProgram.setUniformi("rows", ROW_WIDTH);
         shaderProgram.setUniformi("cols", COL_WIDTH);
-        shaderProgram.setUniformf("focusPoint", focus);
+        //shaderProgram.setUniformf("focusPointX", focus);
+        //shaderProgram.setUniformf("focusPointY", 0);
+        shaderProgram.setUniformf("focusPointX", 0.00759f);
+        shaderProgram.setUniformf("focusPointY", 0.0097f);
         shaderProgram.setUniformf("apertureSize", aperture);
         shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-        shaderProgram.setUniformf("cameraPositionY", 0.5f);
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        //shaderProgram.setUniformf("cameraPositionY", 0.5f);
         //Gdx.app.log("LightField Display", "X: " + textureManager.getCameraPositionX() + " , Y: " + textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());

@@ -46,6 +46,8 @@ uniform int cols;
 uniform float cameraPositionX;
 uniform float cameraPositionY;
 uniform float focusPoint;
+uniform float focusPointX;
+uniform float focusPointY;
 uniform float apertureSize;
 uniform int col_start;
 uniform int col_end;
@@ -80,8 +82,8 @@ void main(void) {
 			if (dx * dx + dy * dy < apertureSize) {
 				float projX   = 2.0 * textureCoords.s - 1.0;
 				float projY   = 2.0 * textureCoords.t - 1.0;
-				float pixelX = projX + dx * focusPoint;
-				float pixelY = projY; //- dy * focusPoint;
+				float pixelX = projX - dx * focusPointX;
+				float pixelY = projY - dy * focusPointY;
 				float px = 0.5 * pixelX + 0.5;
 				float py = 0.5 * pixelY + 0.5;
 				if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {
