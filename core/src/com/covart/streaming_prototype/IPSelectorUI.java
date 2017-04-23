@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class IPSelectorUI implements Disposable {
 
-    public static String[] IP_LIST = new String[]{"140.112.90.95", "140.112.90.86", "140.112.90.89"};
+    public static String[] IP_LIST = new String[]{"140.112.90.95:8051", "140.112.90.86:8051", "140.112.90.89:8051", "140.112.90.89:8052"};
 
     private SelectBox<String> ipSelectBox;
     private BitmapFont selectFont;
@@ -56,10 +56,10 @@ public class IPSelectorUI implements Disposable {
         skin.addRegions(buttonAtlas);
 
         selectFont = new BitmapFont();
-        selectFont.getData().setScale(4f);
+        selectFont.getData().setScale(3f);
 
         labelFont = new BitmapFont();
-        labelFont.getData().setScale(4f);
+        labelFont.getData().setScale(3f);
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);

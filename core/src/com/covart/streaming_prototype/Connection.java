@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import static com.badlogic.gdx.Gdx.net;
 
@@ -58,7 +59,11 @@ public class Connection {
             Gdx.app.log("Connection", "Connecting...");
             SocketHints hints = new SocketHints();
             try {
-                socket = net.newClientSocket(Protocol.TCP, IPSelectorUI.getInstance().getSelectedIP(), 8051, hints);
+                String ip_port = IPSelectorUI.getInstance().getSelectedIP();
+                String[] tokens = ip_port.split(Pattern.quote(":"));
+                String ip_str = tokens[0];
+                String port_str = tokens[1];
+                socket = net.newClientSocket(Protocol.TCP, ip_str, Integer.parseInt(port_str), hints);
                 recvStream = socket.getInputStream();
                 sendStream = socket.getOutputStream();
                 state = State.Connected;
