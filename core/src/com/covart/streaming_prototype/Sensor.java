@@ -158,7 +158,8 @@ public class Sensor implements Runnable, Component {
 
     boolean touchDragged (int screenX, int screenY, int pointer){
         this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
-        this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight());
+        this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight()-100);
+        //this.screenY = ((int)(this.screenY) / 100) * 100;
         return true;
     }
 
@@ -178,7 +179,8 @@ public class Sensor implements Runnable, Component {
             // compute right-vector
             updateRightVector();
             // apply vert rotation
-            float angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 170 - 85;
+            float angleVert;
+            angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 170 - 85;
             tempQuaternion.set(rightVector, angleVert);
             tempQuaternion.transform(directon);
 
@@ -233,7 +235,7 @@ public class Sensor implements Runnable, Component {
         positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
 
 
-        Gdx.app.log("Sensor", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
+        //Gdx.app.log("Sensor", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
     }
 
 
