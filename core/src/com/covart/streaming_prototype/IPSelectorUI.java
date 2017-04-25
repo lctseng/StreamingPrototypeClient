@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class IPSelectorUI implements Disposable {
 
-    public static String[] IP_LIST = new String[]{"140.112.90.95:8051", "140.112.90.86:8051", "140.112.90.89:8051", "140.112.90.89:8052"};
+    public static String[] IP_LIST = new String[]{"140.112.90.95:8051","140.112.90.95:8053", "140.112.90.86:8051", "140.112.90.89:8051", "140.112.90.89:8052"};
 
     private SelectBox<String> ipSelectBox;
     private BitmapFont selectFont;
