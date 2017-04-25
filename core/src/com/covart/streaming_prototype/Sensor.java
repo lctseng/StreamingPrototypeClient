@@ -29,6 +29,8 @@ public class Sensor implements Runnable, Component {
     private Vector3 initPosition;
     private Vector3 initRightVector;
 
+    private Quaternion initRotation;
+
     // current status
     private Vector3 positionDelta;
     private Vector3 rightVector;
@@ -36,6 +38,7 @@ public class Sensor implements Runnable, Component {
     private Quaternion rotation;
     private float translationMagnitudeHorz;
     private float translationMagnitudeVert;
+
 
 
 
@@ -51,7 +54,9 @@ public class Sensor implements Runnable, Component {
     private int serialNumber;
 
     // for fake data generation
-    public static final boolean USE_FAKE_INPUT = true;
+    boolean useFakeInput = false;
+
+
     private float screenX;
     private float screenY;
 
@@ -62,6 +67,7 @@ public class Sensor implements Runnable, Component {
         initDirection = Vector3.Z;
         initUp = Vector3.Y;
         initRightVector = new Vector3();
+        initRotation = new Quaternion();
         updateInitRightVector();
 
         initPosition = new Vector3(0,0,0);
@@ -77,6 +83,8 @@ public class Sensor implements Runnable, Component {
         tempVector3 = new Vector3();
 
         serialNumber = 0;
+
+        toggleFakeMove(); // init to true
     }
 
     private void updateInitRightVector(){
@@ -147,9 +155,14 @@ public class Sensor implements Runnable, Component {
     public void setInitDirection(float vx, float vy, float vz){
         lock.lock();
         initDirection.set(vx, vy, vz);
+        Gdx.app.log("Sensor", String.format(Locale.TAIWAN, "Init direction: X = %6.4f, Y = %6.4f, Z = %6.4f", initDirection.x, initDirection.y, initDirection.z));
         updateInitRightVector();
+        Gdx.input.getRotationMatrix(tempMatrix.val);
+        initRotation.setFromMatrix(true, tempMatrix);
+        //initRotation.conjugate();
         defaultPosReady.signal();
         lock.unlock();
+
     }
 
     public void setInitPosition(float x, float y, float z){
@@ -159,7 +172,6 @@ public class Sensor implements Runnable, Component {
     boolean touchDragged (int screenX, int screenY, int pointer){
         this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
         this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight()-100);
-        //this.screenY = ((int)(this.screenY) / 100) * 100;
         return true;
     }
 
@@ -170,72 +182,64 @@ public class Sensor implements Runnable, Component {
     }
 
     public void updateSensorData(){
-        if(USE_FAKE_INPUT){
+        // Goal: compute rotation and direction
+        if(useFakeInput){
             // apply horz rotation
-            float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 350 - 175;
+            float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
             tempQuaternion.set(Vector3.Y, angleHorz);
             directon.set(initDirection);
             tempQuaternion.transform(directon);
             // compute right-vector
             updateRightVector();
+
             // apply vert rotation
             float angleVert;
-            angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 170 - 85;
+            angleVert = -1* (screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30);
             tempQuaternion.set(rightVector, angleVert);
             tempQuaternion.transform(directon);
 
+            // compute rotation
+            rotation.setFromCross(initDirection, directon);
         }
-        else{
-            // generate the current rotation matrix
+        else {
+            // FIXME: clean code
+            tempQuaternion.set(initRotation);
+            tempQuaternion.conjugate();
             Gdx.input.getRotationMatrix(tempMatrix.val);
-            tempQuaternion.setFromMatrix(true, tempMatrix);
+            rotation.setFromMatrix(true, tempMatrix);
+            rotation.mul(tempQuaternion);
             directon.set(initDirection);
-            tempQuaternion.transform(directon);
-            // compute right-vector
+            rotation.transform(directon);
             updateRightVector();
         }
-        // set rotation
-        rotation.setFromCross(initDirection, directon);
-
-        // compute translation from direction
+        // compute translation from rotation
         computeTranslation();
 
     }
 
     private void computeTranslation(){
         float angleHorz, angleVert;
-        // compute projection on rotation plane
-        tempVector3.set(initUp);
-        tempVector3.crs(rightVector);
-
         // compute vertical translation
-        // compute rotation between projection and current direction
-        tempQuaternion.setFromCross(directon, tempVector3);
         // scale the angle
-        angleVert = tempQuaternion.getAngleRad() / 3;
-        // fix neg
-        if(directon.dot(initUp) > 0){
-            angleVert *= -1;
-        }
+        angleVert = rotation.getAngleAroundRad(rightVector) ;
         // use the scaled angle to compute magnitude
-        translationMagnitudeVert = (float)Math.sin(angleVert);
+        if(angleVert > (Math.PI / 6) && angleVert <= Math.PI) angleVert = ((float)Math.PI/6);
+        if(angleVert >= Math.PI && angleVert < 2*Math.PI) angleVert -= 2*Math.PI ;
+        if(angleVert < -(Math.PI/6)) angleVert = -((float)Math.PI/6);
+        translationMagnitudeVert = (float)Math.sin(angleVert) * -1;
 
-        // compute horizontal translation
-        // compute rotation between projection and init direction
-        tempQuaternion.setFromCross(initDirection, tempVector3);
+        // compute horizontal  translation
         // scale the angle
-        angleHorz = tempQuaternion.getAngleRad() / 6;
-        // fix neg
-        if(initRightVector.dot(tempVector3) < 0){
-            angleHorz *= -1;
-        }
-        // use the scaled angle to compute magnitude
-        translationMagnitudeHorz = (float)Math.sin(angleHorz);
+        angleHorz = rotation.getAngleAroundRad(initUp) ;
+        if(angleHorz > (Math.PI / 3) && angleHorz <= Math.PI) angleHorz = ((float)Math.PI/3);
+        if(angleHorz >= Math.PI && angleHorz < 2*Math.PI) angleHorz -= 2*Math.PI ;
+        if(angleHorz < -(Math.PI/3)) angleHorz = -((float)Math.PI/3);
+        translationMagnitudeHorz = angleHorz / ((float)Math.PI/3) / 2;
         // apply on position delta
         positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
 
+        StringPool.addField("SensorAngle", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
 
-        //Gdx.app.log("Sensor", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
     }
 
 
@@ -245,14 +249,19 @@ public class Sensor implements Runnable, Component {
 
 
 
-        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
-        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
-        StringPool.addField("Translation:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
+        StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
+        StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
+        StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
 
 
         for (SensorDataListener listener : listeners) {
             listener.onSensorDataReady(this);
         }
+    }
+
+    public void toggleFakeMove(){
+        useFakeInput = !useFakeInput;
+        StringPool.addField("Fake Move Enabled", "" + useFakeInput);
     }
 
     public Vector3 getInitDirection(){
@@ -279,4 +288,15 @@ public class Sensor implements Runnable, Component {
     public float getTranslationMagnitudeVert() {
         return translationMagnitudeVert;
     }
+
+
+    public float getScreenX() {
+        return screenX;
+    }
+
+
+    public float getScreenY() {
+        return screenY;
+    }
+
 }

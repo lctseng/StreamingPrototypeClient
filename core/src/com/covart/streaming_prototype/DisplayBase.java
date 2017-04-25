@@ -28,4 +28,7 @@ public abstract class DisplayBase implements Disposable, SensorDataListener {
     public void onSensorDataReady(Sensor sensor){
         //Gdx.app.log("DisplayBase", "Sensor data received");
     }
+
+    public void toggleEnableFocusChange(){
+    }
 }
