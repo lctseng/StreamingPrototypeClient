@@ -55,6 +55,8 @@ public class Sensor implements Runnable, Component {
 
     // for fake data generation
     boolean useFakeInput = false;
+
+
     private float screenX;
     private float screenY;
 
@@ -82,7 +84,7 @@ public class Sensor implements Runnable, Component {
 
         serialNumber = 0;
 
-        ToggleFakeMove(); // init to true
+        toggleFakeMove(); // init to true
     }
 
     private void updateInitRightVector(){
@@ -170,7 +172,6 @@ public class Sensor implements Runnable, Component {
     boolean touchDragged (int screenX, int screenY, int pointer){
         this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
         this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight()-100);
-        //this.screenY = ((int)(this.screenY) / 100) * 100;
         return true;
     }
 
@@ -248,9 +249,9 @@ public class Sensor implements Runnable, Component {
 
 
 
-        StringPool.addField("Rotation:", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
-        StringPool.addField("Direction:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
-        StringPool.addField("Translation:", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
+        StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
+        StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
+        StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
 
 
         for (SensorDataListener listener : listeners) {
@@ -258,9 +259,9 @@ public class Sensor implements Runnable, Component {
         }
     }
 
-    public void ToggleFakeMove(){
+    public void toggleFakeMove(){
         useFakeInput = !useFakeInput;
-        StringPool.addField("Fake Move Enabled:", "" + useFakeInput);
+        StringPool.addField("Fake Move Enabled", "" + useFakeInput);
     }
 
     public Vector3 getInitDirection(){
@@ -287,4 +288,15 @@ public class Sensor implements Runnable, Component {
     public float getTranslationMagnitudeVert() {
         return translationMagnitudeVert;
     }
+
+
+    public float getScreenX() {
+        return screenX;
+    }
+
+
+    public float getScreenY() {
+        return screenY;
+    }
+
 }

@@ -93,7 +93,7 @@ public class StreamingPrototype extends ApplicationAdapter
                     return true; // return true to indicate the event was handled
                 }
                 else if(x <= 100  && y >= 150  && y <= 250){
-                    sensor.ToggleFakeMove();
+                    sensor.toggleFakeMove();
                     return true;
                 }
                 else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
@@ -115,6 +115,10 @@ public class StreamingPrototype extends ApplicationAdapter
                     else{
                         return false;
                     }
+                }
+                else if(x >= Gdx.graphics.getWidth() - 100 && y >= Gdx.graphics.getHeight() - 100){
+                    display.toggleEnableFocusChange();
+                    return true;
                 }
                 else{
                     return false;
