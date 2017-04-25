@@ -70,7 +70,7 @@ public class StreamingPrototype extends ApplicationAdapter
             @Override
             public boolean touchDown (int x, int y, int pointer, int button) {
                 Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
-                if(x <= 135 && y <= 135) {
+                if(x <= 100 && y <= 100) {
                     if (StreamingPrototype.this.state == Stopped) {
                         StringPool.addField("App", "Starting");
                         requireStart();
@@ -92,10 +92,15 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     return true; // return true to indicate the event was handled
                 }
+                else if(x <= 100  && y >= 150  && y <= 250){
+                    sensor.ToggleFakeMove();
+                    return true;
+                }
                 else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
                     if(state == Running) {
                         sceneChanged = true;
                         sceneIndex = (sceneIndex + 1) % 10;
+                        StringPool.addField("Scene", "index: " + sceneIndex);
                         return true;
                     }
                     else{

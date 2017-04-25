@@ -47,6 +47,7 @@ public class DisplayLightField extends DisplayBase{
     private Texture textureStartStop;
     private Texture textureChangeScene;
     private Texture textureSaveFrame;
+    private Texture textureToggleMove;
 
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
@@ -65,6 +66,7 @@ public class DisplayLightField extends DisplayBase{
         textureStartStop = new Texture("start-stop.png");
         textureChangeScene = new Texture("change-scene.png");
         textureSaveFrame = new Texture("save-frame.png");
+        textureToggleMove = new Texture("toggle-move.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -232,7 +234,8 @@ public class DisplayLightField extends DisplayBase{
 
         batch.begin();
         // draw control
-        batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 150, 150, 150);
+        batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
+        batch.draw(textureToggleMove, 0, Gdx.graphics.getHeight() - 250, 100, 100);
         batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 100, 100, 100);
         batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
         // clear flash messages
