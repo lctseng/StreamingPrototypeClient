@@ -158,11 +158,15 @@ public class Sensor implements Runnable, Component {
         Gdx.app.log("Sensor", String.format(Locale.TAIWAN, "Init direction: X = %6.4f, Y = %6.4f, Z = %6.4f", initDirection.x, initDirection.y, initDirection.z));
         updateInitRightVector();
         Gdx.input.getRotationMatrix(tempMatrix.val);
-        initRotation.setFromMatrix(true, tempMatrix);
-        //initRotation.conjugate();
+        RecenterRotation();
         defaultPosReady.signal();
         lock.unlock();
 
+    }
+
+    public void RecenterRotation(){
+        initRotation.setFromMatrix(true, tempMatrix);
+        //initRotation.conjugate();
     }
 
     public void setInitPosition(float x, float y, float z){

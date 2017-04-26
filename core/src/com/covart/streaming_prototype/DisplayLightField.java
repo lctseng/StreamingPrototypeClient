@@ -50,6 +50,7 @@ public class DisplayLightField extends DisplayBase{
     private Texture textureSaveFrame;
     private Texture textureToggleMove;
     private Texture textureFocusChange;
+    private Texture textureRecenter;
 
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
@@ -68,6 +69,7 @@ public class DisplayLightField extends DisplayBase{
         textureSaveFrame = new Texture("save-frame.png");
         textureToggleMove = new Texture("toggle-move.png");
         textureFocusChange = new Texture("focus-change.png");
+        textureRecenter = new Texture("recenter.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -226,6 +228,7 @@ public class DisplayLightField extends DisplayBase{
         batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 100, 100, 100);
         batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
         batch.draw(textureFocusChange, Gdx.graphics.getWidth() - 100, 0, 100, 100);
+        batch.draw(textureRecenter, Gdx.graphics.getWidth() - 250, 0, 100, 100);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
@@ -265,6 +268,7 @@ public class DisplayLightField extends DisplayBase{
         textureStartStop.dispose();
         textureChangeScene.dispose();
         textureManager.dispose();
+        textureRecenter.dispose();
     }
 
     @Override

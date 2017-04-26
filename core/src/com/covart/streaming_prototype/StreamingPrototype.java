@@ -120,6 +120,10 @@ public class StreamingPrototype extends ApplicationAdapter
                     display.toggleEnableFocusChange();
                     return true;
                 }
+                else if(x >= Gdx.graphics.getWidth() - 250 && x < Gdx.graphics.getWidth() - 150 && y >= Gdx.graphics.getHeight() - 100){
+                    sensor.RecenterRotation();
+                    return true;
+                }
                 else{
                     return false;
                 }
