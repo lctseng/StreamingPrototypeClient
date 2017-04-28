@@ -10,6 +10,8 @@ import net.jpountz.lz4.LZ4FastDecompressor;
  * NTU COV-ART Lab, for NCP project
  */
 
+/**  THIS FILE IS DEPRECATED. WILL BE REMOVED IN THE FUTURE!!! **/
+
 public class ImageDecoderLZ4 extends ImageDecoderBase {
 
 
@@ -31,9 +33,9 @@ public class ImageDecoderLZ4 extends ImageDecoderBase {
                 Buffer decodeBuf = acquireImageBuffer();
                 // decode: lz4 decompress
                 Profiler.reportOnProcStart();
-                decompressor.decompress(encodedBuf.data, 0, decodeBuf.data, 0, BufferPool.IMAGE_BUFFER_SIZE);
+                decompressor.decompress(encodedBuf.data, 0, decodeBuf.data, 0, ConfigManager.getImageBufferSize());
                 Profiler.reportOnProcEnd();
-                decodeBuf.size = BufferPool.IMAGE_BUFFER_SIZE;
+                decodeBuf.size = ConfigManager.getImageBufferSize();
                 decodeBuf.index = encodedBuf.index;
 
                 // release buffer to network

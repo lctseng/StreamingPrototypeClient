@@ -14,20 +14,16 @@ public class BufferPool {
         return ourInstance;
     }
 
-    public static final int QUEUE_SIZE = 3;
-    public static final int IMAGE_BUFFER_SIZE = DisplayLightField.DIMENSION * DisplayLightField.DIMENSION * 3;
-    public static final int DECODER_BUFFER_SIZE = IMAGE_BUFFER_SIZE;
-
     public BlockingQueue<Buffer> queueNetworkToDecoder;
     public BlockingQueue<Buffer> queueDecoderToNetwork;
     public BlockingQueue<Buffer> queueDecoderToDisplay;
     public BlockingQueue<Buffer> queueDisplayToDecoder;
 
     private BufferPool() {
-        queueNetworkToDecoder = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
-        queueDecoderToNetwork = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
-        queueDecoderToDisplay = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
-        queueDisplayToDecoder = new ArrayBlockingQueue<Buffer>(QUEUE_SIZE);
+        queueNetworkToDecoder = new ArrayBlockingQueue<Buffer>(ConfigManager.getBufferQueueSize());
+        queueDecoderToNetwork = new ArrayBlockingQueue<Buffer>(ConfigManager.getBufferQueueSize());
+        queueDecoderToDisplay = new ArrayBlockingQueue<Buffer>(ConfigManager.getBufferQueueSize());
+        queueDisplayToDecoder = new ArrayBlockingQueue<Buffer>(ConfigManager.getBufferQueueSize());
         reset();
     }
 
@@ -41,14 +37,14 @@ public class BufferPool {
     }
 
     private void createDecoderDisplayBuffer() {
-        for(int i=0;i<QUEUE_SIZE;i++){
-            queueDisplayToDecoder.add(new Buffer(IMAGE_BUFFER_SIZE));
+        for(int i=0;i<ConfigManager.getBufferQueueSize();i++){
+            queueDisplayToDecoder.add(new Buffer(ConfigManager.getImageBufferSize()));
         }
     }
 
     private void createNetworkDecoderBuffer() {
-        for(int i=0;i<QUEUE_SIZE;i++){
-            queueDecoderToNetwork.add(new Buffer(DECODER_BUFFER_SIZE));
+        for(int i=0;i<ConfigManager.getBufferQueueSize();i++){
+            queueDecoderToNetwork.add(new Buffer(ConfigManager.getDecoderBufferSize()));
         }
     }
 }

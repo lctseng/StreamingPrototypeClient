@@ -143,7 +143,7 @@ public class Sensor implements Runnable, Component {
                 break;
             }
             try {
-                Thread.sleep(150);
+                Thread.sleep(ConfigManager.getSensorReportInterval());
             } catch (InterruptedException e) {
                 break;
             }

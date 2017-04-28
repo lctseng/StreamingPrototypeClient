@@ -117,7 +117,8 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                 }
                 else if(x >= Gdx.graphics.getWidth() - 100 && y >= Gdx.graphics.getHeight() - 100){
-                    display.toggleEnableFocusChange();
+                    ConfigManager.toggleEnableFocusChange();
+                    StringPool.addField("Enable focus change", "" + ConfigManager.isEnableFocusChange());
                     return true;
                 }
                 else if(x >= Gdx.graphics.getWidth() - 250 && x < Gdx.graphics.getWidth() - 150 && y >= Gdx.graphics.getHeight() - 100){
@@ -286,8 +287,8 @@ public class StreamingPrototype extends ApplicationAdapter
                 Profiler.reportOnRecvStart();
                 while(size > 0){
                     int expectSize;
-                    if(size > BufferPool.DECODER_BUFFER_SIZE){
-                        expectSize = BufferPool.DECODER_BUFFER_SIZE;
+                    if(size > ConfigManager.getDecoderBufferSize()){
+                        expectSize = ConfigManager.getDecoderBufferSize();
                     }
                     else{
                         // not enough

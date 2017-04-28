@@ -45,7 +45,6 @@ uniform int rows;
 uniform int cols;
 uniform float cameraPositionX;
 uniform float cameraPositionY;
-uniform float focusPoint;
 uniform float focusPointX;
 uniform float focusPointY;
 uniform float apertureSize;
@@ -67,7 +66,6 @@ void main(void) {
 
 	float centerCameraX = initCameraX + cameraIndexX * cameraGapX;
 	float centerCameraY = initCameraY + cameraIndexY * cameraGapY;
-	float focusPointRatio = 1.0 + focusPoint / focusRatio;
 
 	vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 	int  validPixelCount = 0;

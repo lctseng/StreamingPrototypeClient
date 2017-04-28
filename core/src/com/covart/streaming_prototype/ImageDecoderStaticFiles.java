@@ -61,7 +61,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                 }
                 Thread.sleep(200);
                 FileHandle file = null;
-                int index = count / DisplayLightField.ROW_WIDTH;
+                int index = count / ConfigManager.getNumOfSubLFImgs();
                 if(count >= max_size){
                     if(loop){
                         count = 0;

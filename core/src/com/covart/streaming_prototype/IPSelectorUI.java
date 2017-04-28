@@ -22,8 +22,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class IPSelectorUI implements Disposable {
 
-    public static String[] IP_LIST = new String[]{"140.112.90.95:8051","140.112.90.95:8053", "140.112.90.86:8051", "140.112.90.89:8051", "140.112.90.89:8052"};
-
     private SelectBox<String> ipSelectBox;
     private BitmapFont selectFont;
     private BitmapFont labelFont;
@@ -70,7 +68,7 @@ public class IPSelectorUI implements Disposable {
         textButtonStyle.up = skin.getDrawable("default-round");
         textButtonStyle.down = skin.getDrawable("default-round-down");
         textButtonStyle.checked = skin.getDrawable("default-select-selection");
-        button = new TextButton(IP_LIST[0], textButtonStyle);
+        button = new TextButton(ConfigManager.getServerList()[0], textButtonStyle);
         stage.addActor(button);
 
         SelectBox.SelectBoxStyle style = new SelectBox.SelectBoxStyle();
@@ -101,7 +99,7 @@ public class IPSelectorUI implements Disposable {
         });
 
 
-        ipSelectBox.setItems(IP_LIST);
+        ipSelectBox.setItems(ConfigManager.getServerList());
         ipSelectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
