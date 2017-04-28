@@ -13,18 +13,13 @@ import com.badlogic.gdx.math.Matrix4;
 
 import StreamingFormat.Message;
 
+
 /**
  * Created by lctseng on 2017/2/6.
  * NTU COV-ART Lab, for NCP project
  */
 
 public class DisplayLightField extends DisplayBase{
-
-
-    final static int COL_WIDTH = 16;
-    final static int ROW_WIDTH = 4;
-    final static int TOTAL_IMAGES = COL_WIDTH * ROW_WIDTH;
-    final static int DIMENSION = 256;
 
     final static int HALF_COL_SPAN = 1;
 
@@ -88,8 +83,8 @@ public class DisplayLightField extends DisplayBase{
         ShaderProgram.pedantic = false;
         shaderProgram.setUniformf("focusPoint", focus);
         shaderProgram.setUniformf("apertureSize", aperture);
-        shaderProgram.setUniformi("rows", ROW_WIDTH);
-        shaderProgram.setUniformi("cols", COL_WIDTH);
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
 
 
         // create matrix
@@ -168,7 +163,7 @@ public class DisplayLightField extends DisplayBase{
     @Override
     void start(){
         disposeExistingTexture();
-        textureManager.createTextureSlots(COL_WIDTH);
+        textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
         focusChangeRatio = 1.0f;
     }
 
@@ -198,8 +193,8 @@ public class DisplayLightField extends DisplayBase{
         shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
         shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
         // set camera params
-        shaderProgram.setUniformi("rows", ROW_WIDTH);
-        shaderProgram.setUniformi("cols", COL_WIDTH);;
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
         shaderProgram.setUniformf("focusPointX", 0.00759f * 2f * 4 * focusChangeRatio);
         shaderProgram.setUniformf("focusPointY", 0.0097f * 2f  * focusChangeRatio);
         shaderProgram.setUniformf("apertureSize", aperture);

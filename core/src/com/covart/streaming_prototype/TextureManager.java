@@ -48,7 +48,7 @@ public class TextureManager implements Disposable {
 
     TextureManager(DisplayLightField display){
         this.display = display;
-        slotImage = new Pixmap(DisplayLightField.DIMENSION, DisplayLightField.DIMENSION * DisplayLightField.ROW_WIDTH, Pixmap.Format.RGB888);
+        slotImage = new Pixmap(ConfigManager.getImageWidth(), ConfigManager.getImageHeight()* ConfigManager.getNumOfSubLFImgs(), Pixmap.Format.RGB888);
         slotImageBuf = slotImage.getPixels();
         droppedIndex = new ArrayList<Integer>();
 
@@ -80,7 +80,7 @@ public class TextureManager implements Disposable {
         slotImageBuf.put(buffer.data, 0, buffer.size);
         // if last row, rewind the buffer and submit the texture
         rowIndex += 1;
-        if(rowIndex == DisplayLightField.ROW_WIDTH){
+        if(rowIndex == ConfigManager.getNumOfSubLFImgs()){
             slotImageBuf.rewind();
             if(textures[buffer.index] != null){
                 textures[buffer.index].dispose();

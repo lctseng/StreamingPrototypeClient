@@ -15,7 +15,7 @@ public class BufferPool {
     }
 
     public static final int QUEUE_SIZE = 3;
-    public static final int IMAGE_BUFFER_SIZE = DisplayLightField.DIMENSION * DisplayLightField.DIMENSION * 3;
+    public static final int IMAGE_BUFFER_SIZE = ConfigManager.getImageHeight() * ConfigManager.getImageWidth() * 3;
     public static final int DECODER_BUFFER_SIZE = IMAGE_BUFFER_SIZE;
 
     public BlockingQueue<Buffer> queueNetworkToDecoder;
