@@ -7,6 +7,8 @@ import com.badlogic.gdx.Gdx;
  * NTU COV-ART Lab, for NCP project
  */
 
+/**  THIS FILE IS DEPRECATED. WILL BE REMOVED IN THE FUTURE!!! **/
+
 public class ImageDecoderSimple extends ImageDecoderBase {
 
     @Override

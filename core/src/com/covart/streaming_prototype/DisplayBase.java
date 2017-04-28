@@ -9,6 +9,9 @@ import StreamingFormat.Message;
  * NTU COV-ART Lab, for NCP project
  */
 
+/**  THIS FILE IS DEPRECATED. WILL BE REMOVED IN THE FUTURE!!! **/
+/**  THE CODE WILL BE MERGED INTO DisplayLightField **/
+
 public abstract class DisplayBase implements Disposable, SensorDataListener {
 
     abstract void updateStart();

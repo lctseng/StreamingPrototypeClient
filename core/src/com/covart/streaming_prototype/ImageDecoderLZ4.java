@@ -10,6 +10,8 @@ import net.jpountz.lz4.LZ4FastDecompressor;
  * NTU COV-ART Lab, for NCP project
  */
 
+/**  THIS FILE IS DEPRECATED. WILL BE REMOVED IN THE FUTURE!!! **/
+
 public class ImageDecoderLZ4 extends ImageDecoderBase {
 
 

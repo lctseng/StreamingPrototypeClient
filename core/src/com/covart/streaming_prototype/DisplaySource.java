@@ -14,6 +14,8 @@ import java.nio.ByteBuffer;
  * NTU COV-ART Lab, for NCP project
  */
 
+/**  THIS FILE IS DEPRECATED. WILL BE REMOVED IN THE FUTURE!!! **/
+
 public class DisplaySource extends DisplayBase{
 
     // gdx basic drawing
