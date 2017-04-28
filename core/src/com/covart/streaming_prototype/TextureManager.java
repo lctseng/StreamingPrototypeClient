@@ -24,7 +24,6 @@ public class TextureManager implements Disposable {
 
     private int nSlots = 0;
     private Texture[] textures;
-    private float slotSpan = 0.f;
 
     private Pixmap slotImage;
     private ByteBuffer slotImageBuf;
@@ -58,7 +57,6 @@ public class TextureManager implements Disposable {
         disposeExistingTextures();
         this.nSlots = nSlots;
         textures = new Texture[nSlots];
-        slotSpan = 1.f / nSlots;
     }
 
     public void addImage(Buffer buffer){
@@ -156,8 +154,8 @@ public class TextureManager implements Disposable {
         if(centerIndex < 0) centerIndex = 0;
         else if (centerIndex >= nSlots) centerIndex = nSlots;
         // compute the span
-        columnStart = centerIndex - DisplayLightField.HALF_COL_SPAN;
-        columnEnd = centerIndex + DisplayLightField.HALF_COL_SPAN + 1;
+        columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
+        columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
 
         if(columnStart < 0) columnStart = 0;
         else if(columnStart >= nSlots) columnStart = nSlots - 1;

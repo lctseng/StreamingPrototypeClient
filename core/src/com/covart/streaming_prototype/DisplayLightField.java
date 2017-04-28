@@ -20,10 +20,6 @@ import StreamingFormat.Message;
  */
 
 public class DisplayLightField extends DisplayBase{
-
-    final static int HALF_COL_SPAN = 1;
-
-
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
@@ -31,14 +27,9 @@ public class DisplayLightField extends DisplayBase{
     // texture manager
     private TextureManager textureManager;
 
-
     private ShaderProgram shaderProgram;
 
     private Mesh mesh;
-
-    private float focus = 0.0f;
-    private float aperture = 50.0f;
-
 
     private Texture textureStartStop;
     private Texture textureChangeScene;
@@ -49,9 +40,6 @@ public class DisplayLightField extends DisplayBase{
 
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
-
-    boolean enableFocusChange = false;
-    private float focusChangeRatio = 1.0f;
 
     DisplayLightField(){
 
@@ -77,12 +65,14 @@ public class DisplayLightField extends DisplayBase{
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
         Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
         Gdx.app.error("GLSL", shaderProgram.getLog());
+        if(!shaderProgram.isCompiled()) {
+            throw new RuntimeException("GLSL Compile failed!");
+        }
         for(String str : shaderProgram.getUniforms()){
             Gdx.app.error("GLSL", "Uniform:" + str);
         }
         ShaderProgram.pedantic = false;
-        shaderProgram.setUniformf("focusPoint", focus);
-        shaderProgram.setUniformf("apertureSize", aperture);
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
         shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
 
@@ -164,7 +154,7 @@ public class DisplayLightField extends DisplayBase{
     void start(){
         disposeExistingTexture();
         textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
-        focusChangeRatio = 1.0f;
+        ConfigManager.setFocusChangeRatio(1.0f);
     }
 
 
@@ -195,13 +185,11 @@ public class DisplayLightField extends DisplayBase{
         // set camera params
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
         shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", 0.00759f * 2f * 4 * focusChangeRatio);
-        shaderProgram.setUniformf("focusPointY", 0.0097f * 2f  * focusChangeRatio);
-        shaderProgram.setUniformf("apertureSize", aperture);
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY()  * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
         shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        //shaderProgram.setUniformf("cameraPositionY", 0.5f);
-        //Gdx.app.log("LightField Display", "X: " + textureManager.getCameraPositionX() + " , Y: " + textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
         // binding texture
@@ -282,16 +270,16 @@ public class DisplayLightField extends DisplayBase{
         // update texture manager
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
         // update focus
-        if(enableFocusChange) {
+        if(ConfigManager.isEnableFocusChange()) {
             float screenY = sensor.getScreenY() - 250;
             if (screenY < 0) screenY = 0;
             if(screenY > 0) {
-                focusChangeRatio = 0.01f + (sensor.getScreenY() / (float) (Gdx.graphics.getHeight() - 250)) * 1.5f;
+                ConfigManager.setFocusChangeRatio(0.01f + (sensor.getScreenY() / (float) (Gdx.graphics.getHeight() - 250)) * 1.5f);
             }
             else{
-                focusChangeRatio = 1.0f;
+                ConfigManager.setFocusChangeRatio(1.0f);
             }
-            StringPool.addField("FocusRatio", "" + focusChangeRatio);
+            StringPool.addField("FocusRatio", "" + ConfigManager.getFocusChangeRatio());
         }
     }
 
@@ -305,9 +293,4 @@ public class DisplayLightField extends DisplayBase{
         return textureManager.checkControlFrameRequired();
     }
 
-    @Override
-    public void toggleEnableFocusChange(){
-        enableFocusChange = !enableFocusChange;
-        StringPool.addField("Enable focus change", "" + enableFocusChange);
-    }
 }

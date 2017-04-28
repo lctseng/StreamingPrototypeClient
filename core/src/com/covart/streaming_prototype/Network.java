@@ -16,9 +16,6 @@ import static com.covart.streaming_prototype.Network.State.Ready;
 
 public class Network implements ConnectionListener, Runnable, Component, Disposable {
 
-
-    public boolean STOP_ON_DISCONNECTED = false;
-
     enum State {
         NotReady, Ready
     }
@@ -64,7 +61,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         Gdx.app.log("Network","Connection Closed");
         updateConnectionStateText();
         state = NotReady;
-        if(STOP_ON_DISCONNECTED) {
+        if(ConfigManager.isStopOnDisconnected()) {
             this.app.requireStop();
         }
     }
