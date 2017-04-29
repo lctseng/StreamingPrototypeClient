@@ -59,7 +59,7 @@ public class Connection {
             Gdx.app.log("Connection", "Connecting...");
             SocketHints hints = new SocketHints();
             try {
-                String ip_port = IPSelectorUI.getInstance().getSelectedIP();
+                String ip_port = ConfigManager.getSelectedIP();
                 String[] tokens = ip_port.split(Pattern.quote(":"));
                 String ip_str = tokens[0];
                 String port_str = tokens[1];

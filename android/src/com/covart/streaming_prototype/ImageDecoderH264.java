@@ -97,4 +97,10 @@ public class ImageDecoderH264 extends ImageDecoderBase {
             nativeDecoderCleanup();
         }
     }
+
+    @Override
+    public void stop() {
+        nativeDecoderError = true;
+        super.stop();
+    }
 }

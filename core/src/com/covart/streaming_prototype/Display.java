@@ -3,7 +3,6 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -32,13 +31,6 @@ public class Display implements Disposable, SensorDataListener{
 
     private Mesh mesh;
 
-    private Texture textureStartStop;
-    private Texture textureChangeScene;
-    private Texture textureSaveFrame;
-    private Texture textureToggleMove;
-    private Texture textureFocusChange;
-    private Texture textureRecenter;
-
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
 
@@ -47,13 +39,6 @@ public class Display implements Disposable, SensorDataListener{
         batch = new SpriteBatch();
         font = new BitmapFont();
         font.getData().setScale(1.5f);
-
-        textureStartStop = new Texture("start-stop.png");
-        textureChangeScene = new Texture("change-scene.png");
-        textureSaveFrame = new Texture("save-frame.png");
-        textureToggleMove = new Texture("toggle-move.png");
-        textureFocusChange = new Texture("focus-change.png");
-        textureRecenter = new Texture("recenter.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -68,9 +53,6 @@ public class Display implements Disposable, SensorDataListener{
         Gdx.app.error("GLSL", shaderProgram.getLog());
         if(!shaderProgram.isCompiled()) {
             throw new RuntimeException("GLSL Compile failed!");
-        }
-        for(String str : shaderProgram.getUniforms()){
-            Gdx.app.error("GLSL", "Uniform:" + str);
         }
         ShaderProgram.pedantic = false;
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
@@ -204,13 +186,6 @@ public class Display implements Disposable, SensorDataListener{
 
 
         batch.begin();
-        // draw control
-        batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
-        batch.draw(textureToggleMove, 0, Gdx.graphics.getHeight() - 250, 100, 100);
-        batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 100, 100, 100);
-        batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
-        batch.draw(textureFocusChange, Gdx.graphics.getWidth() - 100, 0, 100, 100);
-        batch.draw(textureRecenter, Gdx.graphics.getWidth() - 250, 0, 100, 100);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
@@ -235,20 +210,11 @@ public class Display implements Disposable, SensorDataListener{
 
     }
 
-    public void injectImageData(byte[] bufData){
-    }
-
     @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
-        textureFocusChange.dispose();
-        textureToggleMove.dispose();
-        textureSaveFrame.dispose();
-        textureStartStop.dispose();
-        textureChangeScene.dispose();
         textureManager.dispose();
-        textureRecenter.dispose();
     }
 
     public void disposeExistingTexture(){
@@ -265,18 +231,6 @@ public class Display implements Disposable, SensorDataListener{
     public void onSensorDataReady(Sensor sensor){
         // update texture manager
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
-        // update focus
-        if(ConfigManager.isEnableFocusChange()) {
-            float screenY = sensor.getScreenY() - 250;
-            if (screenY < 0) screenY = 0;
-            if(screenY > 0) {
-                ConfigManager.setFocusChangeRatio(0.01f + (sensor.getScreenY() / (float) (Gdx.graphics.getHeight() - 250)) * 1.5f);
-            }
-            else{
-                ConfigManager.setFocusChangeRatio(1.0f);
-            }
-            StringPool.addField("FocusRatio", "" + ConfigManager.getFocusChangeRatio());
-        }
     }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){

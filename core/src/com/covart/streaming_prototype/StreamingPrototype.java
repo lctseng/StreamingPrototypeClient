@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.UI.MainMenu;
+import com.covart.streaming_prototype.UI.UIManager;
 
 import java.util.Locale;
 
@@ -20,7 +22,7 @@ public class StreamingPrototype extends ApplicationAdapter
         implements MasterComponentAdapter, SensorDataListener {
 
 
-    enum State {
+    public enum State {
         Stopped, Running, ShuttingDown
     }
 
@@ -35,8 +37,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private Sensor sensor;
 
     // change scene
-    private boolean sceneChanged = false;
-    private int sceneIndex = 0;
+    public boolean sceneChanged = false;
 
     private boolean saveFrameRequested = false;
 
@@ -46,10 +47,21 @@ public class StreamingPrototype extends ApplicationAdapter
         }
     }
 
-	@Override
+    public State getState() {
+        return state;
+    }
+
+    private void setState(State state) {
+        this.state = state;
+        UIManager.getInstance().onAppStateChanged();
+    }
+
+    @Override
 	public void create () {
+        ConfigManager.setApp(this);
+
         StringPool.addField("App", "Initializing");
-        IPSelectorUI.initialize();
+        UIManager.initialize();
         network = new Network(this);
         display = new Display();
         sensor  = new Sensor();
@@ -64,73 +76,9 @@ public class StreamingPrototype extends ApplicationAdapter
         }
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(IPSelectorUI.getInstance().getInputProcessor());
+        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
 
         InputAdapter localInput = new InputAdapter() {
-            @Override
-            public boolean touchDown (int x, int y, int pointer, int button) {
-                Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
-                if(x <= 100 && y <= 100) {
-                    if (StreamingPrototype.this.state == Stopped) {
-                        StringPool.addField("App", "Starting");
-                        requireStart();
-                    } else if (StreamingPrototype.this.state == Running) {
-                        StringPool.addField("App", "Shutting Down...");
-                        sendEndingMessage();
-                        state = ShuttingDown;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                StringPool.addField("App", "Shutting Down!!");
-                                requireStop();
-                            }
-                        }).start();
-
-                    }
-                    return true; // return true to indicate the event was handled
-                }
-                else if(x <= 100  && y >= 150  && y <= 250){
-                    sensor.toggleFakeMove();
-                    return true;
-                }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
-                    if(state == Running) {
-                        sceneChanged = true;
-                        sceneIndex = (sceneIndex + 1) % 10;
-                        StringPool.addField("Scene", "index: " + sceneIndex);
-                        return true;
-                    }
-                    else{
-                        return false;
-                    }
-                }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y >= 150  && y <= 250){
-                    if(state == Running) {
-                        saveFrameRequested = true;
-                        return true;
-                    }
-                    else{
-                        return false;
-                    }
-                }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y >= Gdx.graphics.getHeight() - 100){
-                    ConfigManager.toggleEnableFocusChange();
-                    StringPool.addField("Enable focus change", "" + ConfigManager.isEnableFocusChange());
-                    return true;
-                }
-                else if(x >= Gdx.graphics.getWidth() - 250 && x < Gdx.graphics.getWidth() - 150 && y >= Gdx.graphics.getHeight() - 100){
-                    sensor.RecenterRotation();
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }
             @Override
             public boolean touchDragged (int screenX, int screenY, int pointer) {
                 return sensor.touchDragged(screenX, screenY, pointer);
@@ -139,6 +87,9 @@ public class StreamingPrototype extends ApplicationAdapter
         };
         inputMultiplexer.addProcessor(localInput);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        UIManager.getInstance().registerUI(new MainMenu());
+
         StringPool.addField("App", "Ready for start");
     }
 
@@ -147,10 +98,9 @@ public class StreamingPrototype extends ApplicationAdapter
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
-        sceneIndex = 0;
         app.log("App","starting");
         StringPool.addField("App", "Component started");
-        this.state = Running;
+        setState(Running);
         BufferPool.getInstance().reset();
         Profiler.reset();
         display.start();
@@ -165,7 +115,7 @@ public class StreamingPrototype extends ApplicationAdapter
         stopRequired = false;
         startRequired = false;
         app.log("App","stopping");
-        this.state = Stopped;
+        setState(Stopped);
         sensor.stop();
         decoder.stop();
         network.stop();
@@ -197,7 +147,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if(state == Running){
             updateControlFrame();
         }
-        IPSelectorUI.getInstance().draw();
+        UIManager.getInstance().draw();
 
 	}
 
@@ -207,7 +157,7 @@ public class StreamingPrototype extends ApplicationAdapter
             // create message builder
             Message.Control.Builder controlBuilder = Message.Control.newBuilder();
             // save change scene
-            controlBuilder.setChangeScene(sceneIndex);
+            controlBuilder.setChangeScene(ConfigManager.getSceneIndex());
             // save save frame
             if(saveFrameRequested){
                 controlBuilder.setSaveFrame(1);
@@ -237,7 +187,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
 	public void dispose () {
-        IPSelectorUI.cleanup();
+        UIManager.cleanup();
         decoder.dispose();
         display.dispose();
         network.dispose();
@@ -345,5 +295,36 @@ public class StreamingPrototype extends ApplicationAdapter
             Gdx.app.error("App", "Interrupted when wait for sending ending message");
             e.printStackTrace();
         }
+    }
+
+    public void recenterSensor(){
+        sensor.RecenterRotation();
+    }
+
+    public void setSaveFrameRequested(boolean saveFrameRequested) {
+        this.saveFrameRequested = saveFrameRequested;
+    }
+
+    public void onStopCalled(){
+        StringPool.addField("App", "Shutting Down...");
+        sendEndingMessage();
+        setState(ShuttingDown);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                StringPool.addField("App", "Shutting Down!!");
+                requireStop();
+            }
+        }).start();
+    }
+
+    public void onStartCalled(){
+        StringPool.addField("App", "Starting");
+        requireStart();
     }
 }

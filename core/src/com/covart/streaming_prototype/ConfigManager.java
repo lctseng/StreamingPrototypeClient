@@ -6,7 +6,7 @@ package com.covart.streaming_prototype;
  * NTU COV-ART Lab, for NCP project
  */
 
-class ConfigManager {
+public class ConfigManager {
     private static final ConfigManager ourInstance = new ConfigManager();
 
     static ConfigManager getInstance() {
@@ -33,14 +33,19 @@ class ConfigManager {
             "140.112.90.89:8052"
     };
 
+    private static final Integer[] sceneList = new Integer[]{
+        0,1,2,3
+    };
+
     // variables
+
+    private static StreamingPrototype app;
 
     private static float cameraStepX = 0.00759f * 2f * 4;
     private static float cameraStepY = 0.0097f * 2f;
 
     private static float apertureSize = 10.0f;
 
-    private static boolean enableFocusChange = false;
     private static float focusChangeRatio = 1.0f;
 
     private static int numOfMaxInterpolatedLFRadius = 2;
@@ -48,6 +53,11 @@ class ConfigManager {
     private static boolean stopOnDisconnected = false;
 
     private static long sensorReportInterval = 150;
+
+    private static Integer sceneIndex = 0;
+    private static String selectedIP = serverList[0];
+
+    private static boolean useFakeDirection = false;
 
     // getters and setters
 
@@ -89,18 +99,6 @@ class ConfigManager {
 
     public static void setApertureSize(float apertureSize) {
         ConfigManager.apertureSize = apertureSize;
-    }
-
-    public static boolean isEnableFocusChange() {
-        return enableFocusChange;
-    }
-
-    public static void setEnableFocusChange(boolean enableFocusChange) {
-        ConfigManager.enableFocusChange = enableFocusChange;
-    }
-
-    public static void toggleEnableFocusChange() {
-        enableFocusChange = !enableFocusChange;
     }
 
     public static float getFocusChangeRatio() {
@@ -151,6 +149,43 @@ class ConfigManager {
     public static void setSensorReportInterval(long sensorReportInterval) {
         ConfigManager.sensorReportInterval = sensorReportInterval;
     }
+
+    public static String getSelectedIP() {
+        return selectedIP;
+    }
+
+    public static void setSelectedIP(String selectedIP) {
+        ConfigManager.selectedIP = selectedIP;
+    }
+
+    public static Integer getSceneIndex() {
+        return sceneIndex;
+    }
+
+    public static void setSceneIndex(Integer sceneIndex) {
+        ConfigManager.sceneIndex = sceneIndex;
+    }
+
+    public static StreamingPrototype getApp() {
+        return app;
+    }
+
+    public static void setApp(StreamingPrototype app) {
+        ConfigManager.app = app;
+    }
+
+    public static Integer[] getSceneList() {
+        return sceneList;
+    }
+
+    public static boolean isUseFakeDirection() {
+        return useFakeDirection;
+    }
+
+    public static void setUseFakeDirection(boolean useFakeDirection) {
+        ConfigManager.useFakeDirection = useFakeDirection;
+    }
+
 
     // end of getters and setters
 
