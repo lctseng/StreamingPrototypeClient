@@ -38,7 +38,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     // change scene
     public boolean sceneChanged = false;
-    
+
     private boolean saveFrameRequested = false;
 
     StreamingPrototype(ImageDecoderBase platform_decoder){

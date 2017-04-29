@@ -210,9 +210,6 @@ public class Display implements Disposable, SensorDataListener{
 
     }
 
-    public void injectImageData(byte[] bufData){
-    }
-
     @Override
     public void dispose() {
         batch.dispose();

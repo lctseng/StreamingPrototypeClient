@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -38,15 +39,12 @@ public class MainMenu extends UIComponent {
     private Label startStopLabel;
     private TextButton startStopButton;
 
+    private TextButton canvasControlButton;
+
+    private float fadeTime = 0.2f;
+
     public MainMenu(){
-        canvas = new Table();
-        canvas.setX(0);
-        canvas.setY(300);
-        canvas.setWidth(Gdx.graphics.getWidth());
-        canvas.setHeight(Gdx.graphics.getWidth());
-
-        canvas.setDebug(true);
-
+        // resources
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         largeFont = new BitmapFont();
@@ -54,7 +52,58 @@ public class MainMenu extends UIComponent {
 
         largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
 
+        // canvas
+        createCanvas();
+
+        // canvas control button
+        createCanvasControlButton();
+
+        showMenu();
+
+    }
+
+    private void createCanvas(){
+        canvas = new Table();
+        canvas.setX(0);
+        canvas.setWidth(Gdx.graphics.getWidth());
+        canvas.setHeight(500);
+        canvas.setDebug(true);
+        canvas.setVisible(false);
+        canvas.top();
         addComponents();
+        canvas.setY(Gdx.graphics.getHeight() - canvas.getHeight() - 150);
+    }
+
+    private void createCanvasControlButton(){
+        canvasControlButton = new TextButton("Hide Menu", skin);
+        canvasControlButton.setWidth(200);
+        canvasControlButton.setHeight(100);
+        canvasControlButton.setX((Gdx.graphics.getWidth() - canvasControlButton.getWidth())/2);
+        canvasControlButton.setY(Gdx.graphics.getHeight() - canvasControlButton.getHeight());
+        canvasControlButton.getStyle().font = largeFont;
+        canvasControlButton.setStyle(canvasControlButton.getStyle());
+        canvasControlButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(canvas.isVisible()){
+                    hideMenu();
+                    canvasControlButton.setText("Open Menu");
+                }
+                else{
+                    showMenu();
+                    canvasControlButton.setText("Hide Menu");
+                }
+
+            }
+        });
+    }
+
+    private void showMenu(){
+        canvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(),Actions.fadeIn(fadeTime)));
+    }
+
+    private void hideMenu(){
+        canvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
     }
 
     @Override
@@ -290,6 +339,7 @@ public class MainMenu extends UIComponent {
     @Override
     void registerActors(Stage stage) {
         stage.addActor(canvas);
+        stage.addActor(canvasControlButton);
     }
 
     @Override

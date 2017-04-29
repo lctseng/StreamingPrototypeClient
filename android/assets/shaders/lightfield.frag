@@ -164,7 +164,7 @@ void main(void) {
 		}
 	}	
 	if(validPixelCount == 0){
-		gl_FragColor = vec4(0.5, 0.0, 0.0, 0.0);
+		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 	else{
 		gl_FragColor = color / float(validPixelCount);
