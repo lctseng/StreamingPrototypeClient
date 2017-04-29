@@ -57,4 +57,10 @@ public class UIManager implements Disposable{
         component.registerActors(stage);
         component.start();
     }
+
+    public void onAppStateChanged(){
+        for(UIComponent ui : components){
+            ui.onAppStateChanged();
+        }
+    }
 }

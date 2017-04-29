@@ -3,7 +3,6 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -32,8 +31,6 @@ public class Display implements Disposable, SensorDataListener{
 
     private Mesh mesh;
 
-    private Texture textureStartStop;
-
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
 
@@ -42,8 +39,6 @@ public class Display implements Disposable, SensorDataListener{
         batch = new SpriteBatch();
         font = new BitmapFont();
         font.getData().setScale(1.5f);
-
-        textureStartStop = new Texture("start-stop.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -191,8 +186,6 @@ public class Display implements Disposable, SensorDataListener{
 
 
         batch.begin();
-        // draw control
-        batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
@@ -224,7 +217,6 @@ public class Display implements Disposable, SensorDataListener{
     public void dispose() {
         batch.dispose();
         font.dispose();
-        textureStartStop.dispose();
         textureManager.dispose();
     }
 

@@ -22,7 +22,7 @@ public class StreamingPrototype extends ApplicationAdapter
         implements MasterComponentAdapter, SensorDataListener {
 
 
-    enum State {
+    public enum State {
         Stopped, Running, ShuttingDown
     }
 
@@ -38,8 +38,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     // change scene
     public boolean sceneChanged = false;
-
-
+    
     private boolean saveFrameRequested = false;
 
     StreamingPrototype(ImageDecoderBase platform_decoder){
@@ -48,7 +47,16 @@ public class StreamingPrototype extends ApplicationAdapter
         }
     }
 
-	@Override
+    public State getState() {
+        return state;
+    }
+
+    private void setState(State state) {
+        this.state = state;
+        UIManager.getInstance().onAppStateChanged();
+    }
+
+    @Override
 	public void create () {
         ConfigManager.setApp(this);
 
@@ -72,37 +80,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
         InputAdapter localInput = new InputAdapter() {
             @Override
-            public boolean touchDown (int x, int y, int pointer, int button) {
-                Gdx.app.log("Touch point:", "X:" + x + " , Y:" + y);
-                if(x <= 100 && y <= 100) {
-                    if (StreamingPrototype.this.state == Stopped) {
-                        StringPool.addField("App", "Starting");
-                        requireStart();
-                    } else if (StreamingPrototype.this.state == Running) {
-                        StringPool.addField("App", "Shutting Down...");
-                        sendEndingMessage();
-                        state = ShuttingDown;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                StringPool.addField("App", "Shutting Down!!");
-                                requireStop();
-                            }
-                        }).start();
-
-                    }
-                    return true; // return true to indicate the event was handled
-                }
-                else{
-                    return false;
-                }
-            }
-            @Override
             public boolean touchDragged (int screenX, int screenY, int pointer) {
                 return sensor.touchDragged(screenX, screenY, pointer);
             }
@@ -123,7 +100,7 @@ public class StreamingPrototype extends ApplicationAdapter
         sceneChanged = true;
         app.log("App","starting");
         StringPool.addField("App", "Component started");
-        this.state = Running;
+        setState(Running);
         BufferPool.getInstance().reset();
         Profiler.reset();
         display.start();
@@ -138,7 +115,7 @@ public class StreamingPrototype extends ApplicationAdapter
         stopRequired = false;
         startRequired = false;
         app.log("App","stopping");
-        this.state = Stopped;
+        setState(Stopped);
         sensor.stop();
         decoder.stop();
         network.stop();
@@ -326,5 +303,28 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void setSaveFrameRequested(boolean saveFrameRequested) {
         this.saveFrameRequested = saveFrameRequested;
+    }
+
+    public void onStopCalled(){
+        StringPool.addField("App", "Shutting Down...");
+        sendEndingMessage();
+        setState(ShuttingDown);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                StringPool.addField("App", "Shutting Down!!");
+                requireStop();
+            }
+        }).start();
+    }
+
+    public void onStartCalled(){
+        StringPool.addField("App", "Starting");
+        requireStart();
     }
 }

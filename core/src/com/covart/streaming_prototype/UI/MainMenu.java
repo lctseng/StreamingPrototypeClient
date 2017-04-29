@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.StreamingPrototype.State;
 
 import java.util.Locale;
 
@@ -32,6 +33,10 @@ public class MainMenu extends UIComponent {
     private Label.LabelStyle largeLabelStyle;
 
     private int tableColumnSpan = 3;
+    private int buttonWidth = 250;
+
+    private Label startStopLabel;
+    private TextButton startStopButton;
 
     public MainMenu(){
         canvas = new Table();
@@ -52,13 +57,81 @@ public class MainMenu extends UIComponent {
         addComponents();
     }
 
+    @Override
+    void onAppStateChanged() {
+        updateStartStopText();
+    }
+
     private void addComponents(){
+        addStartStopUI();
         addIPSelectUI();
         addChangeSceneUI();
         addFakeDirectionUI();
         addFocusChangeUI();
         addButtons();
 
+    }
+
+    private void addStartStopUI(){
+        // create label
+        startStopLabel = new Label(getStartStopLabelText(), largeLabelStyle);
+
+        startStopButton = new TextButton(getStartStopButtonText(), skin);
+        startStopButton.getStyle().font = largeFont;
+        startStopButton.setStyle(startStopButton.getStyle());
+        startStopButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                switch (gettAppState()){
+                    case Stopped:
+                        ConfigManager.getApp().onStartCalled();
+                        break;
+                    case Running:
+                        ConfigManager.getApp().onStopCalled();
+                        break;
+                }
+                updateStartStopText();
+
+            }
+        });
+        canvas.add(startStopLabel);
+        canvas.add(startStopButton).width(buttonWidth);
+        canvas.row();
+    }
+
+    private void updateStartStopText(){
+        startStopLabel.setText(getStartStopLabelText());
+        startStopButton.setText(getStartStopButtonText());
+    }
+
+    private String getStartStopButtonText(){
+        switch (gettAppState()){
+            case Running:
+                return "Stop";
+            case ShuttingDown:
+                return "Stopping";
+            case Stopped:
+                return "Start";
+            default:
+                return "Unknown";
+        }
+    }
+
+    private String getStartStopLabelText(){
+        switch (gettAppState()){
+            case Running:
+                return "Running";
+            case ShuttingDown:
+                return "Shutting Down";
+            case Stopped:
+                return "Stopped";
+            default:
+                return "Unknown";
+        }
+    }
+
+    private State gettAppState(){
+        return ConfigManager.getApp().getState();
     }
 
     private void addIPSelectUI(){
@@ -165,8 +238,8 @@ public class MainMenu extends UIComponent {
     }
 
     private void addButtons(){
-        addRecenterButton().width(250);
-        addSaveFrameButton().width(250);
+        addRecenterButton().width(buttonWidth);
+        addSaveFrameButton().width(buttonWidth);
         canvas.row();
     }
 

@@ -17,4 +17,8 @@ public abstract class UIComponent implements Disposable {
     void start(){
 
     }
+
+    void onAppStateChanged(){
+
+    }
 }
