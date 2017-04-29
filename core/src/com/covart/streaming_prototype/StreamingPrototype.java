@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.UI.UIManager;
 
 import java.util.Locale;
 
@@ -49,7 +50,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	@Override
 	public void create () {
         StringPool.addField("App", "Initializing");
-        com.covart.streaming_prototype.UI.IPSelectorUI.initialize();
+        UIManager.initialize();
         network = new Network(this);
         display = new Display();
         sensor  = new Sensor();
@@ -64,7 +65,7 @@ public class StreamingPrototype extends ApplicationAdapter
         }
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(com.covart.streaming_prototype.UI.IPSelectorUI.getInstance().getInputProcessor());
+        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
 
         InputAdapter localInput = new InputAdapter() {
             @Override
@@ -197,7 +198,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if(state == Running){
             updateControlFrame();
         }
-        com.covart.streaming_prototype.UI.IPSelectorUI.getInstance().draw();
+        UIManager.getInstance().draw();
 
 	}
 
@@ -237,7 +238,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
 	public void dispose () {
-        com.covart.streaming_prototype.UI.IPSelectorUI.cleanup();
+        UIManager.cleanup();
         decoder.dispose();
         display.dispose();
         network.dispose();

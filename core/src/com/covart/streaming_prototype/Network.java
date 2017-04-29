@@ -2,6 +2,8 @@ package com.covart.streaming_prototype;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
+import com.covart.streaming_prototype.UI.IPSelectorUI;
+import com.covart.streaming_prototype.UI.UIManager;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import StreamingFormat.Message;
@@ -40,6 +42,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         bufReceivngHeader = new byte[4];
         connection = new Connection(this);
         sender = new NetworkAsyncSender(this);
+        UIManager.getInstance().registerUI(new IPSelectorUI());
         updateConnectionStateText();
         this.app = app;
     }

@@ -1,7 +1,6 @@
 package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.covart.streaming_prototype.ConfigManager;
 
 /**
@@ -21,57 +18,38 @@ import com.covart.streaming_prototype.ConfigManager;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class IPSelectorUI implements Disposable {
+public class IPSelectorUI extends UIComponent {
 
     private SelectBox<String> ipSelectBox;
     private BitmapFont selectFont;
     private BitmapFont labelFont;
 
-    private Stage stage;
+    private TextButton button;
 
-    TextButton button;
-    TextButton.TextButtonStyle textButtonStyle;
-    Skin skin;
-    TextureAtlas buttonAtlas;
-
-    private static IPSelectorUI ourInstance;
-
-    public static IPSelectorUI getInstance() {
-        return ourInstance;
-    }
-
-    public static void initialize(){
-        ourInstance = new IPSelectorUI();
-    }
-
-    public static void cleanup(){
-        ourInstance.dispose();
-    }
-
-
-    private IPSelectorUI(){
-        skin = new Skin();
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
+    public IPSelectorUI(){
+        // create skin data
+        Skin skin = new Skin();
+        TextureAtlas buttonAtlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
         skin.addRegions(buttonAtlas);
 
+        // create fonts
         selectFont = new BitmapFont();
         selectFont.getData().setScale(3f);
 
         labelFont = new BitmapFont();
         labelFont.getData().setScale(3f);
 
-        stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-
-
-        textButtonStyle = new TextButton.TextButtonStyle();
+        // create button
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = labelFont;
         textButtonStyle.up = skin.getDrawable("default-round");
         textButtonStyle.down = skin.getDrawable("default-round-down");
         textButtonStyle.checked = skin.getDrawable("default-select-selection");
-        button = new TextButton(ConfigManager.getServerList()[0], textButtonStyle);
-        stage.addActor(button);
+        button = new TextButton(ConfigManager.getSelectedIP(), textButtonStyle);
+        button.setX((Gdx.graphics.getWidth() - button.getWidth())/2);
+        button.setY(Gdx.graphics.getHeight()- button.getHeight());
 
+        // create select box
         SelectBox.SelectBoxStyle style = new SelectBox.SelectBoxStyle();
         style.font = selectFont;
         style.scrollStyle = new ScrollPane.ScrollPaneStyle();
@@ -80,18 +58,11 @@ public class IPSelectorUI implements Disposable {
         style.listStyle.font = selectFont;
         style.listStyle.selection = skin.getDrawable("default-select-selection");
         ipSelectBox = new SelectBox<String>(style);
-        stage.addActor(ipSelectBox);
+        ipSelectBox.setX((Gdx.graphics.getWidth() - button.getWidth())/2);
+        ipSelectBox.setY(Gdx.graphics.getHeight() - button.getHeight() * 2);
 
 
-
-
-        ipSelectBox.showList();
-
-
-
-
-
-
+        // add button listener
         button.addListener(new ChangeListener() {
             @Override
             public void changed (ChangeEvent event, Actor actor) {
@@ -100,40 +71,28 @@ public class IPSelectorUI implements Disposable {
         });
 
 
+        // add select list listener
         ipSelectBox.setItems(ConfigManager.getServerList());
         ipSelectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("IP Select", ipSelectBox.getSelected());
                 button.setText(ipSelectBox.getSelected());
+                ConfigManager.setSelectedIP(ipSelectBox.getSelected());
             }
         });
-
-        button.setX((Gdx.graphics.getWidth() - button.getWidth())/2);
-        button.setY(Gdx.graphics.getHeight()- button.getHeight());
-
-        ipSelectBox.setX((Gdx.graphics.getWidth() - button.getWidth())/2);
-        ipSelectBox.setY(Gdx.graphics.getHeight() - button.getHeight() * 2);
 
     }
 
     @Override
     public void dispose() {
-        stage.dispose();
         labelFont.dispose();
         selectFont.dispose();
     }
 
-    public void draw(){
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
-    }
-
-    public InputProcessor getInputProcessor(){
-        return stage;
-    }
-
-    public String getSelectedIP(){
-        return ipSelectBox.getSelected();
+    @Override
+    public void registerActors(Stage stage) {
+        stage.addActor(button);
+        stage.addActor(ipSelectBox);
     }
 }

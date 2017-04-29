@@ -33,6 +33,8 @@ public class ConfigManager {
             "140.112.90.89:8052"
     };
 
+    private static String selectedIP = serverList[0];
+
     // variables
 
     private static float cameraStepX = 0.00759f * 2f * 4;
@@ -150,6 +152,14 @@ public class ConfigManager {
 
     public static void setSensorReportInterval(long sensorReportInterval) {
         ConfigManager.sensorReportInterval = sensorReportInterval;
+    }
+
+    public static String getSelectedIP() {
+        return selectedIP;
+    }
+
+    public static void setSelectedIP(String selectedIP) {
+        ConfigManager.selectedIP = selectedIP;
     }
 
     // end of getters and setters
