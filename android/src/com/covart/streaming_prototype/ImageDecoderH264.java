@@ -54,6 +54,10 @@ public class ImageDecoderH264 extends ImageDecoderBase {
                 else{
                     nativeDecoderFlush();
                 }
+                if(nativeDecoderError){
+                    // when there is error in API, just stop it!
+                    break;
+                }
                 // release buffer to network
                 Profiler.reportOnProcEnd();
                 releaseEncodedBuffer(encodedBuf);
