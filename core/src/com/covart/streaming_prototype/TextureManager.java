@@ -28,7 +28,7 @@ public class TextureManager implements Disposable {
     private Pixmap slotImage;
     private ByteBuffer slotImageBuf;
 
-    private DisplayLightField display;
+    private Display display;
 
     private int lastColumnIndex = -1;
     private int rowIndex;
@@ -45,7 +45,7 @@ public class TextureManager implements Disposable {
 
     private final List<Integer> droppedIndex;
 
-    TextureManager(DisplayLightField display){
+    TextureManager(Display display){
         this.display = display;
         slotImage = new Pixmap(ConfigManager.getImageWidth(), ConfigManager.getImageHeight()* ConfigManager.getNumOfSubLFImgs(), Pixmap.Format.RGB888);
         slotImageBuf = slotImage.getPixels();

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.Disposable;
 
 import StreamingFormat.Message;
 
@@ -19,7 +20,7 @@ import StreamingFormat.Message;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class DisplayLightField extends DisplayBase{
+public class Display implements Disposable, SensorDataListener{
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
@@ -41,7 +42,7 @@ public class DisplayLightField extends DisplayBase{
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
 
-    DisplayLightField(){
+    Display(){
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -150,7 +151,6 @@ public class DisplayLightField extends DisplayBase{
 
     }
 
-    @Override
     void start(){
         disposeExistingTexture();
         textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
@@ -170,7 +170,6 @@ public class DisplayLightField extends DisplayBase{
         }
     }
 
-    @Override
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -217,7 +216,6 @@ public class DisplayLightField extends DisplayBase{
     }
 
 
-    @Override
     public void updateEnd(){
         // record FPS
         StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
@@ -237,7 +235,6 @@ public class DisplayLightField extends DisplayBase{
 
     }
 
-    @Override
     public void injectImageData(byte[] bufData){
     }
 
@@ -254,7 +251,6 @@ public class DisplayLightField extends DisplayBase{
         textureRecenter.dispose();
     }
 
-    @Override
     public void disposeExistingTexture(){
         textureManager.disposeExistingTextures();
     }
@@ -283,12 +279,10 @@ public class DisplayLightField extends DisplayBase{
         }
     }
 
-    @Override
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
         textureManager.attachControlFrameInfo(controlBuilder);
     }
 
-    @Override
     public boolean checkControlFrameRequired(){
         return textureManager.checkControlFrameRequired();
     }
