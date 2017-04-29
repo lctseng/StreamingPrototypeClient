@@ -49,7 +49,7 @@ public class StreamingPrototype extends ApplicationAdapter
 	@Override
 	public void create () {
         StringPool.addField("App", "Initializing");
-        IPSelectorUI.initialize();
+        com.covart.streaming_prototype.UI.IPSelectorUI.initialize();
         network = new Network(this);
         display = new Display();
         sensor  = new Sensor();
@@ -64,7 +64,7 @@ public class StreamingPrototype extends ApplicationAdapter
         }
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(IPSelectorUI.getInstance().getInputProcessor());
+        inputMultiplexer.addProcessor(com.covart.streaming_prototype.UI.IPSelectorUI.getInstance().getInputProcessor());
 
         InputAdapter localInput = new InputAdapter() {
             @Override
@@ -197,7 +197,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if(state == Running){
             updateControlFrame();
         }
-        IPSelectorUI.getInstance().draw();
+        com.covart.streaming_prototype.UI.IPSelectorUI.getInstance().draw();
 
 	}
 
@@ -237,7 +237,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
 	public void dispose () {
-        IPSelectorUI.cleanup();
+        com.covart.streaming_prototype.UI.IPSelectorUI.cleanup();
         decoder.dispose();
         display.dispose();
         network.dispose();

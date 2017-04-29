@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.utils.Disposable;
 

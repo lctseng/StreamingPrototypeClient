@@ -6,7 +6,7 @@ package com.covart.streaming_prototype;
  * NTU COV-ART Lab, for NCP project
  */
 
-class ConfigManager {
+public class ConfigManager {
     private static final ConfigManager ourInstance = new ConfigManager();
 
     static ConfigManager getInstance() {
