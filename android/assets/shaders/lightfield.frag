@@ -115,6 +115,50 @@ void main(void) {
 						validPixelCount++;
 						color = color + texture2D(u_custom_texture4, V);
 					}
+					else if(tex_index == 5 && u_texture_valid5 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture5, V);
+					}
+					else if(tex_index == 6 && u_texture_valid6 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture6, V);
+					}
+					else if(tex_index == 7 && u_texture_valid7 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture7, V);
+					}
+					else if(tex_index == 8 && u_texture_valid8 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture8, V);
+					}
+					else if(tex_index == 9 && u_texture_valid9 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture9, V);
+					}
+					else if(tex_index == 10 && u_texture_valid10 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture10, V);
+					}
+					else if(tex_index == 11 && u_texture_valid11 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture11, V);
+					}
+					else if(tex_index == 12 && u_texture_valid12 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture12, V);
+					}
+					else if(tex_index == 13 && u_texture_valid13 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture13, V);
+					}
+					else if(tex_index == 14 && u_texture_valid14 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture14, V);
+					}
+					else if(tex_index == 15 && u_texture_valid15 > 0){
+						validPixelCount++;
+						color = color + texture2D(u_custom_texture15, V);
+					}
 					/*
 					else if(tex_index == 5){
 						color = color + texture2D(u_custom_texture5, V);
