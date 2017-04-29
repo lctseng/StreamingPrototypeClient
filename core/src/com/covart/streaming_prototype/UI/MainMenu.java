@@ -117,6 +117,7 @@ public class MainMenu extends UIComponent {
         addChangeSceneUI();
         addFakeDirectionUI();
         addFocusChangeUI();
+        addInterpolateChangeUI();
         addButtons();
 
     }
@@ -284,6 +285,36 @@ public class MainMenu extends UIComponent {
 
     private String getFocusRatioText(){
         return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
+    }
+
+    private void addInterpolateChangeUI(){
+        // label
+        final Label name = new Label(getInterpolateRadiusText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0, 5, 1, false, skin);
+        slider.setCustomWidth(300);
+        slider.setDebug(canvas.getDebug());
+        slider.getStyle().background.setMinHeight(35);
+        slider.getStyle().knob.setMinWidth(35);
+        slider.getStyle().knob.setMinHeight(35);
+        slider.setStyle(slider.getStyle());
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setNumOfMaxInterpolatedLFRadius(((int)slider.getValue()));
+                name.setText(getInterpolateRadiusText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row();
+    }
+
+    private String getInterpolateRadiusText(){
+        return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
     }
 
     private void addButtons(){
