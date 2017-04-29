@@ -59,8 +59,8 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
         if(decoder == null){
-            Gdx.app.error("App", "No platform decoder specified! Use simple decoder instead!");
-            decoder = new ImageDecoderSimple();
+            Gdx.app.error("App", "No platform decoder specified! Use static decoder instead!");
+            decoder = new ImageDecoderStaticFiles();
         }
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
