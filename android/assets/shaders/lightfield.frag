@@ -159,41 +159,6 @@ void main(void) {
 						validPixelCount++;
 						color = color + texture2D(u_custom_texture15, V);
 					}
-					/*
-					else if(tex_index == 5){
-						color = color + texture2D(u_custom_texture5, V);
-					}
-					else if(tex_index == 6){
-						color = color + texture2D(u_custom_texture6, V);
-					}
-					else if(tex_index == 7){
-						color = color + texture2D(u_custom_texture7, V);
-					}
-					else if(tex_index == 8){
-						color = color + texture2D(u_custom_texture8, V);
-					}
-					else if(tex_index == 9){
-						color = color + texture2D(u_custom_texture9, V);
-					}
-					else if(tex_index == 10){
-						color = color + texture2D(u_custom_texture10, V);
-					}
-					else if(tex_index == 11){
-						color = color + texture2D(u_custom_texture11, V);
-					}
-					else if(tex_index == 12){
-						color = color + texture2D(u_custom_texture12, V);
-					}
-					else if(tex_index == 13){
-						color = color + texture2D(u_custom_texture13, V);
-					}
-					else if(tex_index == 14){
-						color = color + texture2D(u_custom_texture14, V);
-					}
-					else if(tex_index == 15){
-						color = color + texture2D(u_custom_texture15, V);
-					}
-					*/
 				}
 			}
 		}

@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
 
+import java.util.Locale;
+
 
 /**
  * Created by lctseng on 2017/4/29.
@@ -50,6 +52,7 @@ public class MainMenu extends UIComponent {
         addIPSelectUI();
         addChangeSceneUI();
         addFakeDirectionUI();
+        addFocusChangeUI();
 
     }
 
@@ -125,18 +128,51 @@ public class MainMenu extends UIComponent {
         canvas.row();
     }
 
+    private void addFocusChangeUI(){
+        // label
+        final Label name = new Label(getFocusRatioText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.1f, 2.0f, 0.001f, false, skin);
+        slider.setCustomWidth(300);
+        slider.setDebug(canvas.getDebug());
+        slider.getStyle().background.setMinHeight(25);
+        slider.getStyle().knob.setMinWidth(25);
+        slider.setStyle(slider.getStyle());
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setFocusChangeRatio(slider.getValue());
+                name.setText(getFocusRatioText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider);
+        canvas.row();
+
+    }
+
+    private String getFocusRatioText(){
+        return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
+    }
+
     private void enlargeCheckBoxFont(CheckBox box){
         box.getStyle().font = largeFont;
         box.setStyle(box.getStyle());
-        box.getImage().setScale(1.5f);
+        box.getImage().setScale(2.5f);
+        box.getImage().setDebug(canvas.getDebug());
+        box.getImage().setOriginX(30);
+        box.getImage().setOriginY(7);
     }
 
     private void updateCheckBoxText(CheckBox box){
         if(box.isChecked()){
-            box.setText("  Enabled");
+            box.setText("Enabled");
         }
         else{
-            box.setText("  Disabled");
+            box.setText("Disabled");
         }
     }
 

@@ -107,11 +107,6 @@ public class StreamingPrototype extends ApplicationAdapter
                         return false;
                     }
                 }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y >= Gdx.graphics.getHeight() - 100){
-                    ConfigManager.toggleEnableFocusChange();
-                    StringPool.addField("Enable focus change", "" + ConfigManager.isEnableFocusChange());
-                    return true;
-                }
                 else if(x >= Gdx.graphics.getWidth() - 250 && x < Gdx.graphics.getWidth() - 150 && y >= Gdx.graphics.getHeight() - 100){
                     sensor.RecenterRotation();
                     return true;

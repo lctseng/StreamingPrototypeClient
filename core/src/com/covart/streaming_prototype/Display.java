@@ -34,7 +34,6 @@ public class Display implements Disposable, SensorDataListener{
 
     private Texture textureStartStop;
     private Texture textureSaveFrame;
-    private Texture textureFocusChange;
     private Texture textureRecenter;
 
     private Matrix4 modelviewMatrix;
@@ -48,7 +47,6 @@ public class Display implements Disposable, SensorDataListener{
 
         textureStartStop = new Texture("start-stop.png");
         textureSaveFrame = new Texture("save-frame.png");
-        textureFocusChange = new Texture("focus-change.png");
         textureRecenter = new Texture("recenter.png");
 
         // multi-texture
@@ -200,7 +198,6 @@ public class Display implements Disposable, SensorDataListener{
         // draw control
         batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
         batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
-        batch.draw(textureFocusChange, Gdx.graphics.getWidth() - 100, 0, 100, 100);
         batch.draw(textureRecenter, Gdx.graphics.getWidth() - 250, 0, 100, 100);
         // clear flash messages
         StringPool.clearFlashMessages();
@@ -233,7 +230,6 @@ public class Display implements Disposable, SensorDataListener{
     public void dispose() {
         batch.dispose();
         font.dispose();
-        textureFocusChange.dispose();
         textureSaveFrame.dispose();
         textureStartStop.dispose();
         textureManager.dispose();
@@ -254,18 +250,6 @@ public class Display implements Disposable, SensorDataListener{
     public void onSensorDataReady(Sensor sensor){
         // update texture manager
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
-        // update focus
-        if(ConfigManager.isEnableFocusChange()) {
-            float screenY = sensor.getScreenY() - 250;
-            if (screenY < 0) screenY = 0;
-            if(screenY > 0) {
-                ConfigManager.setFocusChangeRatio(0.01f + (sensor.getScreenY() / (float) (Gdx.graphics.getHeight() - 250)) * 1.5f);
-            }
-            else{
-                ConfigManager.setFocusChangeRatio(1.0f);
-            }
-            StringPool.addField("FocusRatio", "" + ConfigManager.getFocusChangeRatio());
-        }
     }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
