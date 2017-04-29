@@ -118,8 +118,9 @@ public class MainMenu extends UIComponent {
         addFakeDirectionUI();
         addStopOnDisconnectedUI();
         addFocusChangeUI();
-        addInterpolateChangeUI();
         addApertureSizeUI();
+        addInterpolateChangeUI();
+        addSensorReportIntervalUI();
         addButtons();
 
     }
@@ -333,6 +334,32 @@ public class MainMenu extends UIComponent {
 
     private String getInterpolateRadiusText(){
         return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+    }
+
+    private void addSensorReportIntervalUI(){
+        // label
+        final Label name = new Label(getSensorReportIntervalText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(100, 1000, 1, false, skin);
+        slider.setValue(ConfigManager.getSensorReportInterval());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setSensorReportInterval(((long)slider.getValue()));
+                name.setText(getSensorReportIntervalText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row();
+    }
+
+    private String getSensorReportIntervalText(){
+        return String.format(Locale.TAIWAN,"Sensor interval: %d", ConfigManager.getSensorReportInterval());
     }
 
     private void addApertureSizeUI(){
