@@ -359,7 +359,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getSensorReportIntervalText(){
-        return String.format(Locale.TAIWAN,"Sensor interval: %d", ConfigManager.getSensorReportInterval());
+        return String.format(Locale.TAIWAN,"Sensor interval: %3d", ConfigManager.getSensorReportInterval());
     }
 
     private void addApertureSizeUI(){
