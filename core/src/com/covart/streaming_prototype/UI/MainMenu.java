@@ -46,35 +46,59 @@ public class MainMenu extends UIComponent {
     }
 
     private void addComponents(){
-        addIPSelectList();
+        addIPSelectUI();
+        addChangeSceneUI();
 
     }
 
-    private void addIPSelectList(){
-        // create button
+    private void addIPSelectUI(){
+        // create label
         Label label = new Label("Server IP:", largeLabelStyle);
 
         // create select box
-        final SelectBox<String> ipSelectBox = new SelectBox<String>(skin);
-        ipSelectBox.getStyle().font = largeFont;
-        ipSelectBox.getStyle().listStyle.font = largeFont;
+        final SelectBox<String> selectBox = new SelectBox<String>(skin);
+        selectBox.getStyle().font = largeFont;
+        selectBox.getStyle().listStyle.font = largeFont;
 
         // add select list listener
-        ipSelectBox.setItems(ConfigManager.getServerList());
-        ipSelectBox.addListener(new ChangeListener() {
+        selectBox.setItems(ConfigManager.getServerList());
+        selectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.log("IP Select", ipSelectBox.getSelected());
-                ConfigManager.setSelectedIP(ipSelectBox.getSelected());
+                ConfigManager.setSelectedIP(selectBox.getSelected());
             }
         });
 
 
-        canvas.add(label).expandX().width(100);
-        canvas.add(ipSelectBox).expandX();
+        canvas.add(label);
+        canvas.add(selectBox);
         canvas.row();
 
 
+    }
+
+    private void addChangeSceneUI(){
+        // label
+        Label name = new Label("Scene index:", largeLabelStyle);
+
+        // create select box
+        final SelectBox<Integer> selectBox = new SelectBox<Integer>(skin);
+        selectBox.getStyle().font = largeFont;
+        selectBox.getStyle().listStyle.font = largeFont;
+
+        // add select list listener
+        selectBox.setItems(ConfigManager.getSceneList());
+        selectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setSceneIndex(selectBox.getSelected());
+                ConfigManager.getApp().sceneChanged = true;
+            }
+        });
+
+        canvas.add(name);
+        canvas.add(selectBox);
+        canvas.row();
     }
 
     @Override

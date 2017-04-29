@@ -33,9 +33,13 @@ public class ConfigManager {
             "140.112.90.89:8052"
     };
 
-    private static String selectedIP = serverList[0];
+    private static final Integer[] sceneList = new Integer[]{
+        0,1,2,3
+    };
 
     // variables
+
+    private static StreamingPrototype app;
 
     private static float cameraStepX = 0.00759f * 2f * 4;
     private static float cameraStepY = 0.0097f * 2f;
@@ -50,6 +54,9 @@ public class ConfigManager {
     private static boolean stopOnDisconnected = false;
 
     private static long sensorReportInterval = 150;
+
+    private static Integer sceneIndex = 0;
+    private static String selectedIP = serverList[0];
 
     // getters and setters
 
@@ -160,6 +167,26 @@ public class ConfigManager {
 
     public static void setSelectedIP(String selectedIP) {
         ConfigManager.selectedIP = selectedIP;
+    }
+
+    public static Integer getSceneIndex() {
+        return sceneIndex;
+    }
+
+    public static void setSceneIndex(Integer sceneIndex) {
+        ConfigManager.sceneIndex = sceneIndex;
+    }
+
+    public static StreamingPrototype getApp() {
+        return app;
+    }
+
+    public static void setApp(StreamingPrototype app) {
+        ConfigManager.app = app;
+    }
+
+    public static Integer[] getSceneList() {
+        return sceneList;
     }
 
     // end of getters and setters

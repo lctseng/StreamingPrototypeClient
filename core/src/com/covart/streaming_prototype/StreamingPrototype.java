@@ -37,8 +37,8 @@ public class StreamingPrototype extends ApplicationAdapter
     private Sensor sensor;
 
     // change scene
-    private boolean sceneChanged = false;
-    private int sceneIndex = 0;
+    public boolean sceneChanged = false;
+
 
     private boolean saveFrameRequested = false;
 
@@ -50,6 +50,8 @@ public class StreamingPrototype extends ApplicationAdapter
 
 	@Override
 	public void create () {
+        ConfigManager.setApp(this);
+
         StringPool.addField("App", "Initializing");
         UIManager.initialize();
         network = new Network(this);
@@ -102,9 +104,6 @@ public class StreamingPrototype extends ApplicationAdapter
                 }
                 else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
                     if(state == Running) {
-                        sceneChanged = true;
-                        sceneIndex = (sceneIndex + 1) % 10;
-                        StringPool.addField("Scene", "index: " + sceneIndex);
                         return true;
                     }
                     else{
@@ -152,7 +151,6 @@ public class StreamingPrototype extends ApplicationAdapter
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
-        sceneIndex = 0;
         app.log("App","starting");
         StringPool.addField("App", "Component started");
         this.state = Running;
@@ -212,7 +210,7 @@ public class StreamingPrototype extends ApplicationAdapter
             // create message builder
             Message.Control.Builder controlBuilder = Message.Control.newBuilder();
             // save change scene
-            controlBuilder.setChangeScene(sceneIndex);
+            controlBuilder.setChangeScene(ConfigManager.getSceneIndex());
             // save save frame
             if(saveFrameRequested){
                 controlBuilder.setSaveFrame(1);
