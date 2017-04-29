@@ -108,7 +108,7 @@ public class Sensor implements Runnable, Component {
             worker.interrupt();
             if(Thread.currentThread() != worker){
                 try {
-                    worker.join();
+                    worker.join(2000);
                     Gdx.app.log("Sensor","Worker stopped");
                 } catch (InterruptedException e) {
                     Gdx.app.error("Sensor", "Cannot join worker: interrupted");
