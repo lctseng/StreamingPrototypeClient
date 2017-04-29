@@ -38,12 +38,12 @@ class ConfigManager {
     private static float cameraStepX = 0.00759f * 2f * 4;
     private static float cameraStepY = 0.0097f * 2f;
 
-    private static float apertureSize = 50.0f;
+    private static float apertureSize = 10.0f;
 
     private static boolean enableFocusChange = false;
     private static float focusChangeRatio = 1.0f;
 
-    private static int numOfMaxInterpolatedLFRadius = 1;
+    private static int numOfMaxInterpolatedLFRadius = 2;
 
     private static boolean stopOnDisconnected = false;
 
