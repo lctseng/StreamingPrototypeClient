@@ -46,7 +46,6 @@ public class ConfigManager {
 
     private static float apertureSize = 10.0f;
 
-    private static boolean enableFocusChange = false;
     private static float focusChangeRatio = 1.0f;
 
     private static int numOfMaxInterpolatedLFRadius = 2;
@@ -58,7 +57,7 @@ public class ConfigManager {
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
 
-    private static boolean useFakeDirection;
+    private static boolean useFakeDirection = false;
 
     // getters and setters
 
@@ -100,18 +99,6 @@ public class ConfigManager {
 
     public static void setApertureSize(float apertureSize) {
         ConfigManager.apertureSize = apertureSize;
-    }
-
-    public static boolean isEnableFocusChange() {
-        return enableFocusChange;
-    }
-
-    public static void setEnableFocusChange(boolean enableFocusChange) {
-        ConfigManager.enableFocusChange = enableFocusChange;
-    }
-
-    public static void toggleEnableFocusChange() {
-        enableFocusChange = !enableFocusChange;
     }
 
     public static float getFocusChangeRatio() {
@@ -199,9 +186,6 @@ public class ConfigManager {
         ConfigManager.useFakeDirection = useFakeDirection;
     }
 
-    public static void toggleUseFakeDirection() {
-        useFakeDirection = !useFakeDirection;
-    }
 
     // end of getters and setters
 
