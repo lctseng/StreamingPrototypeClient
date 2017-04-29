@@ -54,8 +54,6 @@ public class Sensor implements Runnable, Component {
     private int serialNumber;
 
     // for fake data generation
-    boolean useFakeInput = false;
-
 
     private float screenX;
     private float screenY;
@@ -83,8 +81,6 @@ public class Sensor implements Runnable, Component {
         tempVector3 = new Vector3();
 
         serialNumber = 0;
-
-        toggleFakeMove(); // init to true
     }
 
     private void updateInitRightVector(){
@@ -187,7 +183,7 @@ public class Sensor implements Runnable, Component {
 
     public void updateSensorData(){
         // Goal: compute rotation and direction
-        if(useFakeInput){
+        if(ConfigManager.isUseFakeDirection()){
             // apply horz rotation
             float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
             tempQuaternion.set(Vector3.Y, angleHorz);
@@ -261,11 +257,6 @@ public class Sensor implements Runnable, Component {
         for (SensorDataListener listener : listeners) {
             listener.onSensorDataReady(this);
         }
-    }
-
-    public void toggleFakeMove(){
-        useFakeInput = !useFakeInput;
-        StringPool.addField("Fake Move Enabled", "" + useFakeInput);
     }
 
     public Vector3 getInitDirection(){

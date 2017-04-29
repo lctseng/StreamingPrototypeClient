@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -48,6 +49,7 @@ public class MainMenu extends UIComponent {
     private void addComponents(){
         addIPSelectUI();
         addChangeSceneUI();
+        addFakeDirectionUI();
 
     }
 
@@ -99,6 +101,43 @@ public class MainMenu extends UIComponent {
         canvas.add(name);
         canvas.add(selectBox);
         canvas.row();
+    }
+
+    private void addFakeDirectionUI(){
+        // label
+        Label name = new Label("Use fake direction:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setUseFakeDirection(box.isChecked());
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box);
+        canvas.row();
+    }
+
+    private void enlargeCheckBoxFont(CheckBox box){
+        box.getStyle().font = largeFont;
+        box.setStyle(box.getStyle());
+        box.getImage().setScale(1.5f);
+    }
+
+    private void updateCheckBoxText(CheckBox box){
+        if(box.isChecked()){
+            box.setText("  Enabled");
+        }
+        else{
+            box.setText("  Disabled");
+        }
     }
 
     @Override

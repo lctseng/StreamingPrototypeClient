@@ -58,6 +58,8 @@ public class ConfigManager {
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
 
+    private static boolean useFakeDirection;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -187,6 +189,18 @@ public class ConfigManager {
 
     public static Integer[] getSceneList() {
         return sceneList;
+    }
+
+    public static boolean isUseFakeDirection() {
+        return useFakeDirection;
+    }
+
+    public static void setUseFakeDirection(boolean useFakeDirection) {
+        ConfigManager.useFakeDirection = useFakeDirection;
+    }
+
+    public static void toggleUseFakeDirection() {
+        useFakeDirection = !useFakeDirection;
     }
 
     // end of getters and setters
