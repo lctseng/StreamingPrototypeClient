@@ -98,14 +98,6 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     return true; // return true to indicate the event was handled
                 }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y <= 100){
-                    if(state == Running) {
-                        return true;
-                    }
-                    else{
-                        return false;
-                    }
-                }
                 else if(x >= Gdx.graphics.getWidth() - 100 && y >= 150  && y <= 250){
                     if(state == Running) {
                         saveFrameRequested = true;

@@ -33,7 +33,6 @@ public class Display implements Disposable, SensorDataListener{
     private Mesh mesh;
 
     private Texture textureStartStop;
-    private Texture textureChangeScene;
     private Texture textureSaveFrame;
     private Texture textureFocusChange;
     private Texture textureRecenter;
@@ -48,7 +47,6 @@ public class Display implements Disposable, SensorDataListener{
         font.getData().setScale(1.5f);
 
         textureStartStop = new Texture("start-stop.png");
-        textureChangeScene = new Texture("change-scene.png");
         textureSaveFrame = new Texture("save-frame.png");
         textureFocusChange = new Texture("focus-change.png");
         textureRecenter = new Texture("recenter.png");
@@ -201,7 +199,6 @@ public class Display implements Disposable, SensorDataListener{
         batch.begin();
         // draw control
         batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
-        batch.draw(textureChangeScene, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 100, 100, 100);
         batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
         batch.draw(textureFocusChange, Gdx.graphics.getWidth() - 100, 0, 100, 100);
         batch.draw(textureRecenter, Gdx.graphics.getWidth() - 250, 0, 100, 100);
@@ -239,7 +236,6 @@ public class Display implements Disposable, SensorDataListener{
         textureFocusChange.dispose();
         textureSaveFrame.dispose();
         textureStartStop.dispose();
-        textureChangeScene.dispose();
         textureManager.dispose();
         textureRecenter.dispose();
     }
