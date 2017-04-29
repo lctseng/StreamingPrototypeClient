@@ -69,9 +69,6 @@ public class Display implements Disposable, SensorDataListener{
         if(!shaderProgram.isCompiled()) {
             throw new RuntimeException("GLSL Compile failed!");
         }
-        for(String str : shaderProgram.getUniforms()){
-            Gdx.app.error("GLSL", "Uniform:" + str);
-        }
         ShaderProgram.pedantic = false;
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());

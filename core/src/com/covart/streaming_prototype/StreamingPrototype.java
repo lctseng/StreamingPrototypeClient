@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.UIManager;
 
 import java.util.Locale;
@@ -140,6 +141,9 @@ public class StreamingPrototype extends ApplicationAdapter
         };
         inputMultiplexer.addProcessor(localInput);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        UIManager.getInstance().registerUI(new MainMenu());
+
         StringPool.addField("App", "Ready for start");
     }
 
