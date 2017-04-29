@@ -1,7 +1,5 @@
 package com.covart.streaming_prototype;
 
-import android.media.MediaCodec;
-
 import com.badlogic.gdx.Gdx;
 
 /**
@@ -13,13 +11,14 @@ public class ImageDecoderH264 extends ImageDecoderBase {
 
 
 
-    private volatile MediaCodec codec;
+    ;
     private native boolean nativeDecoderInit();
     private native boolean nativeDecoderCleanup();
     private native boolean nativeDecoderParse(Buffer buffer);
     private native boolean nativeDecoderFlush();
 
     private boolean nativeDecoderReady;
+    private volatile boolean nativeDecoderError;
 
 
     ImageDecoderH264(){
@@ -36,9 +35,11 @@ public class ImageDecoderH264 extends ImageDecoderBase {
         }
         else{
             Gdx.app.error("H264", "Native decoder unavailable!");
+            return;
         }
+        nativeDecoderError = false;
 
-        while(true){
+        while(!nativeDecoderError){
             try {
                 // read from network
                 Buffer encodedBuf = acquireEncodedResult();
@@ -58,10 +59,10 @@ public class ImageDecoderH264 extends ImageDecoderBase {
                 releaseEncodedBuffer(encodedBuf);
             } catch (InterruptedException e) {
                 Gdx.app.error("Decoder", "Worker interrupted");
-                cleanup();
                 break;
             }
         }
+        cleanup();
     }
 
     // call from JNI: after frame is decoded and place to Buffer
@@ -70,6 +71,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
             sendImageResult(buf);
         } catch (InterruptedException e) {
             Gdx.app.error("H264", "Worker interrupted when onFrameReady");
+            nativeDecoderError = true;
         }
     }
 
@@ -80,6 +82,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
             return acquireImageBuffer();
         } catch (InterruptedException e) {
             Gdx.app.error("H264", "Worker interrupted when getDisplayBuffer");
+            nativeDecoderError = true;
             return null;
         }
     }

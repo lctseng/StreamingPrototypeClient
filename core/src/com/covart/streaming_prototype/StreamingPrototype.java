@@ -86,9 +86,11 @@ public class StreamingPrototype extends ApplicationAdapter
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
+                                StringPool.addField("App", "Shutting Down!!");
                                 requireStop();
                             }
                         }).start();
+
                     }
                     return true; // return true to indicate the event was handled
                 }
