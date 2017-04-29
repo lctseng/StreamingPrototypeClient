@@ -118,6 +118,7 @@ public class MainMenu extends UIComponent {
         addFakeDirectionUI();
         addFocusChangeUI();
         addInterpolateChangeUI();
+        addApertureSizeUI();
         addButtons();
 
     }
@@ -262,12 +263,8 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0.1f, 2.0f, 0.001f, false, skin);
-        slider.setCustomWidth(300);
-        slider.setDebug(canvas.getDebug());
-        slider.getStyle().background.setMinHeight(35);
-        slider.getStyle().knob.setMinWidth(35);
-        slider.getStyle().knob.setMinHeight(35);
-        slider.setStyle(slider.getStyle());
+        slider.setValue(ConfigManager.getFocusChangeRatio());
+        enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -293,12 +290,8 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0, 5, 1, false, skin);
-        slider.setCustomWidth(300);
-        slider.setDebug(canvas.getDebug());
-        slider.getStyle().background.setMinHeight(35);
-        slider.getStyle().knob.setMinWidth(35);
-        slider.getStyle().knob.setMinHeight(35);
-        slider.setStyle(slider.getStyle());
+        slider.setValue(ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -315,6 +308,32 @@ public class MainMenu extends UIComponent {
 
     private String getInterpolateRadiusText(){
         return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+    }
+
+    private void addApertureSizeUI(){
+        // label
+        final Label name = new Label(getApertureSizeText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 80.0f, 1.0f, false, skin);
+        slider.setValue(ConfigManager.getApertureSize());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setApertureSize(slider.getValue());
+                name.setText(getApertureSizeText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row();
+    }
+
+    private String getApertureSizeText(){
+        return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
     }
 
     private void addButtons(){
@@ -347,6 +366,15 @@ public class MainMenu extends UIComponent {
             }
         });
         return canvas.add(button);
+    }
+
+    private void enlargeSlider(HorzSlider slider){
+        slider.setCustomWidth(300);
+        slider.setDebug(canvas.getDebug());
+        slider.getStyle().background.setMinHeight(35);
+        slider.getStyle().knob.setMinWidth(35);
+        slider.getStyle().knob.setMinHeight(35);
+        slider.setStyle(slider.getStyle());
     }
 
     private void enlargeCheckBoxFont(CheckBox box){
