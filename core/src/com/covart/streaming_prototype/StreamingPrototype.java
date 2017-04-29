@@ -98,19 +98,6 @@ public class StreamingPrototype extends ApplicationAdapter
                     }
                     return true; // return true to indicate the event was handled
                 }
-                else if(x >= Gdx.graphics.getWidth() - 100 && y >= 150  && y <= 250){
-                    if(state == Running) {
-                        saveFrameRequested = true;
-                        return true;
-                    }
-                    else{
-                        return false;
-                    }
-                }
-                else if(x >= Gdx.graphics.getWidth() - 250 && x < Gdx.graphics.getWidth() - 150 && y >= Gdx.graphics.getHeight() - 100){
-                    sensor.RecenterRotation();
-                    return true;
-                }
                 else{
                     return false;
                 }
@@ -331,5 +318,13 @@ public class StreamingPrototype extends ApplicationAdapter
             Gdx.app.error("App", "Interrupted when wait for sending ending message");
             e.printStackTrace();
         }
+    }
+
+    public void recenterSensor(){
+        sensor.RecenterRotation();
+    }
+
+    public void setSaveFrameRequested(boolean saveFrameRequested) {
+        this.saveFrameRequested = saveFrameRequested;
     }
 }

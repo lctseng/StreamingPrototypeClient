@@ -5,11 +5,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
 
@@ -28,6 +30,8 @@ public class MainMenu extends UIComponent {
 
     private BitmapFont largeFont;
     private Label.LabelStyle largeLabelStyle;
+
+    private int tableColumnSpan = 3;
 
     public MainMenu(){
         canvas = new Table();
@@ -53,6 +57,7 @@ public class MainMenu extends UIComponent {
         addChangeSceneUI();
         addFakeDirectionUI();
         addFocusChangeUI();
+        addButtons();
 
     }
 
@@ -76,7 +81,7 @@ public class MainMenu extends UIComponent {
 
 
         canvas.add(label);
-        canvas.add(selectBox);
+        canvas.add(selectBox).colspan(tableColumnSpan - 1);
         canvas.row();
 
 
@@ -102,7 +107,7 @@ public class MainMenu extends UIComponent {
         });
 
         canvas.add(name);
-        canvas.add(selectBox);
+        canvas.add(selectBox).colspan(tableColumnSpan - 1);
         canvas.row();
     }
 
@@ -124,7 +129,7 @@ public class MainMenu extends UIComponent {
 
 
         canvas.add(name);
-        canvas.add(box);
+        canvas.add(box).colspan(tableColumnSpan - 1);
         canvas.row();
     }
 
@@ -136,8 +141,9 @@ public class MainMenu extends UIComponent {
         final HorzSlider slider = new HorzSlider(0.1f, 2.0f, 0.001f, false, skin);
         slider.setCustomWidth(300);
         slider.setDebug(canvas.getDebug());
-        slider.getStyle().background.setMinHeight(25);
-        slider.getStyle().knob.setMinWidth(25);
+        slider.getStyle().background.setMinHeight(35);
+        slider.getStyle().knob.setMinWidth(35);
+        slider.getStyle().knob.setMinHeight(35);
         slider.setStyle(slider.getStyle());
         slider.addListener(new ChangeListener() {
             @Override
@@ -149,13 +155,45 @@ public class MainMenu extends UIComponent {
 
 
         canvas.add(name);
-        canvas.add(slider);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
         canvas.row();
 
     }
 
     private String getFocusRatioText(){
         return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
+    }
+
+    private void addButtons(){
+        addRecenterButton().width(250);
+        addSaveFrameButton().width(250);
+        canvas.row();
+    }
+
+    private Cell<TextButton> addRecenterButton(){
+        TextButton button = new TextButton("Re-center", skin);
+        button.getStyle().font = largeFont;
+        button.setStyle(button.getStyle());
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.getApp().recenterSensor();
+            }
+        });
+        return canvas.add(button);
+    }
+
+    private Cell<TextButton> addSaveFrameButton(){
+        TextButton button = new TextButton("Save frame", skin);
+        button.getStyle().font = largeFont;
+        button.setStyle(button.getStyle());
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.getApp().setSaveFrameRequested(true);
+            }
+        });
+        return canvas.add(button);
     }
 
     private void enlargeCheckBoxFont(CheckBox box){

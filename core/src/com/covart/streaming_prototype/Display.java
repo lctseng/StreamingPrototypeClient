@@ -33,8 +33,6 @@ public class Display implements Disposable, SensorDataListener{
     private Mesh mesh;
 
     private Texture textureStartStop;
-    private Texture textureSaveFrame;
-    private Texture textureRecenter;
 
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
@@ -46,8 +44,6 @@ public class Display implements Disposable, SensorDataListener{
         font.getData().setScale(1.5f);
 
         textureStartStop = new Texture("start-stop.png");
-        textureSaveFrame = new Texture("save-frame.png");
-        textureRecenter = new Texture("recenter.png");
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -197,8 +193,6 @@ public class Display implements Disposable, SensorDataListener{
         batch.begin();
         // draw control
         batch.draw(textureStartStop, 0, Gdx.graphics.getHeight() - 100, 100, 100);
-        batch.draw(textureSaveFrame, Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 250, 100, 100);
-        batch.draw(textureRecenter, Gdx.graphics.getWidth() - 250, 0, 100, 100);
         // clear flash messages
         StringPool.clearFlashMessages();
     }
@@ -230,10 +224,8 @@ public class Display implements Disposable, SensorDataListener{
     public void dispose() {
         batch.dispose();
         font.dispose();
-        textureSaveFrame.dispose();
         textureStartStop.dispose();
         textureManager.dispose();
-        textureRecenter.dispose();
     }
 
     public void disposeExistingTexture(){
