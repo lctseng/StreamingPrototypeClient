@@ -18,7 +18,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
     private native boolean nativeDecoderFlush();
 
     private boolean nativeDecoderReady;
-    private volatile boolean nativeDecoderError;
+    private volatile boolean terminating;
 
 
     ImageDecoderH264(){
@@ -37,9 +37,9 @@ public class ImageDecoderH264 extends ImageDecoderBase {
             Gdx.app.error("H264", "Native decoder unavailable!");
             return;
         }
-        nativeDecoderError = false;
+        terminating = false;
 
-        while(!nativeDecoderError){
+        while(!terminating){
             try {
                 // read from network
                 Buffer encodedBuf = acquireEncodedResult();
@@ -48,13 +48,13 @@ public class ImageDecoderH264 extends ImageDecoderBase {
 
                 if(encodedBuf.size > 0){
                     if(!nativeDecoderParse(encodedBuf)){
-                        Gdx.app.log("H264", "Parse Error!");
+                        Gdx.app.error("H264", "Parse Error!");
                     }
                 }
                 else{
                     nativeDecoderFlush();
                 }
-                if(nativeDecoderError){
+                if(terminating){
                     // when there is error in API, just stop it!
                     break;
                 }
@@ -74,22 +74,33 @@ public class ImageDecoderH264 extends ImageDecoderBase {
 
     // call from JNI: after frame is decoded and place to Buffer
     public void onFrameReady(Buffer buf){
-        try {
-            sendImageResult(buf);
-        } catch (InterruptedException e) {
-            Gdx.app.error("H264", "Worker interrupted when onFrameReady");
-            nativeDecoderError = true;
+        if(!terminating) {
+            try {
+                sendImageResult(buf);
+            } catch (InterruptedException e) {
+                Gdx.app.error("H264", "Worker interrupted when onFrameReady");
+                terminating = true;
+            }
+        }
+        else{
+            Gdx.app.error("H264", "Worker terminating when onFrameReady");
         }
     }
 
     // call from JNI: when frame in decoded
     public Buffer getDisplayBuffer(){
-        // read from network
-        try {
-            return acquireImageBuffer();
-        } catch (InterruptedException e) {
-            Gdx.app.error("H264", "Worker interrupted when getDisplayBuffer");
-            nativeDecoderError = true;
+        if(!terminating) {
+            // read from network
+            try {
+                return acquireImageBuffer();
+            } catch (InterruptedException e) {
+                Gdx.app.error("H264", "Worker interrupted when getDisplayBuffer");
+                terminating = true;
+                return null;
+            }
+        }
+        else{
+            Gdx.app.error("H264", "Worker terminating when getDisplayBuffer");
             return null;
         }
     }
@@ -103,7 +114,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
 
     @Override
     public void stop() {
-        nativeDecoderError = true;
+        terminating = true;
         super.stop();
     }
 }
