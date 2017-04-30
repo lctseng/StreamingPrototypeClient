@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
+import com.covart.streaming_prototype.Buffer;
+import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.StringPool;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

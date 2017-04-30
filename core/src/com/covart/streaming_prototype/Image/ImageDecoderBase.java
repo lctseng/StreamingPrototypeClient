@@ -1,7 +1,10 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
+import com.covart.streaming_prototype.Buffer;
+import com.covart.streaming_prototype.BufferPool;
+import com.covart.streaming_prototype.Component;
 
 /**
  * Created by lctseng on 2017/2/11.

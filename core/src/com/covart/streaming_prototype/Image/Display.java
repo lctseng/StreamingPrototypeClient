@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +10,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
+import com.covart.streaming_prototype.Buffer;
+import com.covart.streaming_prototype.BufferPool;
+import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.Profiler;
+import com.covart.streaming_prototype.Sensor;
+import com.covart.streaming_prototype.StringPool;
 
 import StreamingFormat.Message;
 
@@ -34,7 +40,7 @@ public class Display implements Disposable{
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
 
-    Display(){
+    public Display(){
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -133,7 +139,7 @@ public class Display implements Disposable{
 
     }
 
-    void start(){
+    public void start(){
         disposeExistingTexture();
         textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
         ConfigManager.setFocusChangeRatio(1.0f);

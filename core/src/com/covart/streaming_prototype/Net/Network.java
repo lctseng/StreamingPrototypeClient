@@ -1,13 +1,18 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
+import com.covart.streaming_prototype.Component;
+import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.MasterComponentAdapter;
+import com.covart.streaming_prototype.PackInteger;
+import com.covart.streaming_prototype.StringPool;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import StreamingFormat.Message;
 
-import static com.covart.streaming_prototype.Network.State.NotReady;
-import static com.covart.streaming_prototype.Network.State.Ready;
+import static com.covart.streaming_prototype.Net.Network.State.NotReady;
+import static com.covart.streaming_prototype.Net.Network.State.Ready;
 
 /**
  * Created by lctseng on 2017/2/11.

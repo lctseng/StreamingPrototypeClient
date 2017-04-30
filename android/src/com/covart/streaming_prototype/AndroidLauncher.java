@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.covart.streaming_prototype.Image.ImageDecoderH264;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

@@ -1,10 +1,11 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.Protocol;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.covart.streaming_prototype.ConfigManager;
 
 import java.io.IOException;
 import java.io.InputStream;

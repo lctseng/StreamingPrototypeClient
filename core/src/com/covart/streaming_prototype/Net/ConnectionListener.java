@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Net;
 
 /**
  * Created by lctseng on 2017/2/10.

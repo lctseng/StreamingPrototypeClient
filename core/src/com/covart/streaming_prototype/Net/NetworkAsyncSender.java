@@ -1,6 +1,7 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Net;
 
 import com.badlogic.gdx.Gdx;
+import com.covart.streaming_prototype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
