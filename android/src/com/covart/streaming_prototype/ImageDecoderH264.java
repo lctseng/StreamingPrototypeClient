@@ -58,6 +58,9 @@ public class ImageDecoderH264 extends ImageDecoderBase {
                     // when there is error in API, just stop it!
                     break;
                 }
+                if(Thread.currentThread().isInterrupted()){
+                    break;
+                }
                 // release buffer to network
                 Profiler.reportOnProcEnd();
                 releaseEncodedBuffer(encodedBuf);
