@@ -6,9 +6,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.UIManager;
-import com.covart.streaming_prototype.Net.Network;
+import com.covart.streaming_prototype.Image.Display;
+import com.covart.streaming_prototype.Image.ImageDecoderBase;
+import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
 
 import java.util.Locale;
 

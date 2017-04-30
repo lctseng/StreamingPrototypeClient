@@ -1,6 +1,8 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
+import com.covart.streaming_prototype.Buffer;
+import com.covart.streaming_prototype.Profiler;
 
 /**
  * Created by lctseng on 2017/2/11.
@@ -21,7 +23,7 @@ public class ImageDecoderH264 extends ImageDecoderBase {
     private volatile boolean terminating;
 
 
-    ImageDecoderH264(){
+    public ImageDecoderH264(){
         super();
         System.loadLibrary("ffmpeg");
         System.loadLibrary("native-lib");
