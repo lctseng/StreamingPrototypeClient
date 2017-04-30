@@ -5,11 +5,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 
@@ -18,10 +14,7 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class Sensor implements Runnable, Component {
-
-    private Thread worker = null;
-    private ArrayList<SensorDataListener> listeners;
+public class Sensor implements Component {
 
     // init settings
     private Vector3 initDirection;
@@ -40,16 +33,9 @@ public class Sensor implements Runnable, Component {
     private float translationMagnitudeVert;
 
 
-
-
     // temp data for computation
     private Matrix4 tempMatrix;
     private Quaternion tempQuaternion;
-    private Vector3 tempVector3;
-
-    // wait for init direction
-    private final Lock lock = new ReentrantLock();
-    private final Condition defaultPosReady = lock.newCondition();
 
     private int serialNumber;
 
@@ -58,9 +44,10 @@ public class Sensor implements Runnable, Component {
     private float screenX;
     private float screenY;
 
+    private boolean initDataReady;
+
 
     Sensor(){
-        listeners = new ArrayList<SensorDataListener>();
 
         initDirection = Vector3.Z;
         initUp = Vector3.Y;
@@ -78,9 +65,18 @@ public class Sensor implements Runnable, Component {
 
         tempMatrix = new Matrix4();
         tempQuaternion = new Quaternion();
-        tempVector3 = new Vector3();
 
         serialNumber = 0;
+
+        setInitDataReady(false);
+    }
+
+    public boolean isInitDataReady() {
+        return initDataReady;
+    }
+
+    public void setInitDataReady(boolean initDataReady) {
+        this.initDataReady = initDataReady;
     }
 
     private void updateInitRightVector(){
@@ -89,75 +85,23 @@ public class Sensor implements Runnable, Component {
         Gdx.app.log("Sensor", String.format(Locale.TAIWAN, "Init right: X = %6.4f, Y = %6.4f, Z = %6.4f", initRightVector.x, initRightVector.y, initRightVector.z));
     }
 
-    public void addListener(SensorDataListener listener){
-        listeners.add(listener);
-    }
-
     @Override
     public void start() {
-        stop();
-        Gdx.app.log("Sensor","starting");
-        worker = new Thread(this);
-        worker.start();
+        setInitDataReady(false);
     }
 
     @Override
     public void stop() {
-        if(worker != null){
-            Gdx.app.log("Sensor","stopping");
-            worker.interrupt();
-            if(Thread.currentThread() != worker){
-                try {
-                    worker.join(2000);
-                    Gdx.app.log("Sensor","Worker stopped");
-                } catch (InterruptedException e) {
-                    Gdx.app.error("Sensor", "Cannot join worker: interrupted");
-                    e.printStackTrace();
-                }
-            }
-            worker = null;
-        }
-    }
-
-    @Override
-    public void run() {
-        // wait for default position
-        Gdx.app.log("Sensor Worker", "Start waiting for default position...");
-        lock.lock();
-        try {
-            defaultPosReady.await();
-        } catch (InterruptedException e) {
-            Gdx.app.error("Sensor Worker", "Waiting for default position is interrupted. Worker terminated");
-            return;
-        } finally {
-            lock.unlock();
-        }
-        // start sending
-        serialNumber = 0;
-        while(true){
-            if(Thread.currentThread().isInterrupted()){
-                break;
-            }
-            try {
-                Thread.sleep(ConfigManager.getSensorReportInterval());
-            } catch (InterruptedException e) {
-                break;
-            }
-            serialNumber += 1;
-            sendSensorData();
-        }
+        setInitDataReady(false);
     }
 
     public void setInitDirection(float vx, float vy, float vz){
-        lock.lock();
         initDirection.set(vx, vy, vz);
         Gdx.app.log("Sensor", String.format(Locale.TAIWAN, "Init direction: X = %6.4f, Y = %6.4f, Z = %6.4f", initDirection.x, initDirection.y, initDirection.z));
         updateInitRightVector();
         Gdx.input.getRotationMatrix(tempMatrix.val);
         RecenterRotation();
-        defaultPosReady.signal();
-        lock.unlock();
-
+        setInitDataReady(true);
     }
 
     public void RecenterRotation(){
@@ -215,6 +159,12 @@ public class Sensor implements Runnable, Component {
         // compute translation from rotation
         computeTranslation();
 
+
+
+        StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
+        StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
+        StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
+
     }
 
     private void computeTranslation(){
@@ -240,23 +190,6 @@ public class Sensor implements Runnable, Component {
 
         StringPool.addField("SensorAngle", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
 
-    }
-
-
-    private void sendSensorData(){
-
-        updateSensorData();
-
-
-
-        StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
-        StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
-        StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
-
-
-        for (SensorDataListener listener : listeners) {
-            listener.onSensorDataReady(this);
-        }
     }
 
     public Vector3 getInitDirection(){

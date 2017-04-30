@@ -52,7 +52,7 @@ public class ConfigManager {
 
     private static boolean stopOnDisconnected = false;
 
-    private static long sensorReportInterval = 150;
+    private static float sensorReportInterval = 0.150f;
 
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
@@ -142,11 +142,11 @@ public class ConfigManager {
         ConfigManager.stopOnDisconnected = stopOnDisconnected;
     }
 
-    public static long getSensorReportInterval() {
+    public static float getSensorReportInterval() {
         return sensorReportInterval;
     }
 
-    public static void setSensorReportInterval(long sensorReportInterval) {
+    public static void setSensorReportInterval(float sensorReportInterval) {
         ConfigManager.sensorReportInterval = sensorReportInterval;
     }
 

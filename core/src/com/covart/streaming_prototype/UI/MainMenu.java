@@ -341,13 +341,13 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getSensorReportIntervalText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(100, 1000, 1, false, skin);
+        final HorzSlider slider = new HorzSlider(0.01f, 2f, 0.001f, false, skin);
         slider.setValue(ConfigManager.getSensorReportInterval());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setSensorReportInterval(((long)slider.getValue()));
+                ConfigManager.setSensorReportInterval(slider.getValue());
                 name.setText(getSensorReportIntervalText());
             }
         });
@@ -359,7 +359,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getSensorReportIntervalText(){
-        return String.format(Locale.TAIWAN,"Sensor interval: %3d", ConfigManager.getSensorReportInterval());
+        return String.format(Locale.TAIWAN,"Sensor interval: %.3f", ConfigManager.getSensorReportInterval());
     }
 
     private void addApertureSizeUI(){

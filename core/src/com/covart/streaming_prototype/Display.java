@@ -19,7 +19,7 @@ import StreamingFormat.Message;
  * NTU COV-ART Lab, for NCP project
  */
 
-public class Display implements Disposable, SensorDataListener{
+public class Display implements Disposable{
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
@@ -227,7 +227,6 @@ public class Display implements Disposable, SensorDataListener{
         else return val;
     }
 
-    @Override
     public void onSensorDataReady(Sensor sensor){
         // update texture manager
         textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());

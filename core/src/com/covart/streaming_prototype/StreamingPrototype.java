@@ -19,7 +19,7 @@ import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDo
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter, SensorDataListener {
+        implements MasterComponentAdapter {
 
 
     public enum State {
@@ -35,6 +35,8 @@ public class StreamingPrototype extends ApplicationAdapter
     private Network network;
     private ImageDecoderBase decoder;
     private Sensor sensor;
+
+    private float sensorDataTime;
 
     // change scene
     public boolean sceneChanged = false;
@@ -65,8 +67,6 @@ public class StreamingPrototype extends ApplicationAdapter
         network = new Network(this);
         display = new Display();
         sensor  = new Sensor();
-        sensor.addListener(this);
-        sensor.addListener(display);
 
 
 
@@ -95,6 +95,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void start() {
+        sensorDataTime = 0f;
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
@@ -140,6 +141,16 @@ public class StreamingPrototype extends ApplicationAdapter
         if(stopRequired){
             stop();
         }
+        if(sensor.isInitDataReady()){
+            sensor.updateSensorData();
+            display.onSensorDataReady(sensor);
+            sensorDataTime += Gdx.graphics.getDeltaTime();
+            if(sensorDataTime > ConfigManager.getSensorReportInterval()){
+                sensorDataTime = 0f;
+                sendSenserData();
+            }
+        }
+
         display.updateStart();
         Profiler.generateProfilingStrings();
         display.updateEnd();
@@ -215,8 +226,7 @@ public class StreamingPrototype extends ApplicationAdapter
         return msg;
     }
 
-    @Override
-    public void onSensorDataReady(Sensor sensor) {
+    public void sendSenserData() {
         Message.StreamingMessage msg = makeSensorPacket(sensor.getDirecton(), sensor.getRotation());
         if(msg != null){
             network.sendMessageProtobufAsync(msg);
