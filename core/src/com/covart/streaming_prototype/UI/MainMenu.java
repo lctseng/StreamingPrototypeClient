@@ -36,6 +36,9 @@ public class MainMenu extends UIComponent {
     private int tableColumnSpan = 3;
     private int buttonWidth = 250;
 
+    private float commonRowHeight = 100f;
+    private float slideBarSize = 70f;
+
     private Label startStopLabel;
     private TextButton startStopButton;
 
@@ -67,9 +70,10 @@ public class MainMenu extends UIComponent {
         canvas.setX(0);
         canvas.setWidth(Gdx.graphics.getWidth());
         canvas.setHeight(500);
-        canvas.setDebug(false);
+        canvas.setDebug(true);
         canvas.setVisible(false);
         canvas.top();
+        canvas.row().height(commonRowHeight);
         addComponents();
         canvas.setY(Gdx.graphics.getHeight() - canvas.getHeight() - 150);
     }
@@ -149,7 +153,7 @@ public class MainMenu extends UIComponent {
         });
         canvas.add(startStopLabel);
         canvas.add(startStopButton).width(buttonWidth);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private void updateStartStopText(){
@@ -208,7 +212,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(label);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
 
 
     }
@@ -234,7 +238,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private void addFakeDirectionUI(){
@@ -257,7 +261,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(box).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private void addStopOnDisconnectedUI(){
@@ -280,7 +284,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(box).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private void addFocusChangeUI(){
@@ -288,7 +292,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.1f, 2.0f, 0.001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 2.0f, 0.001f, false, skin);
         slider.setValue(ConfigManager.getFocusChangeRatio());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -302,7 +306,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
 
     }
 
@@ -329,7 +333,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private String getInterpolateRadiusText(){
@@ -355,7 +359,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private String getSensorReportIntervalText(){
@@ -381,7 +385,7 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private String getApertureSizeText(){
@@ -391,7 +395,7 @@ public class MainMenu extends UIComponent {
     private void addButtons(){
         addRecenterButton().width(buttonWidth);
         addSaveFrameButton().width(buttonWidth);
-        canvas.row();
+        canvas.row().height(commonRowHeight);
     }
 
     private Cell<TextButton> addRecenterButton(){
@@ -423,19 +427,19 @@ public class MainMenu extends UIComponent {
     private void enlargeSlider(HorzSlider slider){
         slider.setCustomWidth(300);
         slider.setDebug(canvas.getDebug());
-        slider.getStyle().background.setMinHeight(35);
-        slider.getStyle().knob.setMinWidth(35);
-        slider.getStyle().knob.setMinHeight(35);
+        slider.getStyle().background.setMinHeight(slideBarSize);
+        slider.getStyle().knob.setMinWidth(slideBarSize);
+        slider.getStyle().knob.setMinHeight(slideBarSize);
         slider.setStyle(slider.getStyle());
     }
 
     private void enlargeCheckBoxFont(CheckBox box){
         box.getStyle().font = largeFont;
         box.setStyle(box.getStyle());
-        box.getImage().setScale(2.5f);
         box.getImage().setDebug(canvas.getDebug());
-        box.getImage().setOriginX(30);
+        box.getImage().setOriginX(20);
         box.getImage().setOriginY(7);
+        box.getImage().setScale(4f);
     }
 
     private void updateCheckBoxText(CheckBox box){
