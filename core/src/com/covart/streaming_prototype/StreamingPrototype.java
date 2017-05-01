@@ -156,7 +156,7 @@ public class StreamingPrototype extends ApplicationAdapter
         }
 
         display.updateStart();
-        Profiler.generateProfilingStrings();
+        //Profiler.generateProfilingStrings();
         display.updateEnd();
         // control frame update if started
         if(state == Running){

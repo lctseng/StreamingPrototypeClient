@@ -69,8 +69,8 @@ public class MainMenu extends UIComponent {
         canvas = new Table();
         canvas.setX(0);
         canvas.setWidth(Gdx.graphics.getWidth());
-        canvas.setHeight(500);
-        canvas.setDebug(true);
+        canvas.setHeight(1000);
+        canvas.setDebug(false);
         canvas.setVisible(false);
         canvas.top();
         canvas.row().height(commonRowHeight);
