@@ -59,6 +59,8 @@ public class ConfigManager {
 
     private static boolean useFakeDirection = false;
 
+    private static float sensorUpdateDisplayTime = 0.05f;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -186,6 +188,13 @@ public class ConfigManager {
         ConfigManager.useFakeDirection = useFakeDirection;
     }
 
+    public static float getSensorUpdateDisplayTime() {
+        return sensorUpdateDisplayTime;
+    }
+
+    public static void setSensorUpdateDisplayTime(float sensorUpdateDisplayTime) {
+        ConfigManager.sensorUpdateDisplayTime = sensorUpdateDisplayTime;
+    }
 
     // end of getters and setters
 

@@ -40,7 +40,8 @@ public class StreamingPrototype extends ApplicationAdapter
     private ImageDecoderBase decoder;
     private Sensor sensor;
 
-    private float sensorDataTime;
+    private float sensorSendDataTime;
+    private float sensorDisplayDataTime;
 
     // change scene
     public boolean sceneChanged = false;
@@ -99,7 +100,8 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void start() {
-        sensorDataTime = 0f;
+        sensorSendDataTime = 0f;
+        sensorDisplayDataTime = 0f;
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
@@ -147,11 +149,15 @@ public class StreamingPrototype extends ApplicationAdapter
         }
         if(sensor.isInitDataReady()){
             sensor.updateSensorData();
-            display.onSensorDataReady(sensor);
-            sensorDataTime += Gdx.graphics.getDeltaTime();
-            if(sensorDataTime > ConfigManager.getSensorReportInterval()){
-                sensorDataTime = 0f;
+            sensorSendDataTime += Gdx.graphics.getDeltaTime();
+            if(sensorSendDataTime > ConfigManager.getSensorReportInterval()){
+                sensorSendDataTime = 0f;
                 sendSenserData();
+            }
+            sensorDisplayDataTime += Gdx.graphics.getDeltaTime();
+            if(sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()){
+                sensorDisplayDataTime = 0f;
+                display.onSensorDataReady(sensor);
             }
         }
 
