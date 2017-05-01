@@ -50,6 +50,8 @@ public class Sensor implements Component {
     private float infoPrintTimeMax = 1f;
     private float infoPrintTimeCurrent;
 
+
+
     Sensor(){
 
         initDirection = Vector3.Z;
@@ -174,7 +176,7 @@ public class Sensor implements Component {
         if(angleVert > (Math.PI / 6) && angleVert <= Math.PI) angleVert = ((float)Math.PI/6);
         if(angleVert >= Math.PI && angleVert < 2*Math.PI) angleVert -= 2*Math.PI ;
         if(angleVert < -(Math.PI/6)) angleVert = -((float)Math.PI/6);
-        translationMagnitudeVert = (float)Math.sin(angleVert) * -1;
+        translationMagnitudeVert = translationMagnitudeVert * ConfigManager.getTranslationAverageFactor() +  (float)Math.sin(angleVert) * -1 * (1 - ConfigManager.getTranslationAverageFactor());
 
         // compute horizontal  translation
         // scale the angle
@@ -182,7 +184,7 @@ public class Sensor implements Component {
         if(angleHorz > (Math.PI / 3) && angleHorz <= Math.PI) angleHorz = ((float)Math.PI/3);
         if(angleHorz >= Math.PI && angleHorz < 2*Math.PI) angleHorz -= 2*Math.PI ;
         if(angleHorz < -(Math.PI/3)) angleHorz = -((float)Math.PI/3);
-        translationMagnitudeHorz = angleHorz / ((float)Math.PI/3) / 2;
+        translationMagnitudeHorz =  translationMagnitudeHorz * ConfigManager.getTranslationAverageFactor() + (angleHorz / ((float)Math.PI/3) / 2) * (1f - ConfigManager.getTranslationAverageFactor());
         // apply on position delta
         positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
 

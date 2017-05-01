@@ -124,6 +124,7 @@ public class MainMenu extends UIComponent {
         addFocusChangeUI();
         addApertureSizeUI();
         addInterpolateChangeUI();
+        addSensorTranslationAverageFactorUI();
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         addButtons();
@@ -339,6 +340,32 @@ public class MainMenu extends UIComponent {
 
     private String getInterpolateRadiusText(){
         return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+    }
+
+    private void addSensorTranslationAverageFactorUI(){
+        // label
+        final Label name = new Label(getSensorTranslationAverageFactorText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 1.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getTranslationAverageFactor());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setTranslationAverageFactor(slider.getValue());
+                name.setText(getSensorTranslationAverageFactorText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row().height(commonRowHeight);
+    }
+
+    private String getSensorTranslationAverageFactorText(){
+        return String.format(Locale.TAIWAN,"Translation average factor: %.3f", ConfigManager.getTranslationAverageFactor());
     }
 
     private void addSensorUpdateDisplayUI(){
