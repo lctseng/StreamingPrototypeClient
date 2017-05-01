@@ -59,6 +59,10 @@ public class ConfigManager {
 
     private static boolean useFakeDirection = false;
 
+    private static float sensorUpdateDisplayTime = 1f/60f;
+
+    private static float translationAverageFactor = 0.9f;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -186,6 +190,21 @@ public class ConfigManager {
         ConfigManager.useFakeDirection = useFakeDirection;
     }
 
+    public static float getSensorUpdateDisplayTime() {
+        return sensorUpdateDisplayTime;
+    }
+
+    public static void setSensorUpdateDisplayTime(float sensorUpdateDisplayTime) {
+        ConfigManager.sensorUpdateDisplayTime = sensorUpdateDisplayTime;
+    }
+
+    public static float getTranslationAverageFactor() {
+        return translationAverageFactor;
+    }
+
+    public static void setTranslationAverageFactor(float translationAverageFactor) {
+        ConfigManager.translationAverageFactor = translationAverageFactor;
+    }
 
     // end of getters and setters
 

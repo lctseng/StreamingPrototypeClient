@@ -47,6 +47,11 @@ public class Sensor implements Component {
     private boolean initDataReady;
 
 
+    private float infoPrintTimeMax = 1f;
+    private float infoPrintTimeCurrent;
+
+
+
     Sensor(){
 
         initDirection = Vector3.Z;
@@ -67,6 +72,7 @@ public class Sensor implements Component {
         tempQuaternion = new Quaternion();
 
         serialNumber = 0;
+        infoPrintTimeCurrent = 0;
 
         setInitDataReady(false);
     }
@@ -159,12 +165,6 @@ public class Sensor implements Component {
         // compute translation from rotation
         computeTranslation();
 
-
-
-        StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
-        StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
-        StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
-
     }
 
     private void computeTranslation(){
@@ -176,7 +176,7 @@ public class Sensor implements Component {
         if(angleVert > (Math.PI / 6) && angleVert <= Math.PI) angleVert = ((float)Math.PI/6);
         if(angleVert >= Math.PI && angleVert < 2*Math.PI) angleVert -= 2*Math.PI ;
         if(angleVert < -(Math.PI/6)) angleVert = -((float)Math.PI/6);
-        translationMagnitudeVert = (float)Math.sin(angleVert) * -1;
+        translationMagnitudeVert = translationMagnitudeVert * ConfigManager.getTranslationAverageFactor() +  (float)Math.sin(angleVert) * -1 * (1 - ConfigManager.getTranslationAverageFactor());
 
         // compute horizontal  translation
         // scale the angle
@@ -184,11 +184,19 @@ public class Sensor implements Component {
         if(angleHorz > (Math.PI / 3) && angleHorz <= Math.PI) angleHorz = ((float)Math.PI/3);
         if(angleHorz >= Math.PI && angleHorz < 2*Math.PI) angleHorz -= 2*Math.PI ;
         if(angleHorz < -(Math.PI/3)) angleHorz = -((float)Math.PI/3);
-        translationMagnitudeHorz = angleHorz / ((float)Math.PI/3) / 2;
+        translationMagnitudeHorz =  translationMagnitudeHorz * ConfigManager.getTranslationAverageFactor() + (angleHorz / ((float)Math.PI/3) / 2) * (1f - ConfigManager.getTranslationAverageFactor());
         // apply on position delta
         positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
 
-        StringPool.addField("SensorAngle", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
+
+        infoPrintTimeCurrent += Gdx.graphics.getDeltaTime();
+        if(infoPrintTimeCurrent > infoPrintTimeMax) {
+            infoPrintTimeCurrent = 0f;
+            StringPool.addField("SensorAngle", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
+            StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
+            StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
+            StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
+        }
 
     }
 

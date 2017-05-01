@@ -66,7 +66,7 @@ public class TextureManager implements Disposable {
         // if lastColumn != current column, then reset rowIndex
         // means a new column is coming!
         if(lastColumnIndex != buffer.index){
-            Gdx.app.log("TextureManager", "Set new column: " + buffer.index);
+            //Gdx.app.log("TextureManager", "Set new column: " + buffer.index);
             rowIndex = 0;
             lastColumnIndex = buffer.index;
             // reset image buffer
@@ -88,7 +88,7 @@ public class TextureManager implements Disposable {
             }
             textures[buffer.index] = new Texture(slotImage);
             slotImageBuf.rewind();
-            Gdx.app.log("TextureManager", "End of column: " + buffer.index);
+            //Gdx.app.log("TextureManager", "End of column: " + buffer.index);
             rowIndex = 0;
             //freeUnusedTextures();
 
