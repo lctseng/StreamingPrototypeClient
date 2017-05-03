@@ -41,8 +41,8 @@ public class ConfigManager {
 
     private static StreamingPrototype app;
 
-    private static float cameraStepX = 0.00759f * 2f * 4;
-    private static float cameraStepY = 0.0097f * 2f;
+    private static float cameraStepX = 0.1f; // 0.00759f * 2f * 4
+    private static float cameraStepY = 0.0194f; // 0.0097f * 2f
 
     private static float apertureSize = 10.0f;
 

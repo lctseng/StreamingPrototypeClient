@@ -122,6 +122,8 @@ public class MainMenu extends UIComponent {
         addFakeDirectionUI();
         addStopOnDisconnectedUI();
         addFocusChangeUI();
+        addStepXChangeUI();
+        addStepYChangeUI();
         addApertureSizeUI();
         addInterpolateChangeUI();
         addSensorTranslationAverageFactorUI();
@@ -314,6 +316,60 @@ public class MainMenu extends UIComponent {
 
     private String getFocusRatioText(){
         return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
+    }
+
+    private void addStepXChangeUI(){
+        // label
+        final Label name = new Label(getStepXChangeText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.001f, 0.150f, 0.00001f, false, skin);
+        slider.setValue(ConfigManager.getCameraStepX());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setCameraStepX(slider.getValue());
+                name.setText(getStepXChangeText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row().height(commonRowHeight);
+
+    }
+
+    private String getStepXChangeText(){
+        return String.format(Locale.TAIWAN,"Step X ratio: %.5f",ConfigManager.getCameraStepX());
+    }
+
+    private void addStepYChangeUI(){
+        // label
+        final Label name = new Label(getStepYChangeText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0001f, 0.050f, 0.00001f, false, skin);
+        slider.setValue(ConfigManager.getCameraStepY());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setCameraStepY(slider.getValue());
+                name.setText(getStepYChangeText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row().height(commonRowHeight);
+
+    }
+
+    private String getStepYChangeText(){
+        return String.format(Locale.TAIWAN,"Step Y ratio: %.5f",ConfigManager.getCameraStepY());
     }
 
     private void addInterpolateChangeUI(){
