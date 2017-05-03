@@ -81,7 +81,7 @@ void main(void) {
 				float projX   = 2.0 * textureCoords.s - 1.0;
 				float projY   = 2.0 * textureCoords.t - 1.0;
 				float pixelX = projX - dx * focusPointX;
-				float pixelY = projY - dy * focusPointY;
+				float pixelY = projY + dy * focusPointY;
 				float px = 0.5 * pixelX + 0.5;
 				float py = 0.5 * pixelY + 0.5;
 				if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {

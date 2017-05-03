@@ -144,7 +144,7 @@ public class Sensor implements Component {
 
             // apply vert rotation
             float angleVert;
-            angleVert = -1* (screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30);
+            angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30;
             tempQuaternion.set(rightVector, angleVert);
             tempQuaternion.transform(directon);
 
