@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StreamingPrototype.State;
 
@@ -124,6 +125,9 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
         addSensorMoveTypeSelectUI();
         addSensorAutoMoveSpeedUI();
+        canvas.row().height(commonRowHeight);
+        addDisplayModeSelectUI();
+        addDisplayVRDisparityUI();
         canvas.row().height(commonRowHeight);
         addStopOnDisconnectedUI();
         addFocusChangeUI();
@@ -277,8 +281,56 @@ public class MainMenu extends UIComponent {
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
     }
 
+    private void addDisplayModeSelectUI(){
+        // label
+        Label name = new Label("Display mode:", largeLabelStyle);
+
+        // create select box
+        final SelectBox<Display.Mode> selectBox = new SelectBox<Display.Mode>(skin);
+        selectBox.getStyle().font = largeFont;
+        selectBox.getStyle().listStyle.font = largeFont;
+
+        // add select list listener
+        selectBox.setItems(ConfigManager.getDisplayModeList());
+        selectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayMode(selectBox.getSelected());
+            }
+        });
+
+        canvas.add(name);
+        canvas.add(selectBox).colspan(tableColumnSpan - 1);
+    }
+
+    private void addDisplayVRDisparityUI(){
+        // label
+        final Label name = new Label(getDisplayVRDisparityText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 0.50f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getDisplayVRDisparity());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayVRDisparity(slider.getValue());
+                name.setText(getDisplayVRDisparityText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayVRDisparityText(){
+        return String.format(Locale.TAIWAN,"Display disparity: %.5f",ConfigManager.getDisplayVRDisparity());
+    }
+
     private void addStopOnDisconnectedUI(){
-// label
+        // label
         Label name = new Label("Stop on disconnected:", largeLabelStyle);
 
         // checkbox

@@ -26,6 +26,11 @@ import StreamingFormat.Message;
  */
 
 public class Display implements Disposable{
+
+    public enum Mode {
+        VR, NORMAL
+    }
+
     // gdx basic drawing
     private SpriteBatch batch;
     private BitmapFont font;
@@ -170,86 +175,92 @@ public class Display implements Disposable{
         }
     }
 
+    private void drawNormalView(){
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
+        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
+    }
+
+    private void drawVRView(){
+        // draw left eye
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixLeft);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
+        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
+
+        // draw right eye
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixRight);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
+        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
+    }
+
+
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         collectImages();
-
-        boolean enableVR = true;
-
-
-        if(enableVR) {
-
-            // draw left eye
-            shaderProgram.begin();
-            // set matrix
-            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixLeft);
-            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-            // set camera params
-            shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-            shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-            shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-            shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-            shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-            shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-            shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-            shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-            // binding texture
-            textureManager.bindTextures(shaderProgram);
-            // draw!
-            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            shaderProgram.end();
-
-            // draw right eye
-            shaderProgram.begin();
-            // set matrix
-            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixRight);
-            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-            // set camera params
-            shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-            shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-            shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-            shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-            shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-            shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-            shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-            shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-            // binding texture
-            textureManager.bindTextures(shaderProgram);
-            // draw!
-            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            shaderProgram.end();
-        }
-        else{
-            // Normal render
-            shaderProgram.begin();
-            // set matrix
-            shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-            shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-            // set camera params
-            shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-            shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-            shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-            shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-            shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-            shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-            shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-            shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-            shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-            // binding texture
-            textureManager.bindTextures(shaderProgram);
-            // draw!
-            mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            shaderProgram.end();
+        
+        switch(ConfigManager.getDisplayMode()){
+            case NORMAL:
+                drawNormalView();
+                break;
+            case VR:
+                drawVRView();
+                break;
         }
         Profiler.reportOnDisplay();
 
