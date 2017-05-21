@@ -100,6 +100,8 @@ void main(void) {
 
 				if(enable_distortion_correction != 0){
 					// distortion
+					// ref: http://paulbourke.net/miscellaneous/lenscorrection/
+					
 					float r2 = projX * projX + projY * projY;
 					float rScale = 1.0 - 0.1*r2;
 					
