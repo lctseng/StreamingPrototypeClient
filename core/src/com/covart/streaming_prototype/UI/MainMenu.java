@@ -128,6 +128,7 @@ public class MainMenu extends UIComponent {
         addStepYChangeUI();
         addApertureSizeUI();
         addInterpolateChangeUI();
+        addFreeUnusedTextureControlUI();
         addSensorTranslationAverageFactorUI();
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
@@ -400,6 +401,32 @@ public class MainMenu extends UIComponent {
 
     private String getInterpolateRadiusText(){
         return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+    }
+
+    private void addFreeUnusedTextureControlUI(){
+        // label
+        final Label name = new Label(getFreeUnusedTextureControlText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0, ConfigManager.getNumOfLFs(), 1, false, skin);
+        slider.setValue(ConfigManager.getFreeUnusedTextureThreshold());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setFreeUnusedTextureThreshold(((int)slider.getValue()));
+                name.setText(getFreeUnusedTextureControlText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row().height(commonRowHeight);
+    }
+
+    private String getFreeUnusedTextureControlText(){
+        return String.format(Locale.TAIWAN,"Free texture threshold: %d", ConfigManager.getFreeUnusedTextureThreshold());
     }
 
     private void addSensorTranslationAverageFactorUI(){

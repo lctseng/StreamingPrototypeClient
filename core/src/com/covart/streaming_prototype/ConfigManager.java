@@ -71,6 +71,8 @@ public class ConfigManager {
 
     private static float translationAverageFactor = 0.9f;
 
+    private static int freeUnusedTextureThreshold = 0;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -230,5 +232,13 @@ public class ConfigManager {
 
     public static void setSensorAutoMoveSpeed(float sensorAutoMoveSpeed) {
         ConfigManager.sensorAutoMoveSpeed = sensorAutoMoveSpeed;
+    }
+
+    public static int getFreeUnusedTextureThreshold() {
+        return freeUnusedTextureThreshold;
+    }
+
+    public static void setFreeUnusedTextureThreshold(int freeUnusedTextureThreshold) {
+        ConfigManager.freeUnusedTextureThreshold = freeUnusedTextureThreshold;
     }
 }
