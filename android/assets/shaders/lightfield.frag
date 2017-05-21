@@ -50,12 +50,14 @@ uniform float focusPointY;
 uniform float apertureSize;
 uniform int col_start;
 uniform int col_end;
+uniform int interop_span;
 
 void main(void) {
 	float spanX = 1.0 / float(cols);
 	float spanY = 1.0 / float(rows);
 	float cameraIndexX = cameraPositionX * float(cols - 1);
 	float cameraIndexY = cameraPositionY * float(rows - 1);
+	int cameraIndexYRounded = int(floor(cameraIndexY + 0.5));
 	float gapRatio = 8.0;
 
 	float cameraGapX = gapRatio / float(cols - 1);
@@ -77,7 +79,11 @@ void main(void) {
 			float cameraY = initCameraY + float(i) * cameraGapY;
 			float dx = cameraX - centerCameraX;
 			float dy = cameraY - centerCameraY;
-			if (dx * dx + dy * dy < apertureSize) {
+			int yDiff = cameraIndexYRounded - i;
+			if(yDiff < 0){
+				yDiff *= -1;
+			}
+			if (dx * dx + dy * dy < apertureSize && yDiff <= interop_span) {
 				float projX   = 2.0 * textureCoords.s - 1.0;
 				float projY   = 2.0 * textureCoords.t - 1.0;
 				float pixelX = projX - dx * focusPointX;
