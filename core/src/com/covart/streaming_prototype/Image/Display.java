@@ -179,6 +179,7 @@ public class Display implements Disposable{
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
