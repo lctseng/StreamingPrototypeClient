@@ -16,6 +16,10 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
 
 public class Sensor implements Component {
 
+    public enum MoveType {
+        REAL, MANUAL, AUTO, NONE
+    }
+
     // init settings
     private Vector3 initDirection;
     private Vector3 initUp;
@@ -50,7 +54,9 @@ public class Sensor implements Component {
     private float infoPrintTimeMax = 1f;
     private float infoPrintTimeCurrent;
 
-
+    private float autoMoveScreenX = 0.0f;
+    private boolean autoMoveForward;
+    private float autoMovePausingTime;
 
     Sensor(){
 
@@ -131,36 +137,82 @@ public class Sensor implements Component {
         rightVector.nor();
     }
 
-    public void updateSensorData(){
-        // Goal: compute rotation and direction
-        if(ConfigManager.isUseFakeDirection()){
-            // apply horz rotation
-            float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
-            tempQuaternion.set(Vector3.Y, angleHorz);
-            directon.set(initDirection);
-            tempQuaternion.transform(directon);
-            // compute right-vector
-            updateRightVector();
+    public void onMoveTypeChanged(){
+        if(ConfigManager.getSensorMoveType() == MoveType.AUTO) {
+            // reset auto move
+            autoMoveScreenX = 0.0f;
+            autoMoveForward = true;
+            autoMovePausingTime = 1.0f;
+        }
+    }
 
-            // apply vert rotation
-            float angleVert;
-            angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30;
-            tempQuaternion.set(rightVector, angleVert);
-            tempQuaternion.transform(directon);
-
-            // compute rotation
-            rotation.setFromCross(initDirection, directon);
+    private void updateAutoMoveScreenX(){
+        if(autoMovePausingTime > 0.0f){
+            autoMovePausingTime -= Gdx.graphics.getDeltaTime();
         }
         else {
-            // FIXME: clean code
-            tempQuaternion.set(initRotation);
-            tempQuaternion.conjugate();
-            Gdx.input.getRotationMatrix(tempMatrix.val);
-            rotation.setFromMatrix(true, tempMatrix);
-            rotation.mul(tempQuaternion);
-            directon.set(initDirection);
-            rotation.transform(directon);
-            updateRightVector();
+            if (autoMoveForward) {
+                autoMoveScreenX += Gdx.graphics.getDeltaTime() * ConfigManager.getSensorAutoMoveSpeed();
+                if (autoMoveScreenX >= Gdx.graphics.getWidth() - 10) {
+                    autoMoveScreenX = Gdx.graphics.getWidth() - 10;
+                    autoMoveForward = false;
+                    autoMovePausingTime = 0.5f;
+                }
+            } else {
+                autoMoveScreenX -= Gdx.graphics.getDeltaTime() * ConfigManager.getSensorAutoMoveSpeed();
+                if (autoMoveScreenX <= 10) {
+                    autoMoveScreenX = 10;
+                    autoMoveForward = true;
+                    autoMovePausingTime = 0.5f;
+                }
+            }
+        }
+    }
+
+    private void computeFakeDirectionUsingScreenXY(float screenX, float screenY){
+        // apply horz rotation
+        float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
+        tempQuaternion.set(Vector3.Y, angleHorz);
+        directon.set(initDirection);
+        tempQuaternion.transform(directon);
+        // compute right-vector
+        updateRightVector();
+
+        // apply vert rotation
+        float angleVert;
+        angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30;
+        tempQuaternion.set(rightVector, angleVert);
+        tempQuaternion.transform(directon);
+
+        // compute rotation
+        rotation.setFromCross(initDirection, directon);
+    }
+
+    private void computeRealDirection(){
+        // FIXME: clean code
+        tempQuaternion.set(initRotation);
+        tempQuaternion.conjugate();
+        Gdx.input.getRotationMatrix(tempMatrix.val);
+        rotation.setFromMatrix(true, tempMatrix);
+        rotation.mul(tempQuaternion);
+        directon.set(initDirection);
+        rotation.transform(directon);
+        updateRightVector();
+    }
+
+    public void updateSensorData(){
+        // Goal: compute rotation and direction
+        switch(ConfigManager.getSensorMoveType()){
+            case AUTO:
+                updateAutoMoveScreenX();
+                computeFakeDirectionUsingScreenXY(autoMoveScreenX, screenY);
+                break;
+            case MANUAL:
+                computeFakeDirectionUsingScreenXY(screenX, screenY);
+                break;
+            case REAL:
+                computeRealDirection();
+                break;
         }
         // compute translation from rotation
         computeTranslation();

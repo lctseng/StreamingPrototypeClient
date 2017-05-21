@@ -37,6 +37,12 @@ public class ConfigManager {
         0,1,2,3
     };
 
+
+
+    private static final Sensor.MoveType[] sensorMoveTypeList = new Sensor.MoveType[]{
+            Sensor.MoveType.REAL, Sensor.MoveType.MANUAL,Sensor.MoveType.AUTO,
+    };
+
     // variables
 
     private static StreamingPrototype app;
@@ -57,7 +63,9 @@ public class ConfigManager {
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
 
-    private static boolean useFakeDirection = false;
+    private static Sensor.MoveType sensorMoveType = Sensor.MoveType.REAL;
+
+    private static float sensorAutoMoveSpeed = 500.0f;
 
     private static float sensorUpdateDisplayTime = 1f/60f;
 
@@ -130,6 +138,10 @@ public class ConfigManager {
         return serverList;
     }
 
+    public static Sensor.MoveType[] getSensorMoveTypeList() {
+        return sensorMoveTypeList;
+    }
+
     public static int getNumOfMaxInterpolatedLFRadius() {
         return numOfMaxInterpolatedLFRadius;
     }
@@ -182,14 +194,6 @@ public class ConfigManager {
         return sceneList;
     }
 
-    public static boolean isUseFakeDirection() {
-        return useFakeDirection;
-    }
-
-    public static void setUseFakeDirection(boolean useFakeDirection) {
-        ConfigManager.useFakeDirection = useFakeDirection;
-    }
-
     public static float getSensorUpdateDisplayTime() {
         return sensorUpdateDisplayTime;
     }
@@ -212,4 +216,19 @@ public class ConfigManager {
     }
 
 
+    public static Sensor.MoveType getSensorMoveType() {
+        return sensorMoveType;
+    }
+
+    public static void setSensorMoveType(Sensor.MoveType sensorMoveType) {
+        ConfigManager.sensorMoveType = sensorMoveType;
+    }
+
+    public static float getSensorAutoMoveSpeed() {
+        return sensorAutoMoveSpeed;
+    }
+
+    public static void setSensorAutoMoveSpeed(float sensorAutoMoveSpeed) {
+        ConfigManager.sensorAutoMoveSpeed = sensorAutoMoveSpeed;
+    }
 }

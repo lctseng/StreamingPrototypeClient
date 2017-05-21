@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StreamingPrototype.State;
 
 import java.util.Locale;
@@ -119,7 +120,8 @@ public class MainMenu extends UIComponent {
         addStartStopUI();
         addIPSelectUI();
         addChangeSceneUI();
-        addFakeDirectionUI();
+        addSensorMoveTypeSelectUI();
+        addSensorAutoMoveSpeedUI();
         addStopOnDisconnectedUI();
         addFocusChangeUI();
         addStepXChangeUI();
@@ -245,26 +247,28 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
     }
 
-    private void addFakeDirectionUI(){
-        // label
-        Label name = new Label("Use fake direction:", largeLabelStyle);
 
-        // checkbox
-        final CheckBox box = new CheckBox("",skin);
-        box.setChecked(ConfigManager.isUseFakeDirection());
-        updateCheckBoxText(box);
-        enlargeCheckBoxFont(box);
-        box.addListener(new ChangeListener() {
+    private void addSensorMoveTypeSelectUI(){
+        // label
+        Label name = new Label("Sensor move type:", largeLabelStyle);
+
+        // create select box
+        final SelectBox<Sensor.MoveType> selectBox = new SelectBox<Sensor.MoveType>(skin);
+        selectBox.getStyle().font = largeFont;
+        selectBox.getStyle().listStyle.font = largeFont;
+
+        // add select list listener
+        selectBox.setItems(ConfigManager.getSensorMoveTypeList());
+        selectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setUseFakeDirection(box.isChecked());
-                updateCheckBoxText(box);
+                ConfigManager.setSensorMoveType(selectBox.getSelected());
+                ConfigManager.getApp().sensor.onMoveTypeChanged();
             }
         });
 
-
         canvas.add(name);
-        canvas.add(box).colspan(tableColumnSpan - 1);
+        canvas.add(selectBox).colspan(tableColumnSpan - 1);
         canvas.row().height(commonRowHeight);
     }
 
@@ -501,6 +505,32 @@ public class MainMenu extends UIComponent {
 
     private String getApertureSizeText(){
         return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
+    }
+
+    private void addSensorAutoMoveSpeedUI(){
+        // label
+        final Label name = new Label(getSensorAutoMoveSpeedText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 2000.0f, 10.0f, false, skin);
+        slider.setValue(ConfigManager.getSensorAutoMoveSpeed());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setSensorAutoMoveSpeed(slider.getValue());
+                name.setText(getSensorAutoMoveSpeedText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+        canvas.row().height(commonRowHeight);
+    }
+
+    private String getSensorAutoMoveSpeedText(){
+        return String.format(Locale.TAIWAN,"Auto move speed: %d", (int)ConfigManager.getSensorAutoMoveSpeed());
     }
 
     private void addButtons(){
