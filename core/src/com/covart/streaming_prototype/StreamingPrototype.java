@@ -35,10 +35,10 @@ public class StreamingPrototype extends ApplicationAdapter
     private volatile boolean stopRequired = false;
 
     // major component
-    private Display display;
-    private Network network;
-    private ImageDecoderBase decoder;
-    private Sensor sensor;
+    public Display display;
+    public Network network;
+    public ImageDecoderBase decoder;
+    public Sensor sensor;
 
     private float sensorSendDataTime;
     private float sensorDisplayDataTime;
