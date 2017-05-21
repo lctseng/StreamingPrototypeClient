@@ -52,6 +52,8 @@ uniform int col_start;
 uniform int col_end;
 uniform int interop_span;
 
+uniform int enable_distortion_correction;
+
 void main(void) {
 	float spanX = 1.0 / float(cols);
 	float spanY = 1.0 / float(rows);
@@ -91,86 +93,113 @@ void main(void) {
 				yDiff *= -1;
 			}
 			if (dx * dx + dy * dy < apertureSize && xDiff <= interop_span && yDiff <= interop_span) {
+				
+				// map texture coordinate from [0,1] to NDC [-1, 1]
 				float projX   = 2.0 * textureCoords.s - 1.0;
 				float projY   = 2.0 * textureCoords.t - 1.0;
-				float pixelX = projX - dx * focusPointX;
-				float pixelY = projY + dy * focusPointY;
-				float px = 0.5 * pixelX + 0.5;
-				float py = 0.5 * pixelY + 0.5;
-				if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {
+
+				if(enable_distortion_correction != 0){
+					// distortion
+					float r2 = projX * projX + projY * projY;
+					float rScale = 1.0 - 0.1*r2;
 					
-					float global_y = (float(i) + py)*spanY;
+					vec2 P;
+					P.x = projX;
+					P.y = projY;
 					
-					int tex_index = j - col_start;
-					float remainX = px;
-					vec2 V;
-					V.x = remainX;
-					V.y = global_y;
+					P /= rScale;	
+					
+					float rr2 = dot(P, P);
+					projX = projX / ( 1.0 - (0.1 * rr2 )  );
+					projY = projY / ( 1.0 - (0.1 * rr2 )  );
+				}
+				
+
+				if(projX >= -1.0 && projY >= -1.0 && projX < 1.0 && projY < 1.0) {
+					
+					// apply focus shift
+					float pixelX = projX - dx * focusPointX;
+					float pixelY = projY + dy * focusPointY;
 					
 					
-					if(tex_index == 0 && u_texture_valid0 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture0, V);
-					}
-					else if(tex_index == 1 && u_texture_valid1 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture1, V);
-					}
-					else if(tex_index == 2 && u_texture_valid2 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture2, V);
-					}
-					else if(tex_index == 3 && u_texture_valid3 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture3, V);
-					}
-					else if(tex_index == 4 && u_texture_valid4 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture4, V);
-					}
-					else if(tex_index == 5 && u_texture_valid5 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture5, V);
-					}
-					else if(tex_index == 6 && u_texture_valid6 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture6, V);
-					}
-					else if(tex_index == 7 && u_texture_valid7 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture7, V);
-					}
-					else if(tex_index == 8 && u_texture_valid8 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture8, V);
-					}
-					else if(tex_index == 9 && u_texture_valid9 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture9, V);
-					}
-					else if(tex_index == 10 && u_texture_valid10 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture10, V);
-					}
-					else if(tex_index == 11 && u_texture_valid11 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture11, V);
-					}
-					else if(tex_index == 12 && u_texture_valid12 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture12, V);
-					}
-					else if(tex_index == 13 && u_texture_valid13 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture13, V);
-					}
-					else if(tex_index == 14 && u_texture_valid14 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture14, V);
-					}
-					else if(tex_index == 15 && u_texture_valid15 > 0){
-						validPixelCount++;
-						color = color + texture2D(u_custom_texture15, V);
+					// convert back to [0, 1]
+					float px = 0.5 * pixelX + 0.5;
+					float py = 0.5 * pixelY + 0.5;
+					if(px >= 0.0 && py >= 0.0 && px < 1.0 && py < 1.0) {
+					
+						float global_y = (float(i) + py)*spanY;
+						
+						int tex_index = j - col_start;
+						float remainX = px;
+						vec2 V;
+						V.x = remainX;
+						V.y = global_y;
+						
+						
+						if(tex_index == 0 && u_texture_valid0 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture0, V);
+						}
+						else if(tex_index == 1 && u_texture_valid1 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture1, V);
+						}
+						else if(tex_index == 2 && u_texture_valid2 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture2, V);
+						}
+						else if(tex_index == 3 && u_texture_valid3 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture3, V);
+						}
+						else if(tex_index == 4 && u_texture_valid4 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture4, V);
+						}
+						else if(tex_index == 5 && u_texture_valid5 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture5, V);
+						}
+						else if(tex_index == 6 && u_texture_valid6 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture6, V);
+						}
+						else if(tex_index == 7 && u_texture_valid7 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture7, V);
+						}
+						else if(tex_index == 8 && u_texture_valid8 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture8, V);
+						}
+						else if(tex_index == 9 && u_texture_valid9 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture9, V);
+						}
+						else if(tex_index == 10 && u_texture_valid10 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture10, V);
+						}
+						else if(tex_index == 11 && u_texture_valid11 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture11, V);
+						}
+						else if(tex_index == 12 && u_texture_valid12 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture12, V);
+						}
+						else if(tex_index == 13 && u_texture_valid13 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture13, V);
+						}
+						else if(tex_index == 14 && u_texture_valid14 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture14, V);
+						}
+						else if(tex_index == 15 && u_texture_valid15 > 0){
+							validPixelCount++;
+							color = color + texture2D(u_custom_texture15, V);
+						}
 					}
 				}
 			}

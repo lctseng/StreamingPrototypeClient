@@ -46,7 +46,7 @@ public class ConfigManager {
     };
 
     private static final Display.Mode[] displayModeList = new Display.Mode[] {
-            Display.Mode.NORMAL, Display.Mode.VR
+            Display.Mode.NORMAL, Display.Mode.VR, Display.Mode.VR_RAW
     };
 
     // variables

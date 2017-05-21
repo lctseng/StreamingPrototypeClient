@@ -28,7 +28,7 @@ import StreamingFormat.Message;
 public class Display implements Disposable{
 
     public enum Mode {
-        VR, NORMAL
+        VR, VR_RAW, NORMAL
     }
 
     // gdx basic drawing
@@ -80,6 +80,7 @@ public class Display implements Disposable{
         projectionMatrixRight = new Matrix4();
         float ratio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
         projectionMatrix.setToOrtho(ratio * -1, ratio, -1.0f, 1.0f, -1.0f, 1.0f);
+
         // create VR two-eye projection
         // TODO: handle widere screen?
         int vrRectWidth;
@@ -191,6 +192,8 @@ public class Display implements Disposable{
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
         shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        shaderProgram.setUniformi("enable_distortion_correction", 0);
+
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
@@ -198,6 +201,64 @@ public class Display implements Disposable{
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
     }
+
+    private void drawVRViewRaw(){
+        float disparity = ConfigManager.getDisplayVRDisparity();
+        float centerX = textureManager.getCameraPositionX();
+
+        // compute left and right X
+        float leftX = centerX - disparity;
+        float rightX = centerX + disparity;
+
+        // draw left eye
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixLeft);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
+        shaderProgram.setUniformf("cameraPositionX", leftX);
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        shaderProgram.setUniformi("enable_distortion_correction", 0);
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
+
+        // draw right eye
+        shaderProgram.begin();
+        // set matrix
+        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixRight);
+        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+        // set camera params
+        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
+        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
+        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
+        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
+        shaderProgram.setUniformf("cameraPositionX", rightX);
+        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
+        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
+        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
+        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        shaderProgram.setUniformi("enable_distortion_correction", 0);
+        // binding texture
+        textureManager.bindTextures(shaderProgram);
+        // draw!
+        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        shaderProgram.end();
+    }
+
 
     private void drawVRView(){
         float disparity = ConfigManager.getDisplayVRDisparity();
@@ -223,6 +284,7 @@ public class Display implements Disposable{
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
         shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        shaderProgram.setUniformi("enable_distortion_correction", 1);
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
@@ -246,6 +308,7 @@ public class Display implements Disposable{
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
         shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        shaderProgram.setUniformi("enable_distortion_correction", 1);
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
@@ -253,7 +316,6 @@ public class Display implements Disposable{
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
     }
-
 
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -267,6 +329,9 @@ public class Display implements Disposable{
                 break;
             case VR:
                 drawVRView();
+                break;
+            case VR_RAW:
+                drawVRViewRaw();
                 break;
         }
         Profiler.reportOnDisplay();
