@@ -69,8 +69,8 @@ public class Display implements Disposable{
         // create matrix
         modelviewMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
-        float ratio = (float)Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
-        projectionMatrix.setToOrtho(-1.0f, 1.0f, ratio * -1, ratio, -1.0f, 1.0f);
+        float ratio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        projectionMatrix.setToOrtho(ratio * -1, ratio, -1.0f, 1.0f, -1.0f, 1.0f);
 
 
         // create mesh

@@ -118,20 +118,28 @@ public class MainMenu extends UIComponent {
 
     private void addComponents(){
         addStartStopUI();
+        canvas.row().height(commonRowHeight);
         addIPSelectUI();
         addChangeSceneUI();
+        canvas.row().height(commonRowHeight);
         addSensorMoveTypeSelectUI();
         addSensorAutoMoveSpeedUI();
+        canvas.row().height(commonRowHeight);
         addStopOnDisconnectedUI();
         addFocusChangeUI();
+        canvas.row().height(commonRowHeight);
         addStepXChangeUI();
         addStepYChangeUI();
+        canvas.row().height(commonRowHeight);
         addApertureSizeUI();
         addInterpolateChangeUI();
+        canvas.row().height(commonRowHeight);
         addFreeUnusedTextureControlUI();
         addSensorTranslationAverageFactorUI();
+        canvas.row().height(commonRowHeight);
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
+        canvas.row().height(commonRowHeight);
         addButtons();
 
     }
@@ -160,7 +168,6 @@ public class MainMenu extends UIComponent {
         });
         canvas.add(startStopLabel);
         canvas.add(startStopButton).width(buttonWidth);
-        canvas.row().height(commonRowHeight);
     }
 
     private void updateStartStopText(){
@@ -219,7 +226,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(label);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
 
 
     }
@@ -245,7 +251,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
 
@@ -270,7 +275,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private void addStopOnDisconnectedUI(){
@@ -293,7 +297,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(box).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private void addFocusChangeUI(){
@@ -315,7 +318,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
 
     }
 
@@ -342,7 +344,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
 
     }
 
@@ -369,7 +370,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
 
     }
 
@@ -396,7 +396,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getInterpolateRadiusText(){
@@ -422,7 +421,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getFreeUnusedTextureControlText(){
@@ -448,7 +446,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getSensorTranslationAverageFactorText(){
@@ -474,7 +471,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getSensorUpdateDisplayText(){
@@ -501,7 +497,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getSensorReportIntervalText(){
@@ -527,7 +522,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getApertureSizeText(){
@@ -553,7 +547,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(slider).colspan(tableColumnSpan - 1);
-        canvas.row().height(commonRowHeight);
     }
 
     private String getSensorAutoMoveSpeedText(){
@@ -563,7 +556,6 @@ public class MainMenu extends UIComponent {
     private void addButtons(){
         addRecenterButton().width(buttonWidth);
         addSaveFrameButton().width(buttonWidth);
-        canvas.row().height(commonRowHeight);
     }
 
     private Cell<TextButton> addRecenterButton(){
