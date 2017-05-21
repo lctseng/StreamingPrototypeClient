@@ -200,6 +200,13 @@ public class Display implements Disposable{
     }
 
     private void drawVRView(){
+        float disparity = ConfigManager.getDisplayVRDisparity();
+        float centerX = textureManager.getCameraPositionX();
+
+        // compute left and right X
+        float leftX = centerX - disparity;
+        float rightX = centerX + disparity;
+
         // draw left eye
         shaderProgram.begin();
         // set matrix
@@ -211,7 +218,7 @@ public class Display implements Disposable{
         shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionX", leftX);
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
@@ -234,7 +241,7 @@ public class Display implements Disposable{
         shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
+        shaderProgram.setUniformf("cameraPositionX", rightX);
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
@@ -253,7 +260,7 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         collectImages();
-        
+
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:
                 drawNormalView();
