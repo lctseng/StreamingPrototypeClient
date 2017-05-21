@@ -90,20 +90,23 @@ public class TextureManager implements Disposable {
             slotImageBuf.rewind();
             //Gdx.app.log("TextureManager", "End of column: " + buffer.index);
             rowIndex = 0;
-            //freeUnusedTextures();
+            freeUnusedTextures();
 
         }
     }
 
     private void freeUnusedTextures(){
-        for(int i=0;i<nSlots;i++){
-            if(textures[i] != null) {
-                if (Math.abs(lastColumnIndex - i) > 3) {
-                    // i-th texture is too far
-                    textures[i].dispose();
-                    textures[i] = null;
-                    synchronized (droppedIndex) {
-                        droppedIndex.add(i);
+        int threshold = ConfigManager.getFreeUnusedTextureThreshold();
+        if(threshold > 0) {
+            for (int i = 0; i < nSlots; i++) {
+                if (textures[i] != null) {
+                    if (Math.abs(lastColumnIndex - i) >= threshold) {
+                        // i-th texture is too far
+                        textures[i].dispose();
+                        textures[i] = null;
+                        synchronized (droppedIndex) {
+                            droppedIndex.add(i);
+                        }
                     }
                 }
             }
