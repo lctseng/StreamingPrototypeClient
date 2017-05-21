@@ -1,6 +1,8 @@
 package com.covart.streaming_prototype;
 
 
+import com.covart.streaming_prototype.Image.Display;
+
 /**
  * Created by lctseng on 2017/4/28.
  * NTU COV-ART Lab, for NCP project
@@ -43,6 +45,10 @@ public class ConfigManager {
             Sensor.MoveType.REAL, Sensor.MoveType.MANUAL,Sensor.MoveType.AUTO,
     };
 
+    private static final Display.Mode[] displayModeList = new Display.Mode[] {
+            Display.Mode.NORMAL, Display.Mode.VR, Display.Mode.VR_RAW
+    };
+
     // variables
 
     private static StreamingPrototype app;
@@ -72,6 +78,10 @@ public class ConfigManager {
     private static float translationAverageFactor = 0.9f;
 
     private static int freeUnusedTextureThreshold = 0;
+
+    private static Display.Mode displayMode = Display.Mode.NORMAL;
+
+    private static float displayVRDisparity = 0.25f;
 
     // getters and setters
 
@@ -212,9 +222,20 @@ public class ConfigManager {
         ConfigManager.translationAverageFactor = translationAverageFactor;
     }
 
-    // end of getters and setters
+    public static Display.Mode getDisplayMode() {
+        return displayMode;
+    }
 
-    private ConfigManager() {
+    public static void setDisplayMode(Display.Mode displayMode) {
+        ConfigManager.displayMode = displayMode;
+    }
+
+    public static float getDisplayVRDisparity() {
+        return displayVRDisparity;
+    }
+
+    public static void setDisplayVRDisparity(float displayVRDisparity) {
+        ConfigManager.displayVRDisparity = displayVRDisparity;
     }
 
 
@@ -241,4 +262,15 @@ public class ConfigManager {
     public static void setFreeUnusedTextureThreshold(int freeUnusedTextureThreshold) {
         ConfigManager.freeUnusedTextureThreshold = freeUnusedTextureThreshold;
     }
+
+    public static Display.Mode[] getDisplayModeList() {
+        return displayModeList;
+    }
+
+    // end of getters and setters
+
+    private ConfigManager() {
+    }
+
+
 }

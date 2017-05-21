@@ -87,6 +87,7 @@ public class TextureManager implements Disposable {
                 textures[buffer.index].dispose();
             }
             textures[buffer.index] = new Texture(slotImage);
+            //textures[buffer.index] = new Texture("grid4.jpg");
             slotImageBuf.rewind();
             //Gdx.app.log("TextureManager", "End of column: " + buffer.index);
             rowIndex = 0;
@@ -160,9 +161,27 @@ public class TextureManager implements Disposable {
         if(centerIndex < 0) centerIndex = 0;
         else if (centerIndex >= nSlots) centerIndex = nSlots;
         // compute the span
-        columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
-        columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
+        if(ConfigManager.getDisplayMode() == Display.Mode.VR || ConfigManager.getDisplayMode() == Display.Mode.VR_RAW){
+            float disparity = ConfigManager.getDisplayVRDisparity();
+            // dh correction
+            if(dh - disparity < -0.5f ){
+                dh = -0.5f + disparity;
+            }
+            if(dh + disparity > 0.5f ){
+                dh = 0.5f - disparity;
+            }
 
+            // compute index
+            int leftIndex = (int)((dh + 0.5 - disparity) * nSlots);
+            int rightIndex = (int)((dh + 0.5 + disparity) * nSlots);
+            columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
+            columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
+        }
+        else{
+            // Normal
+            columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
+            columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
+        }
         if(columnStart < 0) columnStart = 0;
         else if(columnStart >= nSlots) columnStart = nSlots - 1;
 
