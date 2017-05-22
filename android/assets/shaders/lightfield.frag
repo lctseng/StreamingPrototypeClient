@@ -53,6 +53,8 @@ uniform int col_end;
 uniform int interop_span;
 
 uniform int enable_distortion_correction;
+uniform float lensFactorX;
+uniform float lensFactorY;
 
 void main(void) {
 	float spanX = 1.0 / float(cols);
@@ -103,17 +105,17 @@ void main(void) {
 					// ref: http://paulbourke.net/miscellaneous/lenscorrection/
 					
 					float r2 = projX * projX + projY * projY;
-					float rScale = 1.0 - 0.1*r2;
+					float rScaleX = 1.0 - lensFactorX*r2;
+					float rScaleY = 1.0 - lensFactorY*r2;
 					
 					vec2 P;
-					P.x = projX;
-					P.y = projY;
+					P.x = projX / rScaleX;
+					P.y = projY / rScaleY;
 					
-					P /= rScale;	
 					
 					float rr2 = dot(P, P);
-					projX = projX / ( 1.0 - (0.1 * rr2 )  );
-					projY = projY / ( 1.0 - (0.1 * rr2 )  );
+					projX = projX / ( 1.0 - (lensFactorX * rr2 )  );
+					projY = projY / ( 1.0 - (lensFactorY * rr2 )  );
 				}
 				
 

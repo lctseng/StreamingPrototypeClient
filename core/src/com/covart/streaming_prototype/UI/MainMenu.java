@@ -129,6 +129,9 @@ public class MainMenu extends UIComponent {
         addDisplayModeSelectUI();
         addDisplayVRDisparityUI();
         canvas.row().height(commonRowHeight);
+        addDisplayLensFactorXUI();
+        addDisplayLensFactorYUI();
+        canvas.row().height(commonRowHeight);
         addStopOnDisconnectedUI();
         addFocusChangeUI();
         canvas.row().height(commonRowHeight);
@@ -326,7 +329,60 @@ public class MainMenu extends UIComponent {
     }
 
     private String getDisplayVRDisparityText(){
-        return String.format(Locale.TAIWAN,"Display disparity: %.5f",ConfigManager.getDisplayVRDisparity());
+        return String.format(Locale.TAIWAN,"Display disparity: %.2f",ConfigManager.getDisplayVRDisparity());
+    }
+
+    private void addDisplayLensFactorXUI(){
+        // label
+        final Label name = new Label(getDisplayLensFactorXText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 0.20f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getDisplayLensFactorX());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayLensFactorX(slider.getValue());
+                name.setText(getDisplayLensFactorXText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayLensFactorXText(){
+        return String.format(Locale.TAIWAN,"Lens factor X: %.2f",ConfigManager.getDisplayLensFactorX());
+    }
+
+
+    private void addDisplayLensFactorYUI(){
+        // label
+        final Label name = new Label(getDisplayLensFactorYText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.0f, 0.20f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getDisplayLensFactorY());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayLensFactorY(slider.getValue());
+                name.setText(getDisplayLensFactorYText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayLensFactorYText(){
+        return String.format(Locale.TAIWAN,"Lens factor Y: %.2f",ConfigManager.getDisplayLensFactorY());
     }
 
     private void addStopOnDisconnectedUI(){
