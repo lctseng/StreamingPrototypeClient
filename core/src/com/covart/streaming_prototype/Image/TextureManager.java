@@ -161,7 +161,7 @@ public class TextureManager implements Disposable {
         if(centerIndex < 0) centerIndex = 0;
         else if (centerIndex >= nSlots) centerIndex = nSlots;
         // compute the span
-        if(ConfigManager.getDisplayMode() == Display.Mode.VR || ConfigManager.getDisplayMode() == Display.Mode.VR_RAW){
+        if(ConfigManager.getDisplayMode() == Display.Mode.VR){
             float disparity = ConfigManager.getDisplayVRDisparity();
             // dh correction
             if(dh - disparity < -0.5f ){

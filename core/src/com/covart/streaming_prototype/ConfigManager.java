@@ -46,7 +46,7 @@ public class ConfigManager {
     };
 
     private static final Display.Mode[] displayModeList = new Display.Mode[] {
-            Display.Mode.NORMAL, Display.Mode.VR, Display.Mode.VR_RAW
+            Display.Mode.NORMAL, Display.Mode.VR
     };
 
     // variables
@@ -82,6 +82,11 @@ public class ConfigManager {
     private static Display.Mode displayMode = Display.Mode.NORMAL;
 
     private static float displayVRDisparity = 0.25f;
+
+    private static float displayLensFactorX = 0.1f;
+
+    private static float displayLensFactorY = 0.1f;
+
 
     // getters and setters
 
@@ -265,6 +270,22 @@ public class ConfigManager {
 
     public static Display.Mode[] getDisplayModeList() {
         return displayModeList;
+    }
+
+    public static float getDisplayLensFactorX() {
+        return displayLensFactorX;
+    }
+
+    public static void setDisplayLensFactorX(float displayLensFactorX) {
+        ConfigManager.displayLensFactorX = displayLensFactorX;
+    }
+
+    public static float getDisplayLensFactorY() {
+        return displayLensFactorY;
+    }
+
+    public static void setDisplayLensFactorY(float displayLensFactorY) {
+        ConfigManager.displayLensFactorY = displayLensFactorY;
     }
 
     // end of getters and setters
