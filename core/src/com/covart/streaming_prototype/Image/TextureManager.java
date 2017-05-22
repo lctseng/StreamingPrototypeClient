@@ -174,19 +174,18 @@ public class TextureManager implements Disposable {
             // compute index
             int leftIndex = (int)((dh + 0.5 - disparity) * nSlots);
             int rightIndex = (int)((dh + 0.5 + disparity) * nSlots);
-            columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
-            columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
+            columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         else{
             // Normal
-            columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius();
-            columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 1;
+            columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         if(columnStart < 0) columnStart = 0;
         else if(columnStart >= nSlots) columnStart = nSlots - 1;
 
         if(columnEnd >nSlots) columnEnd = nSlots ;
-        //Gdx.app.log("LightField Display", "Effective col: " + columnStart + "-" + (columnEnd-1));
         // prepare camera XY
         // TODO: cameraX should map deltaMin ~ deltaMax to 0 ~ 1
         cameraPositionX = dh + 0.5f;
