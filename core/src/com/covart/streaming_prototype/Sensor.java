@@ -58,6 +58,8 @@ public class Sensor implements Component {
     private boolean autoMoveForward;
     private float autoMovePausingTime;
 
+    private boolean flipHorzAndVert = false;
+
     Sensor(){
 
         initDirection = Vector3.Z;
@@ -81,6 +83,7 @@ public class Sensor implements Component {
         infoPrintTimeCurrent = 0;
 
         setInitDataReady(false);
+        onMoveTypeChanged();
     }
 
     public boolean isInitDataReady() {
@@ -138,11 +141,20 @@ public class Sensor implements Component {
     }
 
     public void onMoveTypeChanged(){
-        if(ConfigManager.getSensorMoveType() == MoveType.AUTO) {
-            // reset auto move
-            autoMoveScreenX = 0.0f;
-            autoMoveForward = true;
-            autoMovePausingTime = 1.0f;
+        switch(ConfigManager.getSensorMoveType()){
+            case AUTO:
+                // reset auto move
+                autoMoveScreenX = 0.0f;
+                autoMoveForward = true;
+                autoMovePausingTime = 1.0f;
+                flipHorzAndVert = false;
+                break;
+            case MANUAL:
+                flipHorzAndVert = false;
+                break;
+            case REAL:
+                flipHorzAndVert = true;
+                break;
         }
     }
 
@@ -221,22 +233,30 @@ public class Sensor implements Component {
 
     private void computeTranslation(){
         float angleHorz, angleVert;
+        if(flipHorzAndVert){
+            angleHorz = rotation.getAngleAroundRad(rightVector) ;
+            angleVert = rotation.getAngleAroundRad(initUp) ;
+        }
+        else{
+            angleVert = rotation.getAngleAroundRad(rightVector) ;
+            angleHorz = rotation.getAngleAroundRad(initUp) ;
+
+        }
         // compute vertical translation
         // scale the angle
-        angleVert = rotation.getAngleAroundRad(rightVector) ;
         // use the scaled angle to compute magnitude
         if(angleVert > (Math.PI / 6) && angleVert <= Math.PI) angleVert = ((float)Math.PI/6);
         if(angleVert >= Math.PI && angleVert < 2*Math.PI) angleVert -= 2*Math.PI ;
         if(angleVert < -(Math.PI/6)) angleVert = -((float)Math.PI/6);
-        translationMagnitudeVert = translationMagnitudeVert * ConfigManager.getTranslationAverageFactor() +  (float)Math.sin(angleVert) * -1 * (1 - ConfigManager.getTranslationAverageFactor());
+        translationMagnitudeVert = translationMagnitudeVert * ConfigManager.getTranslationAverageFactor() +  (float)Math.sin(angleVert)  * (1 - ConfigManager.getTranslationAverageFactor());
 
         // compute horizontal  translation
         // scale the angle
-        angleHorz = rotation.getAngleAroundRad(initUp) ;
+
         if(angleHorz > (Math.PI / 3) && angleHorz <= Math.PI) angleHorz = ((float)Math.PI/3);
         if(angleHorz >= Math.PI && angleHorz < 2*Math.PI) angleHorz -= 2*Math.PI ;
         if(angleHorz < -(Math.PI/3)) angleHorz = -((float)Math.PI/3);
-        translationMagnitudeHorz =  translationMagnitudeHorz * ConfigManager.getTranslationAverageFactor() + (angleHorz / ((float)Math.PI/3) / 2) * (1f - ConfigManager.getTranslationAverageFactor());
+        translationMagnitudeHorz =  translationMagnitudeHorz * ConfigManager.getTranslationAverageFactor() + (angleHorz / ((float)Math.PI/3) / 2) * (1f - ConfigManager.getTranslationAverageFactor()) * -1;
         // apply on position delta
         positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
 
