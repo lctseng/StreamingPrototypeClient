@@ -148,6 +148,113 @@ public final class Message {
     // @@protoc_insertion_point(enum_scope:StreamingFormat.MessageType)
   }
 
+  /**
+   * Protobuf enum {@code StreamingFormat.EditOperation}
+   */
+  public enum EditOperation
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>START = 0;</code>
+     */
+    START(0),
+    /**
+     * <code>FINISH = 1;</code>
+     */
+    FINISH(1),
+    /**
+     * <code>UPDATE = 2;</code>
+     */
+    UPDATE(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>START = 0;</code>
+     */
+    public static final int START_VALUE = 0;
+    /**
+     * <code>FINISH = 1;</code>
+     */
+    public static final int FINISH_VALUE = 1;
+    /**
+     * <code>UPDATE = 2;</code>
+     */
+    public static final int UPDATE_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static EditOperation valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static EditOperation forNumber(int value) {
+      switch (value) {
+        case 0: return START;
+        case 1: return FINISH;
+        case 2: return UPDATE;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<EditOperation>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        EditOperation> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<EditOperation>() {
+            public EditOperation findValueByNumber(int number) {
+              return EditOperation.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return StreamingFormat.Message.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final EditOperation[] VALUES = values();
+
+    public static EditOperation valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private EditOperation(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:StreamingFormat.EditOperation)
+  }
+
   public interface InitOrBuilder extends
       // @@protoc_insertion_point(interface_extends:StreamingFormat.Init)
       com.google.protobuf.MessageOrBuilder {
@@ -2290,6 +2397,616 @@ public final class Message {
 
   }
 
+  public interface EditingOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:StreamingFormat.Editing)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.StreamingFormat.EditOperation op = 1;</code>
+     */
+    int getOpValue();
+    /**
+     * <code>.StreamingFormat.EditOperation op = 1;</code>
+     */
+    StreamingFormat.Message.EditOperation getOp();
+
+    /**
+     * <pre>
+     * screen x are only valid in UPDATE op
+     * </pre>
+     *
+     * <code>float screen_x = 2;</code>
+     */
+    float getScreenX();
+
+    /**
+     * <code>float screen_y = 3;</code>
+     */
+    float getScreenY();
+  }
+  /**
+   * Protobuf type {@code StreamingFormat.Editing}
+   */
+  public  static final class Editing extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:StreamingFormat.Editing)
+      EditingOrBuilder {
+    // Use Editing.newBuilder() to construct.
+    private Editing(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Editing() {
+      op_ = 0;
+      screenX_ = 0F;
+      screenY_ = 0F;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private Editing(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+
+              op_ = rawValue;
+              break;
+            }
+            case 21: {
+
+              screenX_ = input.readFloat();
+              break;
+            }
+            case 29: {
+
+              screenY_ = input.readFloat();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_Editing_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_Editing_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              StreamingFormat.Message.Editing.class, StreamingFormat.Message.Editing.Builder.class);
+    }
+
+    public static final int OP_FIELD_NUMBER = 1;
+    private int op_;
+    /**
+     * <code>.StreamingFormat.EditOperation op = 1;</code>
+     */
+    public int getOpValue() {
+      return op_;
+    }
+    /**
+     * <code>.StreamingFormat.EditOperation op = 1;</code>
+     */
+    public StreamingFormat.Message.EditOperation getOp() {
+      StreamingFormat.Message.EditOperation result = StreamingFormat.Message.EditOperation.valueOf(op_);
+      return result == null ? StreamingFormat.Message.EditOperation.UNRECOGNIZED : result;
+    }
+
+    public static final int SCREEN_X_FIELD_NUMBER = 2;
+    private float screenX_;
+    /**
+     * <pre>
+     * screen x are only valid in UPDATE op
+     * </pre>
+     *
+     * <code>float screen_x = 2;</code>
+     */
+    public float getScreenX() {
+      return screenX_;
+    }
+
+    public static final int SCREEN_Y_FIELD_NUMBER = 3;
+    private float screenY_;
+    /**
+     * <code>float screen_y = 3;</code>
+     */
+    public float getScreenY() {
+      return screenY_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (op_ != StreamingFormat.Message.EditOperation.START.getNumber()) {
+        output.writeEnum(1, op_);
+      }
+      if (screenX_ != 0F) {
+        output.writeFloat(2, screenX_);
+      }
+      if (screenY_ != 0F) {
+        output.writeFloat(3, screenY_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (op_ != StreamingFormat.Message.EditOperation.START.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, op_);
+      }
+      if (screenX_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(2, screenX_);
+      }
+      if (screenY_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(3, screenY_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof StreamingFormat.Message.Editing)) {
+        return super.equals(obj);
+      }
+      StreamingFormat.Message.Editing other = (StreamingFormat.Message.Editing) obj;
+
+      boolean result = true;
+      result = result && op_ == other.op_;
+      result = result && (
+          java.lang.Float.floatToIntBits(getScreenX())
+          == java.lang.Float.floatToIntBits(
+              other.getScreenX()));
+      result = result && (
+          java.lang.Float.floatToIntBits(getScreenY())
+          == java.lang.Float.floatToIntBits(
+              other.getScreenY()));
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + OP_FIELD_NUMBER;
+      hash = (53 * hash) + op_;
+      hash = (37 * hash) + SCREEN_X_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getScreenX());
+      hash = (37 * hash) + SCREEN_Y_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getScreenY());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static StreamingFormat.Message.Editing parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Editing parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Editing parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.Editing parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(StreamingFormat.Message.Editing prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code StreamingFormat.Editing}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:StreamingFormat.Editing)
+        StreamingFormat.Message.EditingOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Editing_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Editing_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                StreamingFormat.Message.Editing.class, StreamingFormat.Message.Editing.Builder.class);
+      }
+
+      // Construct using StreamingFormat.Message.Editing.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        op_ = 0;
+
+        screenX_ = 0F;
+
+        screenY_ = 0F;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_Editing_descriptor;
+      }
+
+      public StreamingFormat.Message.Editing getDefaultInstanceForType() {
+        return StreamingFormat.Message.Editing.getDefaultInstance();
+      }
+
+      public StreamingFormat.Message.Editing build() {
+        StreamingFormat.Message.Editing result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public StreamingFormat.Message.Editing buildPartial() {
+        StreamingFormat.Message.Editing result = new StreamingFormat.Message.Editing(this);
+        result.op_ = op_;
+        result.screenX_ = screenX_;
+        result.screenY_ = screenY_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof StreamingFormat.Message.Editing) {
+          return mergeFrom((StreamingFormat.Message.Editing)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(StreamingFormat.Message.Editing other) {
+        if (other == StreamingFormat.Message.Editing.getDefaultInstance()) return this;
+        if (other.op_ != 0) {
+          setOpValue(other.getOpValue());
+        }
+        if (other.getScreenX() != 0F) {
+          setScreenX(other.getScreenX());
+        }
+        if (other.getScreenY() != 0F) {
+          setScreenY(other.getScreenY());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        StreamingFormat.Message.Editing parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (StreamingFormat.Message.Editing) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int op_ = 0;
+      /**
+       * <code>.StreamingFormat.EditOperation op = 1;</code>
+       */
+      public int getOpValue() {
+        return op_;
+      }
+      /**
+       * <code>.StreamingFormat.EditOperation op = 1;</code>
+       */
+      public Builder setOpValue(int value) {
+        op_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.EditOperation op = 1;</code>
+       */
+      public StreamingFormat.Message.EditOperation getOp() {
+        StreamingFormat.Message.EditOperation result = StreamingFormat.Message.EditOperation.valueOf(op_);
+        return result == null ? StreamingFormat.Message.EditOperation.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.StreamingFormat.EditOperation op = 1;</code>
+       */
+      public Builder setOp(StreamingFormat.Message.EditOperation value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        op_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.EditOperation op = 1;</code>
+       */
+      public Builder clearOp() {
+        
+        op_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private float screenX_ ;
+      /**
+       * <pre>
+       * screen x are only valid in UPDATE op
+       * </pre>
+       *
+       * <code>float screen_x = 2;</code>
+       */
+      public float getScreenX() {
+        return screenX_;
+      }
+      /**
+       * <pre>
+       * screen x are only valid in UPDATE op
+       * </pre>
+       *
+       * <code>float screen_x = 2;</code>
+       */
+      public Builder setScreenX(float value) {
+        
+        screenX_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * screen x are only valid in UPDATE op
+       * </pre>
+       *
+       * <code>float screen_x = 2;</code>
+       */
+      public Builder clearScreenX() {
+        
+        screenX_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private float screenY_ ;
+      /**
+       * <code>float screen_y = 3;</code>
+       */
+      public float getScreenY() {
+        return screenY_;
+      }
+      /**
+       * <code>float screen_y = 3;</code>
+       */
+      public Builder setScreenY(float value) {
+        
+        screenY_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>float screen_y = 3;</code>
+       */
+      public Builder clearScreenY() {
+        
+        screenY_ = 0F;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:StreamingFormat.Editing)
+    }
+
+    // @@protoc_insertion_point(class_scope:StreamingFormat.Editing)
+    private static final StreamingFormat.Message.Editing DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new StreamingFormat.Message.Editing();
+    }
+
+    public static StreamingFormat.Message.Editing getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Editing>
+        PARSER = new com.google.protobuf.AbstractParser<Editing>() {
+      public Editing parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Editing(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Editing> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Editing> getParserForType() {
+      return PARSER;
+    }
+
+    public StreamingFormat.Message.Editing getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface ControlOrBuilder extends
       // @@protoc_insertion_point(interface_extends:StreamingFormat.Control)
       com.google.protobuf.MessageOrBuilder {
@@ -2316,6 +3033,19 @@ public final class Message {
      * <code>uint32 change_scene = 3;</code>
      */
     int getChangeScene();
+
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    boolean hasEditingMsg();
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    StreamingFormat.Message.Editing getEditingMsg();
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    StreamingFormat.Message.EditingOrBuilder getEditingMsgOrBuilder();
   }
   /**
    * Protobuf type {@code StreamingFormat.Control}
@@ -2390,6 +3120,19 @@ public final class Message {
               changeScene_ = input.readUInt32();
               break;
             }
+            case 34: {
+              StreamingFormat.Message.Editing.Builder subBuilder = null;
+              if (editingMsg_ != null) {
+                subBuilder = editingMsg_.toBuilder();
+              }
+              editingMsg_ = input.readMessage(StreamingFormat.Message.Editing.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(editingMsg_);
+                editingMsg_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -2458,6 +3201,27 @@ public final class Message {
       return changeScene_;
     }
 
+    public static final int EDITINGMSG_FIELD_NUMBER = 4;
+    private StreamingFormat.Message.Editing editingMsg_;
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    public boolean hasEditingMsg() {
+      return editingMsg_ != null;
+    }
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    public StreamingFormat.Message.Editing getEditingMsg() {
+      return editingMsg_ == null ? StreamingFormat.Message.Editing.getDefaultInstance() : editingMsg_;
+    }
+    /**
+     * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+     */
+    public StreamingFormat.Message.EditingOrBuilder getEditingMsgOrBuilder() {
+      return getEditingMsg();
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2483,6 +3247,9 @@ public final class Message {
       }
       if (changeScene_ != 0) {
         output.writeUInt32(3, changeScene_);
+      }
+      if (editingMsg_ != null) {
+        output.writeMessage(4, getEditingMsg());
       }
     }
 
@@ -2513,6 +3280,10 @@ public final class Message {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(3, changeScene_);
       }
+      if (editingMsg_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getEditingMsg());
+      }
       memoizedSize = size;
       return size;
     }
@@ -2535,6 +3306,11 @@ public final class Message {
           == other.getSaveFrame());
       result = result && (getChangeScene()
           == other.getChangeScene());
+      result = result && (hasEditingMsg() == other.hasEditingMsg());
+      if (hasEditingMsg()) {
+        result = result && getEditingMsg()
+            .equals(other.getEditingMsg());
+      }
       return result;
     }
 
@@ -2553,6 +3329,10 @@ public final class Message {
       hash = (53 * hash) + getSaveFrame();
       hash = (37 * hash) + CHANGE_SCENE_FIELD_NUMBER;
       hash = (53 * hash) + getChangeScene();
+      if (hasEditingMsg()) {
+        hash = (37 * hash) + EDITINGMSG_FIELD_NUMBER;
+        hash = (53 * hash) + getEditingMsg().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2677,6 +3457,12 @@ public final class Message {
 
         changeScene_ = 0;
 
+        if (editingMsgBuilder_ == null) {
+          editingMsg_ = null;
+        } else {
+          editingMsg_ = null;
+          editingMsgBuilder_ = null;
+        }
         return this;
       }
 
@@ -2708,6 +3494,11 @@ public final class Message {
         result.dropIndex_ = dropIndex_;
         result.saveFrame_ = saveFrame_;
         result.changeScene_ = changeScene_;
+        if (editingMsgBuilder_ == null) {
+          result.editingMsg_ = editingMsg_;
+        } else {
+          result.editingMsg_ = editingMsgBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2765,6 +3556,9 @@ public final class Message {
         }
         if (other.getChangeScene() != 0) {
           setChangeScene(other.getChangeScene());
+        }
+        if (other.hasEditingMsg()) {
+          mergeEditingMsg(other.getEditingMsg());
         }
         onChanged();
         return this;
@@ -2909,6 +3703,123 @@ public final class Message {
         changeScene_ = 0;
         onChanged();
         return this;
+      }
+
+      private StreamingFormat.Message.Editing editingMsg_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          StreamingFormat.Message.Editing, StreamingFormat.Message.Editing.Builder, StreamingFormat.Message.EditingOrBuilder> editingMsgBuilder_;
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public boolean hasEditingMsg() {
+        return editingMsgBuilder_ != null || editingMsg_ != null;
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public StreamingFormat.Message.Editing getEditingMsg() {
+        if (editingMsgBuilder_ == null) {
+          return editingMsg_ == null ? StreamingFormat.Message.Editing.getDefaultInstance() : editingMsg_;
+        } else {
+          return editingMsgBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public Builder setEditingMsg(StreamingFormat.Message.Editing value) {
+        if (editingMsgBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          editingMsg_ = value;
+          onChanged();
+        } else {
+          editingMsgBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public Builder setEditingMsg(
+          StreamingFormat.Message.Editing.Builder builderForValue) {
+        if (editingMsgBuilder_ == null) {
+          editingMsg_ = builderForValue.build();
+          onChanged();
+        } else {
+          editingMsgBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public Builder mergeEditingMsg(StreamingFormat.Message.Editing value) {
+        if (editingMsgBuilder_ == null) {
+          if (editingMsg_ != null) {
+            editingMsg_ =
+              StreamingFormat.Message.Editing.newBuilder(editingMsg_).mergeFrom(value).buildPartial();
+          } else {
+            editingMsg_ = value;
+          }
+          onChanged();
+        } else {
+          editingMsgBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public Builder clearEditingMsg() {
+        if (editingMsgBuilder_ == null) {
+          editingMsg_ = null;
+          onChanged();
+        } else {
+          editingMsg_ = null;
+          editingMsgBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public StreamingFormat.Message.Editing.Builder getEditingMsgBuilder() {
+        
+        onChanged();
+        return getEditingMsgFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      public StreamingFormat.Message.EditingOrBuilder getEditingMsgOrBuilder() {
+        if (editingMsgBuilder_ != null) {
+          return editingMsgBuilder_.getMessageOrBuilder();
+        } else {
+          return editingMsg_ == null ?
+              StreamingFormat.Message.Editing.getDefaultInstance() : editingMsg_;
+        }
+      }
+      /**
+       * <code>.StreamingFormat.Editing editingMsg = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          StreamingFormat.Message.Editing, StreamingFormat.Message.Editing.Builder, StreamingFormat.Message.EditingOrBuilder> 
+          getEditingMsgFieldBuilder() {
+        if (editingMsgBuilder_ == null) {
+          editingMsgBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              StreamingFormat.Message.Editing, StreamingFormat.Message.Editing.Builder, StreamingFormat.Message.EditingOrBuilder>(
+                  getEditingMsg(),
+                  getParentForChildren(),
+                  isClean());
+          editingMsg_ = null;
+        }
+        return editingMsgBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -5603,6 +6514,11 @@ public final class Message {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StreamingFormat_Camera_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StreamingFormat_Editing_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StreamingFormat_Editing_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StreamingFormat_Control_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -5638,23 +6554,27 @@ public final class Message {
       "\022\n\n\002vz\030\007 \001(\002\"\207\001\n\006Camera\022\024\n\014serialNumber\030" +
       "\002 \001(\r\022\017\n\007delta_x\030\003 \001(\002\022\017\n\007delta_y\030\004 \001(\002\022" +
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
-      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"G\n\007Contro" +
-      "l\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave_frame\030\002 \001(" +
-      "\r\022\024\n\014change_scene\030\003 \001(\r\"R\n\005Image\022\024\n\014seri",
-      "alNumber\030\002 \001(\r\022\016\n\006status\030\003 \001(\r\022\020\n\010byteSi" +
-      "ze\030\004 \001(\r\022\021\n\timageData\030\005 \001(\014\"\010\n\006Ending\"\312\002" +
-      "\n\020StreamingMessage\022*\n\004type\030\001 \001(\0162\034.Strea" +
-      "mingFormat.MessageType\022&\n\007initMsg\030\002 \001(\0132" +
-      "\025.StreamingFormat.Init\0222\n\rdefaultPosMsg\030" +
-      "\003 \001(\0132\033.StreamingFormat.DefaultPos\022*\n\tca" +
-      "meraMsg\030\004 \001(\0132\027.StreamingFormat.Camera\022(" +
-      "\n\010imageMsg\030\005 \001(\0132\026.StreamingFormat.Image" +
-      "\022*\n\tendingMsg\030\006 \001(\0132\027.StreamingFormat.En" +
-      "ding\022,\n\ncontrolMsg\030\007 \001(\0132\030.StreamingForm",
-      "at.Control*m\n\013MessageType\022\013\n\007MsgInit\020\000\022\021" +
-      "\n\rMsgDefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010" +
-      "MsgImage\020\003\022\r\n\tMsgEnding\020\004\022\016\n\nMsgControl\020" +
-      "\005b\006proto3"
+      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"Y\n\007Editin" +
+      "g\022*\n\002op\030\001 \001(\0162\036.StreamingFormat.EditOper" +
+      "ation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010screen_y\030\003 \001(",
+      "\002\"u\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave" +
+      "_frame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\ned" +
+      "itingMsg\030\004 \001(\0132\030.StreamingFormat.Editing" +
+      "\"R\n\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006statu" +
+      "s\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageData\030\005" +
+      " \001(\014\"\010\n\006Ending\"\312\002\n\020StreamingMessage\022*\n\004t" +
+      "ype\030\001 \001(\0162\034.StreamingFormat.MessageType\022" +
+      "&\n\007initMsg\030\002 \001(\0132\025.StreamingFormat.Init\022" +
+      "2\n\rdefaultPosMsg\030\003 \001(\0132\033.StreamingFormat" +
+      ".DefaultPos\022*\n\tcameraMsg\030\004 \001(\0132\027.Streami",
+      "ngFormat.Camera\022(\n\010imageMsg\030\005 \001(\0132\026.Stre" +
+      "amingFormat.Image\022*\n\tendingMsg\030\006 \001(\0132\027.S" +
+      "treamingFormat.Ending\022,\n\ncontrolMsg\030\007 \001(" +
+      "\0132\030.StreamingFormat.Control*m\n\013MessageTy" +
+      "pe\022\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultPos\020\001\022\021\n\rMs" +
+      "gCameraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n\tMsgEnding" +
+      "\020\004\022\016\n\nMsgControl\020\005*2\n\rEditOperation\022\t\n\005S" +
+      "TART\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5686,26 +6606,32 @@ public final class Message {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Camera_descriptor,
         new java.lang.String[] { "SerialNumber", "DeltaX", "DeltaY", "DeltaZ", "DeltaVx", "DeltaVy", "DeltaVz", });
-    internal_static_StreamingFormat_Control_descriptor =
+    internal_static_StreamingFormat_Editing_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_StreamingFormat_Editing_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StreamingFormat_Editing_descriptor,
+        new java.lang.String[] { "Op", "ScreenX", "ScreenY", });
+    internal_static_StreamingFormat_Control_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_StreamingFormat_Control_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Control_descriptor,
-        new java.lang.String[] { "DropIndex", "SaveFrame", "ChangeScene", });
+        new java.lang.String[] { "DropIndex", "SaveFrame", "ChangeScene", "EditingMsg", });
     internal_static_StreamingFormat_Image_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_StreamingFormat_Image_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Image_descriptor,
         new java.lang.String[] { "SerialNumber", "Status", "ByteSize", "ImageData", });
     internal_static_StreamingFormat_Ending_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_StreamingFormat_Ending_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Ending_descriptor,
         new java.lang.String[] { });
     internal_static_StreamingFormat_StreamingMessage_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_StreamingFormat_StreamingMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_StreamingMessage_descriptor,
