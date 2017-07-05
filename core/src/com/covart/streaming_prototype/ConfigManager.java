@@ -29,10 +29,12 @@ public class ConfigManager {
 
     private static final String[] serverList = new String[]{
             "140.112.90.95:8051",
+            "140.112.90.95:8052",
             "140.112.90.95:8053",
             "140.112.90.86:8051",
             "140.112.90.89:8051",
-            "140.112.90.89:8052"
+            "140.112.90.89:8052",
+            "140.112.90.89:8053"
     };
 
     private static final Integer[] sceneList = new Integer[]{
