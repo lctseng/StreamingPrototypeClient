@@ -153,6 +153,10 @@ public class MainMenu extends UIComponent {
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         canvas.row().height(commonRowHeight);
+
+        addEditingReportIntervalUI();
+        canvas.row().height(commonRowHeight);
+
         addButtons();
 
     }
@@ -643,6 +647,8 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
     }
 
+
+
     private void addSensorAutoMoveSpeedUI(){
         // label
         final Label name = new Label(getSensorAutoMoveSpeedText(), largeLabelStyle);
@@ -667,6 +673,34 @@ public class MainMenu extends UIComponent {
     private String getSensorAutoMoveSpeedText(){
         return String.format(Locale.TAIWAN,"Auto move speed: %d", (int)ConfigManager.getSensorAutoMoveSpeed());
     }
+
+
+    private void addEditingReportIntervalUI(){
+        // label
+        final Label name = new Label(getEditingReportIntervalText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.01f, 1.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getEditingReportInterval());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEditingReportInterval(slider.getValue());
+                name.setText(getEditingReportIntervalText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getEditingReportIntervalText(){
+        return String.format(Locale.TAIWAN,"Editing report interval: %.3f", ConfigManager.getEditingReportInterval());
+    }
+
+
 
     private void addButtons(){
         addRecenterButton().width(buttonWidth);

@@ -93,7 +93,7 @@ public class ConfigManager {
 
     private static boolean editingModeEnabled = false;
 
-
+    private static float editingReportInterval = 0.01f;
 
 
     // getters and setters
@@ -306,6 +306,14 @@ public class ConfigManager {
 
     public static void toggleEditingModeEnabled() {
         ConfigManager.editingModeEnabled = !ConfigManager.editingModeEnabled;
+    }
+
+    public static float getEditingReportInterval() {
+        return editingReportInterval;
+    }
+
+    public static void setEditingReportInterval(float editingReportInterval) {
+        ConfigManager.editingReportInterval = editingReportInterval;
     }
 
     // end of getters and setters
