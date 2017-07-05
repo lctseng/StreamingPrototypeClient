@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -673,30 +674,30 @@ public class MainMenu extends UIComponent {
         addEditingModeButton().width(buttonWidth);
     }
 
-    private Cell<TextButton> addRecenterButton(){
-        TextButton button = new TextButton("Re-center", skin);
+    private Cell<TextButton> addButton(String buttonText, EventListener listener){
+        TextButton button = new TextButton(buttonText, skin);
         button.getStyle().font = largeFont;
         button.setStyle(button.getStyle());
-        button.addListener(new ChangeListener() {
+        button.addListener(listener);
+        return canvas.add(button);
+    }
+
+    private Cell<TextButton> addRecenterButton(){
+        return addButton("Re-center", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.getApp().recenterSensor();
             }
         });
-        return canvas.add(button);
     }
 
     private Cell<TextButton> addSaveFrameButton(){
-        TextButton button = new TextButton("Save frame", skin);
-        button.getStyle().font = largeFont;
-        button.setStyle(button.getStyle());
-        button.addListener(new ChangeListener() {
+        return addButton("Save frame", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.getApp().setSaveFrameRequested(true);
             }
         });
-        return canvas.add(button);
     }
 
     private Cell<TextButton> addEditingModeButton(){
