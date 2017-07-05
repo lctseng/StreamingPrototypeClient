@@ -35,11 +35,11 @@ public class MainMenu extends UIComponent {
     private BitmapFont largeFont;
     private Label.LabelStyle largeLabelStyle;
 
-    private int tableColumnSpan = 3;
+    private int tableColumnSpan = 2;
     private int buttonWidth = 250;
 
-    private float commonRowHeight = 100f;
-    private float slideBarSize = 70f;
+    private float commonRowHeight = 70f;
+    private float slideBarSize = 50f;
 
     private Label startStopLabel;
     private TextButton startStopButton;
@@ -53,7 +53,7 @@ public class MainMenu extends UIComponent {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         largeFont = new BitmapFont();
-        largeFont.getData().setScale(2.5f);
+        largeFont.getData().setScale(1.5f);
 
         largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
 
@@ -120,30 +120,33 @@ public class MainMenu extends UIComponent {
     private void addComponents(){
         addStartStopUI();
         canvas.row().height(commonRowHeight);
+
         addIPSelectUI();
         addChangeSceneUI();
-        canvas.row().height(commonRowHeight);
         addSensorMoveTypeSelectUI();
-        addSensorAutoMoveSpeedUI();
         canvas.row().height(commonRowHeight);
+
+        addSensorAutoMoveSpeedUI();
         addDisplayModeSelectUI();
         addDisplayVRDisparityUI();
         canvas.row().height(commonRowHeight);
+
         addDisplayLensFactorXUI();
         addDisplayLensFactorYUI();
-        canvas.row().height(commonRowHeight);
         addStopOnDisconnectedUI();
-        addFocusChangeUI();
         canvas.row().height(commonRowHeight);
+
+        addFocusChangeUI();
         addStepXChangeUI();
         addStepYChangeUI();
         canvas.row().height(commonRowHeight);
+
         addApertureSizeUI();
         addInterpolateChangeUI();
-        canvas.row().height(commonRowHeight);
         addFreeUnusedTextureControlUI();
-        addSensorTranslationAverageFactorUI();
         canvas.row().height(commonRowHeight);
+
+        addSensorTranslationAverageFactorUI();
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         canvas.row().height(commonRowHeight);
@@ -693,7 +696,7 @@ public class MainMenu extends UIComponent {
     }
 
     private void enlargeSlider(HorzSlider slider){
-        slider.setCustomWidth(300);
+        slider.setCustomWidth(buttonWidth);
         slider.setDebug(canvas.getDebug());
         slider.getStyle().background.setMinHeight(slideBarSize);
         slider.getStyle().knob.setMinWidth(slideBarSize);
