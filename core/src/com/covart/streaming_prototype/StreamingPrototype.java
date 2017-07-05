@@ -6,12 +6,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.covart.streaming_prototype.Net.Network;
-import com.covart.streaming_prototype.UI.MainMenu;
-import com.covart.streaming_prototype.UI.UIManager;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
+import com.covart.streaming_prototype.Net.Network;
+import com.covart.streaming_prototype.UI.MainMenu;
+import com.covart.streaming_prototype.UI.UIManager;
 
 import java.util.Locale;
 
@@ -355,9 +355,24 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void startEditingMode(){
         updateEditingModeText();
+        sendEditingModeMessage(Message.EditOperation.START);
     }
 
     public void finishEditingMode(){
         updateEditingModeText();
+        sendEditingModeMessage(Message.EditOperation.FINISH);
+    }
+
+    private void sendEditingModeMessage(Message.EditOperation op){
+        Message.Control.Builder controlBuilder = Message.Control.newBuilder();
+        controlBuilder.setEditingMsg(Message.Editing.newBuilder()
+                                        .setOp(op));
+        // create message
+        Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
+                .setType(Message.MessageType.MsgControl)
+                .setControlMsg(controlBuilder.build()
+                ).build();
+        // send!
+        network.sendMessageProtobufAsync(msg);
     }
 }
