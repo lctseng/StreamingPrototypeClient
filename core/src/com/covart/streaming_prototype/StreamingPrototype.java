@@ -96,6 +96,7 @@ public class StreamingPrototype extends ApplicationAdapter
         UIManager.getInstance().registerUI(new MainMenu());
 
         StringPool.addField("App", "Ready for start");
+        updateEditingModeText();
     }
 
     @Override
@@ -346,5 +347,17 @@ public class StreamingPrototype extends ApplicationAdapter
     public void onStartCalled(){
         StringPool.addField("App", "Starting");
         requireStart();
+    }
+
+    private void updateEditingModeText(){
+        StringPool.addField("Editing", ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled");
+    }
+
+    public void startEditingMode(){
+        updateEditingModeText();
+    }
+
+    public void finishEditingMode(){
+        updateEditingModeText();
     }
 }

@@ -44,6 +44,8 @@ public class MainMenu extends UIComponent {
     private Label startStopLabel;
     private TextButton startStopButton;
 
+    private TextButton editingModeButton;
+
     private TextButton canvasControlButton;
 
     private float fadeTime = 0.2f;
@@ -214,6 +216,7 @@ public class MainMenu extends UIComponent {
     private State gettAppState(){
         return ConfigManager.getApp().getState();
     }
+
 
     private void addIPSelectUI(){
         // create label
@@ -667,6 +670,7 @@ public class MainMenu extends UIComponent {
     private void addButtons(){
         addRecenterButton().width(buttonWidth);
         addSaveFrameButton().width(buttonWidth);
+        addEditingModeButton().width(buttonWidth);
     }
 
     private Cell<TextButton> addRecenterButton(){
@@ -693,6 +697,44 @@ public class MainMenu extends UIComponent {
             }
         });
         return canvas.add(button);
+    }
+
+    private Cell<TextButton> addEditingModeButton(){
+        // create label
+        editingModeButton = new TextButton(getEditingModeButtonText(), skin);
+        editingModeButton.getStyle().font = largeFont;
+        editingModeButton.setStyle(editingModeButton.getStyle());
+        editingModeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.toggleEditingModeEnabled();
+                if(ConfigManager.isEditingModeEnabled()){
+                    // enable editing
+                    ConfigManager.getApp().startEditingMode();
+                }
+                else{
+                    // disable editing
+                    ConfigManager.getApp().finishEditingMode();
+                }
+
+                updateEditingModeText();
+
+            }
+        });
+        return canvas.add(editingModeButton);
+    }
+
+    private void updateEditingModeText(){
+        editingModeButton.setText(getEditingModeButtonText());
+    }
+
+    private String getEditingModeButtonText(){
+        if(ConfigManager.isEditingModeEnabled()){
+            return "Finish Editing";
+        }
+        else{
+            return "Start Editing";
+        }
     }
 
     private void enlargeSlider(HorzSlider slider){

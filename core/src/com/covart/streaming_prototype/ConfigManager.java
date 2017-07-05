@@ -51,6 +51,8 @@ public class ConfigManager {
             Display.Mode.NORMAL, Display.Mode.VR
     };
 
+
+
     // variables
 
     private static StreamingPrototype app;
@@ -88,6 +90,10 @@ public class ConfigManager {
     private static float displayLensFactorX = 0.1f;
 
     private static float displayLensFactorY = 0.1f;
+
+    private static boolean editingModeEnabled = false;
+
+
 
 
     // getters and setters
@@ -290,10 +296,23 @@ public class ConfigManager {
         ConfigManager.displayLensFactorY = displayLensFactorY;
     }
 
+    public static boolean isEditingModeEnabled() {
+        return editingModeEnabled;
+    }
+
+    public static void setEditingModeEnabled(boolean editingModeEnabled) {
+        ConfigManager.editingModeEnabled = editingModeEnabled;
+    }
+
+    public static void toggleEditingModeEnabled() {
+        ConfigManager.editingModeEnabled = !ConfigManager.editingModeEnabled;
+    }
+
     // end of getters and setters
 
     private ConfigManager() {
     }
+
 
 
 }
