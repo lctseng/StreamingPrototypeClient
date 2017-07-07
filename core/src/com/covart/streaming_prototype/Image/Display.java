@@ -2,11 +2,21 @@ package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
@@ -40,12 +50,19 @@ public class Display implements Disposable{
 
     private ShaderProgram shaderProgram;
 
-    private Mesh mesh;
-
     private Matrix4 modelviewMatrix;
     private Matrix4 projectionMatrix;
     private Matrix4 projectionMatrixLeft;
     private Matrix4 projectionMatrixRight;
+
+    private Texture tempTexture;
+
+    public PerspectiveCamera cam;
+    public Model model;
+    public ModelInstance instance;
+    public ModelBatch modelBatch;
+    public CameraInputController camController;
+    public Environment environment;
 
     public Display(){
 
@@ -56,11 +73,11 @@ public class Display implements Disposable{
         // multi-texture
         textureManager = new TextureManager(this);
 
+        tempTexture = new Texture("grid.jpg");
 
 
-
-        String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
-        String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
+        String vertexShader = Gdx.files.internal("shaders/lightfield_new.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/lightfield_new.frag").readString();
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
         Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
         Gdx.app.error("GLSL", shaderProgram.getLog());
@@ -80,6 +97,7 @@ public class Display implements Disposable{
         projectionMatrixRight = new Matrix4();
         float ratio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
         projectionMatrix.setToOrtho(ratio * -1, ratio, -1.0f, 1.0f, -1.0f, 1.0f);
+        //projectionMatrix.setToLookAt(new Vector3(0,0,-10),new Vector3(0,0,0),new Vector3(-1,0,0));
 
         // create VR two-eye projection
         // TODO: handle widere screen?
@@ -89,72 +107,38 @@ public class Display implements Disposable{
         projectionMatrixLeft.setToOrtho(-1.0f, 3.0f , -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
 
+        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.position.set(0f, 0f, 2f);
+        cam.lookAt(0,0,0);
+        cam.near = 0.1f;
+        cam.far = 300f;
+        cam.update();
 
 
-        // create mesh
-        float[] verts = new float[36];
-        int i = 0;
-        float x,y; // Mesh location in the world
-        float width,height; // Mesh width and height
 
-        x = y = -1.0f;
-        width = height = 2f;
 
-        //Top Left Vertex Triangle 1
-        verts[i++] = x;   //X
-        verts[i++] = y + height; //Y
-        verts[i++] = 0;    //Z
-        verts[i++] = 1.0f; // W
-        verts[i++] = 0f;   //U
-        verts[i++] = 0f;   //V
+        modelBatch = new ModelBatch(vertexShader, fragmentShader);
 
-        //Top Right Vertex Triangle 1
-        verts[i++] = x + width;
-        verts[i++] = y + height;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
+        camController = new CameraInputController(cam);
+        Gdx.input.setInputProcessor(camController);
 
-        //Bottom Left Vertex Triangle 1
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 0f;
-        verts[i++] = 1f;
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        //Top Right Vertex Triangle 2
-        verts[i++] = x + width;
-        verts[i++] = y + height;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
 
-        //Bottom Right Vertex Triangle 2
-        verts[i++] = x + width;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 1f;
+        ModelBuilder modelBuilder = new ModelBuilder();
 
-        //Bottom Left Vertex Triangle 2
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 0f;
-        verts[i] = 1f;
-
-        // Create a mesh out of two triangles rendered clockwise without indices
-        mesh = new Mesh( true, 6, 0,
-                new VertexAttribute( VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE ),
-                new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
-
-        mesh.setVertices(verts);
-
+        model = modelBuilder.createRect(
+                -1,-1,0,
+                1,-1,0,
+                1,1,0,
+                -1,1,0,
+                0,0,1,
+                new Material(TextureAttribute.createDiffuse(tempTexture)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
+        );
+        instance = new ModelInstance(model);
     }
 
     public void start(){
@@ -177,11 +161,16 @@ public class Display implements Disposable{
     }
 
     private void drawNormalView(){
+
+        /*
         shaderProgram.begin();
         // set matrix
+
         shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
         shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
+
         // set camera params
+
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
         shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
         shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
@@ -196,12 +185,30 @@ public class Display implements Disposable{
         shaderProgram.setUniformf("lensFactorX", 0);
         shaderProgram.setUniformf("lensFactorY", 0);
 
+
         // binding texture
-        textureManager.bindTextures(shaderProgram);
+        //textureManager.bindTextures(shaderProgram);
+        tempTexture.bind(0);
         // draw!
+
         mesh.render(shaderProgram, GL20.GL_TRIANGLES);
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
+        */
+
+
+
+
+        camController.update();
+
+        Gdx.graphics.getGL20().glEnable(GL20.GL_TEXTURE_2D);
+        tempTexture.bind();
+
+
+        modelBatch.begin(cam);
+        modelBatch.render(instance, environment);
+        //modelBatch.render(instance2, environment);
+        modelBatch.end();
     }
 
 
@@ -235,7 +242,7 @@ public class Display implements Disposable{
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        //mesh.render(shaderProgram, GL20.GL_TRIANGLES);
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
 
@@ -261,7 +268,7 @@ public class Display implements Disposable{
         // binding texture
         textureManager.bindTextures(shaderProgram);
         // draw!
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+        //mesh.render(shaderProgram, GL20.GL_TRIANGLES);
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
     }
@@ -269,6 +276,8 @@ public class Display implements Disposable{
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         collectImages();
 
@@ -316,6 +325,9 @@ public class Display implements Disposable{
         batch.dispose();
         font.dispose();
         textureManager.dispose();
+        tempTexture.dispose();
+        model.dispose();
+        modelBatch.dispose();
     }
 
     public void disposeExistingTexture(){

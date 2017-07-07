@@ -17,11 +17,11 @@ public class ConfigManager {
 
     // constants
 
-    private static final int imageWidth = 256;
-    private static final int imageHeight = 256;
+    private static final int imageWidth = 512;
+    private static final int imageHeight = 512;
 
-    private static final int numOfLFs = 16;
-    private static final int numOfSubLFImgs = 4;
+    private static final int numOfLFs = 8;
+    private static final int numOfSubLFImgs = 8;
 
     private static final int bufferQueueSize = 3;
     private static final int imageBufferSize =  imageWidth * imageHeight * 3;

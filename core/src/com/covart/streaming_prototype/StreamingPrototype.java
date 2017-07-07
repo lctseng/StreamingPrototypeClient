@@ -18,6 +18,7 @@ import java.util.Locale;
 import StreamingFormat.Message;
 
 import static com.badlogic.gdx.Gdx.app;
+import static com.badlogic.gdx.math.MathUtils.clamp;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
 import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDown;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
@@ -48,8 +49,11 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean saveFrameRequested = false;
 
-    StreamingPrototype(ImageDecoderBase platform_decoder){
-        if(platform_decoder != null){
+    // editing
+    private float editingReportTime;
+
+    StreamingPrototype(ImageDecoderBase platform_decoder) {
+        if (platform_decoder != null) {
             decoder = platform_decoder;
         }
     }
@@ -64,49 +68,56 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     @Override
-	public void create () {
+    public void create() {
         ConfigManager.setApp(this);
 
         StringPool.addField("App", "Initializing");
         UIManager.initialize();
         network = new Network(this);
         display = new Display();
-        sensor  = new Sensor();
+        sensor = new Sensor();
 
 
-
-        if(decoder == null){
+        if (decoder == null) {
             Gdx.app.error("App", "No platform decoder specified! Use static decoder instead!");
             decoder = new ImageDecoderStaticFiles();
         }
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
-
-        InputAdapter localInput = new InputAdapter() {
-            @Override
-            public boolean touchDragged (int screenX, int screenY, int pointer) {
-                return sensor.touchDragged(screenX, screenY, pointer);
-            }
-
-        };
-        inputMultiplexer.addProcessor(localInput);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
+        initializeInput();
         UIManager.getInstance().registerUI(new MainMenu());
 
         StringPool.addField("App", "Ready for start");
         updateEditingModeText();
     }
 
+    private void initializeInput() {
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
+
+        InputAdapter localInput = new InputAdapter() {
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                if (ConfigManager.isEditingModeEnabled()) {
+                    return editingTouchDragged(screenX, screenY, pointer);
+                } else {
+                    return sensor.touchDragged(screenX, screenY, pointer);
+                }
+            }
+        };
+        inputMultiplexer.addProcessor(localInput);
+        //Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+
     @Override
     public void start() {
+        editingReportTime = 0f;
         sensorSendDataTime = 0f;
         sensorDisplayDataTime = 0f;
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
-        app.log("App","starting");
+        app.log("App", "starting");
         StringPool.addField("App", "Component started");
         setState(Running);
         BufferPool.getInstance().reset();
@@ -122,7 +133,7 @@ public class StreamingPrototype extends ApplicationAdapter
     public void stop() {
         stopRequired = false;
         startRequired = false;
-        app.log("App","stopping");
+        app.log("App", "stopping");
         setState(Stopped);
         sensor.stop();
         decoder.stop();
@@ -140,23 +151,23 @@ public class StreamingPrototype extends ApplicationAdapter
         startRequired = true;
     }
 
-	@Override
-	public void render () {
-        if(startRequired){
+    @Override
+    public void render() {
+        if (startRequired) {
             start();
         }
-        if(stopRequired){
+        if (stopRequired) {
             stop();
         }
-        if(sensor.isInitDataReady()){
+        if (sensor.isInitDataReady()) {
             sensor.updateSensorData();
             sensorSendDataTime += Gdx.graphics.getDeltaTime();
-            if(sensorSendDataTime > ConfigManager.getSensorReportInterval()){
+            if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
                 sensorSendDataTime = 0f;
                 sendSenserData();
             }
             sensorDisplayDataTime += Gdx.graphics.getDeltaTime();
-            if(sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()){
+            if (sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()) {
                 sensorDisplayDataTime = 0f;
                 display.onSensorDataReady(sensor);
             }
@@ -166,22 +177,23 @@ public class StreamingPrototype extends ApplicationAdapter
         //Profiler.generateProfilingStrings();
         display.updateEnd();
         // control frame update if started
-        if(state == Running){
+        if (state == Running) {
+            updateEditing();
             updateControlFrame();
         }
         UIManager.getInstance().draw();
 
-	}
+    }
 
     private void updateControlFrame() {
-        if(checkControlFrameRequired()){
+        if (checkControlFrameRequired()) {
             sceneChanged = false;
             // create message builder
             Message.Control.Builder controlBuilder = Message.Control.newBuilder();
             // save change scene
             controlBuilder.setChangeScene(ConfigManager.getSceneIndex());
             // save save frame
-            if(saveFrameRequested){
+            if (saveFrameRequested) {
                 controlBuilder.setSaveFrame(1);
                 saveFrameRequested = false;
             }
@@ -200,7 +212,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean checkControlFrameRequired() {
         // check drop index
-        if(display.checkControlFrameRequired() || sceneChanged || saveFrameRequested){
+        if (display.checkControlFrameRequired() || sceneChanged || saveFrameRequested) {
             return true;
         }
         return false;
@@ -208,12 +220,12 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     @Override
-	public void dispose () {
+    public void dispose() {
         UIManager.cleanup();
         decoder.dispose();
         display.dispose();
         network.dispose();
-	}
+    }
 
 
     private Message.StreamingMessage makeSensorPacket(Vector3 direction, Quaternion rotation) {
@@ -239,14 +251,14 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void sendSenserData() {
         Message.StreamingMessage msg = makeSensorPacket(sensor.getDirecton(), sensor.getRotation());
-        if(msg != null){
+        if (msg != null) {
             network.sendMessageProtobufAsync(msg);
         }
     }
 
     @Override
     public void dispatchMessage(Message.StreamingMessage msg) throws InterruptedException {
-        switch(msg.getType()){
+        switch (msg.getType()) {
             case MsgDefaultPos:
                 Gdx.app.log("Dispatch", "DefaultPos set");
                 Message.DefaultPos posMsg = msg.getDefaultPosMsg();
@@ -256,14 +268,13 @@ public class StreamingPrototype extends ApplicationAdapter
             case MsgImage:
                 //Gdx.app.log("App","Receiving new column:" + msg.getImageMsg().getStatus());
                 //Gdx.app.log("App","Receiving bytesize:" + msg.getImageMsg().getByteSize());
-                int size =  msg.getImageMsg().getByteSize();
+                int size = msg.getImageMsg().getByteSize();
                 Profiler.reportOnRecvStart();
-                while(size > 0){
+                while (size > 0) {
                     int expectSize;
-                    if(size > ConfigManager.getDecoderBufferSize()){
+                    if (size > ConfigManager.getDecoderBufferSize()) {
                         expectSize = ConfigManager.getDecoderBufferSize();
-                    }
-                    else{
+                    } else {
                         // not enough
                         expectSize = size;
                     }
@@ -286,13 +297,13 @@ public class StreamingPrototype extends ApplicationAdapter
                 BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 // report
                 Profiler.reportOnRecvEnd();
-                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(),  msg.getImageMsg().getStatus() ,msg.getImageMsg().getByteSize()));
+                StringPool.addField("Image Data", String.format(Locale.TAIWAN, "[%d] (index: %d) %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getStatus(), msg.getImageMsg().getByteSize()));
                 Gdx.app.debug("Image Data", String.format(Locale.TAIWAN, "[%d] %d bytes", msg.getImageMsg().getSerialNumber(), msg.getImageMsg().getByteSize()));
                 // send data to decoder
 
                 break;
             case MsgEnding:
-                Gdx.app.log("Dispatch","Ending message received");
+                Gdx.app.log("Dispatch", "Ending message received");
                 requireStop();
                 StringPool.removeField("Image Data");
                 break;
@@ -318,7 +329,7 @@ public class StreamingPrototype extends ApplicationAdapter
         }
     }
 
-    public void recenterSensor(){
+    public void recenterSensor() {
         sensor.RecenterRotation();
     }
 
@@ -326,7 +337,7 @@ public class StreamingPrototype extends ApplicationAdapter
         this.saveFrameRequested = saveFrameRequested;
     }
 
-    public void onStopCalled(){
+    public void onStopCalled() {
         StringPool.addField("App", "Shutting Down...");
         sendEndingMessage();
         setState(ShuttingDown);
@@ -344,29 +355,59 @@ public class StreamingPrototype extends ApplicationAdapter
         }).start();
     }
 
-    public void onStartCalled(){
+    public void onStartCalled() {
         StringPool.addField("App", "Starting");
         requireStart();
     }
 
-    private void updateEditingModeText(){
+    private void updateEditingModeText() {
         StringPool.addField("Editing", ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled");
     }
 
-    public void startEditingMode(){
-        updateEditingModeText();
-        sendEditingModeMessage(Message.EditOperation.START);
+    private void updateEditingModeText(float imageX, float imageY) {
+        StringPool.addField("Editing", (ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled") + ", ImageX:" + imageX + ", ImageY:" + imageY);
     }
 
-    public void finishEditingMode(){
+    public void startEditingMode() {
         updateEditingModeText();
-        sendEditingModeMessage(Message.EditOperation.FINISH);
+        sendEditingModeMessage(Message.EditOperation.START, 0, 0);
     }
 
-    private void sendEditingModeMessage(Message.EditOperation op){
+    public void finishEditingMode() {
+        updateEditingModeText();
+        sendEditingModeMessage(Message.EditOperation.FINISH, 0, 0);
+    }
+
+    private boolean editingTouchDragged(int screenX, int screenY, int pointer) {
+        if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
+            this.editingReportTime = 0f;
+            // compute imageX, imageY
+            // assume landscape, width > height
+            float halfDiffWH = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
+            float imageX = (clamp(screenX - halfDiffWH, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageWidth();
+            float imageY = (clamp(screenY, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageHeight();
+            Gdx.app.log("Editing", "ImageX:" + imageX + ", ImageY:" + imageY);
+            updateEditingModeText(imageX, imageY);
+            sendEditingModeMessage(Message.EditOperation.UPDATE, imageX, imageY);
+        }
+        return true;
+    }
+
+    private void updateEditing() {
+        if (ConfigManager.isEditingModeEnabled()) {
+            this.editingReportTime += Gdx.graphics.getDeltaTime();
+        }
+    }
+
+
+    private void sendEditingModeMessage(Message.EditOperation op, float imageX, float imageY) {
         Message.Control.Builder controlBuilder = Message.Control.newBuilder();
         controlBuilder.setEditingMsg(Message.Editing.newBuilder()
-                                        .setOp(op));
+                .setOp(op)
+                .setScreenX(imageX)
+                .setScreenY(imageY)
+
+        );
         // create message
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
                 .setType(Message.MessageType.MsgControl)

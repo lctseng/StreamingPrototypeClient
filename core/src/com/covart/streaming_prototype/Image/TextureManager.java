@@ -198,13 +198,13 @@ public class TextureManager implements Disposable {
             int textureIndex = i - columnStart;
             if(textures[i] != null) {
                 textures[i].bind(textureIndex);
-                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
-                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                //shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
+                //shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
             }
             else{
                 Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
                 Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
-                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
+                //shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
             }
         }
     }

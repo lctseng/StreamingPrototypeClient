@@ -67,6 +67,7 @@ public class MainMenu extends UIComponent {
         createCanvasControlButton();
 
         showMenu();
+        hideMenu();
 
     }
 
