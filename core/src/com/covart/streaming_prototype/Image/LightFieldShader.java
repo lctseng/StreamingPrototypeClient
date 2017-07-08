@@ -16,15 +16,31 @@
 
 package com.covart.streaming_prototype.Image;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.ConfigManager;
 
 /**
  * See: http://blog.xoppa.com/creating-a-shader-with-libgdx
  * @author Xoppa
  */
 public class LightFieldShader extends DefaultShader{
+
+    private TextureManager textureManager;
+
+    public TextureManager getTextureManager() {
+        return textureManager;
+    }
+
+    public void setTextureManager(TextureManager textureManager) {
+        this.textureManager = textureManager;
+    }
 
     public LightFieldShader(Renderable renderable) {
         super(renderable);
@@ -44,5 +60,71 @@ public class LightFieldShader extends DefaultShader{
 
     public LightFieldShader(Renderable renderable, Config config, ShaderProgram shaderProgram) {
         super(renderable, config, shaderProgram);
+    }
+
+    @Override
+    public void render(Renderable renderable, Attributes combinedAttributes) {
+        bindProjections();
+        bindTexture();
+        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 20.0f);
+        super.render(renderable, combinedAttributes);
+    }
+
+    private void bindTexture(){
+        if(textureManager != null) {
+            textureManager.bindTextures(program);
+        }
+    }
+
+    private void bindProjections(){
+        bindRkRfProjection();
+        bindRfRdProjections();
+    }
+
+    private void bindRkRfProjection(){
+        Matrix4 inverseProj = camera.invProjectionView;
+        float screen_x = Display.screenX / Gdx.graphics.getWidth();//(Display.screenX - ((Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2))/ Gdx.graphics.getHeight();
+        float screen_y = Display.screenY / Gdx.graphics.getHeight();
+        float ndc_x = 2.0f*(screen_x) - 1.0f;
+        float ndc_y = -2.0f*(screen_y) + 1.0f;
+        Vector3 posScreen = new Vector3(ndc_x,ndc_y,0);
+        posScreen.prj(inverseProj);
+        //Gdx.app.log("Shader", "NDC X:" + ndc_x + ", NDC Y: " + ndc_y + ", Converted: (" + posScreen.x + "," + posScreen.y + ", " + posScreen.z + ")");
+        float[] data = {posScreen.x, posScreen.y, posScreen.z};
+        program.setUniform3fv("u_test_position",data, 0, 3);
+        program.setUniformMatrix("u_rk_to_rf",inverseProj);
+        program.setUniformMatrix("u_myProjView",camera.combined);
+    }
+
+    private void bindRfRdProjections(){
+        int totalCols = ConfigManager.getNumOfLFs();
+        int totalRows = ConfigManager.getNumOfSubLFImgs();
+        for(int i=0;i< totalCols;++i){
+            for(int j=0;j<totalRows;++j){
+
+                PerspectiveCamera cam = new PerspectiveCamera(67, ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
+
+                float camera_x = ( -1f + (1 + i)*(2f/(totalCols + 1)) ) * ConfigManager.getCameraStepY() * 100f;
+                float camera_y = ( -1f + (1 + j)*(2f/(totalRows + 1)) ) * ConfigManager.getCameraStepY() * 100f;
+                cam.position.set( camera_x, camera_y, 0f);
+                cam.lookAt(camera_x,camera_y,-1);
+                cam.near = 0.1f;
+                cam.far = 10f;
+                /*
+                PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                cam.position.set(0f, 0f, 1f);
+                cam.lookAt(0,0,-1);
+                cam.near = 1f;
+                cam.far = 3f;
+                */
+
+
+                cam.update();
+                String name = "u_rf_to_rd" + i + "_" + j;
+                program.setUniformMatrix(name, cam.combined);
+
+
+            }
+        }
     }
 }

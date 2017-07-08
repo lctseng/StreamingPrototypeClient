@@ -20,8 +20,8 @@ public class ConfigManager {
     private static final int imageWidth = 512;
     private static final int imageHeight = 512;
 
-    private static final int numOfLFs = 8;
-    private static final int numOfSubLFImgs = 8;
+    private static final int numOfLFs = 4;
+    private static final int numOfSubLFImgs = 4;
 
     private static final int bufferQueueSize = 3;
     private static final int imageBufferSize =  imageWidth * imageHeight * 3;
@@ -57,12 +57,12 @@ public class ConfigManager {
 
     private static StreamingPrototype app;
 
-    private static float cameraStepX = 0.1f; // 0.00759f * 2f * 4
-    private static float cameraStepY = 0.0194f; // 0.0097f * 2f
+    private static float cameraStepX = 0.001f; // 0.00759f * 2f * 4
+    private static float cameraStepY = 0.0141f; // 0.0097f * 2f
 
     private static float apertureSize = 10.0f;
 
-    private static float focusChangeRatio = 1.0f;
+    private static float focusChangeRatio = 0.429f;
 
     private static int numOfMaxInterpolatedLFRadius = 2;
 

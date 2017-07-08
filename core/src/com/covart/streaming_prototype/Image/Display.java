@@ -1,6 +1,8 @@
 package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,6 +28,7 @@ import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Profiler;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
+import com.covart.streaming_prototype.UI.UIManager;
 
 import StreamingFormat.Message;
 
@@ -64,6 +67,11 @@ public class Display implements Disposable{
     public CameraInputController camController;
     public Environment environment;
 
+
+    public static float screenX;
+    public static float screenY;
+
+    public LightFieldShaderProvider shaderProvider;
 
     public Display(){
 
@@ -109,19 +117,39 @@ public class Display implements Disposable{
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
 
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 0f, 2f);
-        cam.lookAt(0,0,0);
+        cam.position.set(0f, 0f, 3f);
+        cam.lookAt(0,0,-1);
         cam.near = 0.1f;
-        cam.far = 300f;
+        cam.far = 3 + (ConfigManager.getFocusChangeRatio() - 0f) * (ConfigManager.getCameraStepX() * 1000);
         cam.update();
 
 
 
+        shaderProvider = new LightFieldShaderProvider(vertexShader, fragmentShader);
+        shaderProvider.setTextureManager(textureManager);
 
-        modelBatch = new ModelBatch(new LightFieldShaderProvider(vertexShader, fragmentShader));
+        modelBatch = new ModelBatch(shaderProvider);
 
         camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
+        camController.pinchZoomFactor = 1f;
+        camController.rotateAngle = 30;
+        camController.translateUnits = 1;
+
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
+
+        InputAdapter localInput = new InputAdapter() {
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                Display.screenX = screenX;
+                Display.screenY = screenY;
+                return false;
+            }
+        };
+        inputMultiplexer.addProcessor(localInput);
+        inputMultiplexer.addProcessor(camController);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
@@ -280,6 +308,9 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         collectImages();
+
+        cam.far = 3 + (ConfigManager.getFocusChangeRatio() - 0f) * (ConfigManager.getCameraStepX() * 1000);
+        cam.update();
 
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:

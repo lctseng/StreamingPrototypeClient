@@ -193,21 +193,45 @@ public class TextureManager implements Disposable {
         visualizeColumnStatus();
     }
 
+    /*
     public void bindTextures(ShaderProgram shaderProgram){
         for(int i=columnStart;i<columnEnd;i++){
             int textureIndex = i - columnStart;
             if(textures[i] != null) {
                 textures[i].bind(textureIndex);
-                //shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
-                //shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                Gdx.app.log("Tex", "Binding:" + textureIndex);
             }
             else{
                 Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
                 Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
-                //shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
             }
         }
     }
+    */
+
+    public void bindTextures(ShaderProgram shaderProgram){
+        if(textures == null){
+            return;
+        }
+        for(int i=0;i<ConfigManager.getNumOfLFs();i++){
+            int textureIndex = i;
+            if(textures[i] != null) {
+                textures[i].bind(textureIndex);
+                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                //Gdx.app.log("Tex", "Binding:" + textureIndex);
+            }
+            else{
+                Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
+                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
+            }
+        }
+    }
+
 
     public void visualizeColumnStatus(){
         visualizeVisibleColumn();
