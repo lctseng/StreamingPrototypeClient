@@ -64,6 +64,7 @@ public class Display implements Disposable{
     public CameraInputController camController;
     public Environment environment;
 
+
     public Display(){
 
         batch = new SpriteBatch();
@@ -117,7 +118,7 @@ public class Display implements Disposable{
 
 
 
-        modelBatch = new ModelBatch(vertexShader, fragmentShader);
+        modelBatch = new ModelBatch(new LightFieldShaderProvider(vertexShader, fragmentShader));
 
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
@@ -125,7 +126,6 @@ public class Display implements Disposable{
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
