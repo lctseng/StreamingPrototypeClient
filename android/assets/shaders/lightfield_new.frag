@@ -21,30 +21,93 @@ varying HIGH vec2 v_diffuseUV;
 uniform sampler2D u_diffuseTexture;
 #endif
 
+
+// testing
+
 uniform vec3 u_test_position;
+uniform mat4 u_myProjView;
+uniform int colLimit;
+
+// end of testing
+
+
 uniform mat4 u_rk_to_rf;
 
-uniform mat4 u_myProjView;
+uniform float u_cameraPositionX;
+uniform float u_cameraPositionY;
+
+uniform float u_positionFactor;
 
 uniform float u_apertureSize;
 
-uniform mat4 u_rf_to_rd0_0;
-uniform mat4 u_rf_to_rd0_1;
-uniform mat4 u_rf_to_rd0_2;
-uniform mat4 u_rf_to_rd0_3;
-uniform mat4 u_rf_to_rd1_0;
-uniform mat4 u_rf_to_rd1_1;
-uniform mat4 u_rf_to_rd1_2;
-uniform mat4 u_rf_to_rd1_3;
-uniform mat4 u_rf_to_rd2_0;
-uniform mat4 u_rf_to_rd2_1;
-uniform mat4 u_rf_to_rd2_2;
-uniform mat4 u_rf_to_rd2_3;
-uniform mat4 u_rf_to_rd3_0;
-uniform mat4 u_rf_to_rd3_1;
-uniform mat4 u_rf_to_rd3_2;
-uniform mat4 u_rf_to_rd3_3;
+uniform int u_cols;
+uniform int u_rows;
 
+uniform mat4 u_rf_to_rd0_0; 
+uniform mat4 u_rf_to_rd0_1; 
+uniform mat4 u_rf_to_rd0_2; 
+uniform mat4 u_rf_to_rd0_3; 
+uniform mat4 u_rf_to_rd0_4; 
+uniform mat4 u_rf_to_rd0_5; 
+uniform mat4 u_rf_to_rd0_6; 
+uniform mat4 u_rf_to_rd0_7; 
+uniform mat4 u_rf_to_rd1_0; 
+uniform mat4 u_rf_to_rd1_1; 
+uniform mat4 u_rf_to_rd1_2; 
+uniform mat4 u_rf_to_rd1_3; 
+uniform mat4 u_rf_to_rd1_4; 
+uniform mat4 u_rf_to_rd1_5; 
+uniform mat4 u_rf_to_rd1_6; 
+uniform mat4 u_rf_to_rd1_7; 
+uniform mat4 u_rf_to_rd2_0; 
+uniform mat4 u_rf_to_rd2_1; 
+uniform mat4 u_rf_to_rd2_2; 
+uniform mat4 u_rf_to_rd2_3; 
+uniform mat4 u_rf_to_rd2_4; 
+uniform mat4 u_rf_to_rd2_5; 
+uniform mat4 u_rf_to_rd2_6; 
+uniform mat4 u_rf_to_rd2_7; 
+uniform mat4 u_rf_to_rd3_0; 
+uniform mat4 u_rf_to_rd3_1; 
+uniform mat4 u_rf_to_rd3_2; 
+uniform mat4 u_rf_to_rd3_3; 
+uniform mat4 u_rf_to_rd3_4; 
+uniform mat4 u_rf_to_rd3_5; 
+uniform mat4 u_rf_to_rd3_6; 
+uniform mat4 u_rf_to_rd3_7; 
+uniform mat4 u_rf_to_rd4_0; 
+uniform mat4 u_rf_to_rd4_1; 
+uniform mat4 u_rf_to_rd4_2; 
+uniform mat4 u_rf_to_rd4_3; 
+uniform mat4 u_rf_to_rd4_4; 
+uniform mat4 u_rf_to_rd4_5; 
+uniform mat4 u_rf_to_rd4_6; 
+uniform mat4 u_rf_to_rd4_7; 
+uniform mat4 u_rf_to_rd5_0; 
+uniform mat4 u_rf_to_rd5_1; 
+uniform mat4 u_rf_to_rd5_2; 
+uniform mat4 u_rf_to_rd5_3; 
+uniform mat4 u_rf_to_rd5_4; 
+uniform mat4 u_rf_to_rd5_5; 
+uniform mat4 u_rf_to_rd5_6; 
+uniform mat4 u_rf_to_rd5_7; 
+uniform mat4 u_rf_to_rd6_0; 
+uniform mat4 u_rf_to_rd6_1; 
+uniform mat4 u_rf_to_rd6_2; 
+uniform mat4 u_rf_to_rd6_3; 
+uniform mat4 u_rf_to_rd6_4; 
+uniform mat4 u_rf_to_rd6_5; 
+uniform mat4 u_rf_to_rd6_7; 
+uniform mat4 u_rf_to_rd6_6; 
+uniform mat4 u_rf_to_rd7_0; 
+uniform mat4 u_rf_to_rd7_1; 
+uniform mat4 u_rf_to_rd7_2; 
+uniform mat4 u_rf_to_rd7_3; 
+uniform mat4 u_rf_to_rd7_4; 
+uniform mat4 u_rf_to_rd7_5; 
+uniform mat4 u_rf_to_rd7_6; 
+uniform mat4 u_rf_to_rd7_7;  
+                               
 
 uniform sampler2D u_custom_texture0;
 uniform int u_texture_valid0;
@@ -71,7 +134,6 @@ uniform sampler2D u_custom_texture7;
 uniform int u_texture_valid7;
 
 
-
 void main() {
 	#if defined(diffuseTextureFlag)
 		vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV);
@@ -83,17 +145,15 @@ void main() {
 		//diffuse = vec4(gl_FragCoord.x / 1600.0,gl_FragCoord.y / 900.0,0,1);
 
 
-		int cols = 4;
-		int rows = 4;
 
-		float spanX = 1.0 / float(cols);
-		float spanY = 1.0 / float(rows);
+		float spanX = 2.0 / float(u_cols);
+		float spanY = 2.0 / float(u_rows);
 
 		// project 
 		// RK(s,t) -> RF(s,t)
 		float screen_x = 2.0 * ((gl_FragCoord.x - 0)/1600.0) - 1.0;
-		float screen_y = (2.0 * ((gl_FragCoord.y - 0)/900.0 ) - 1.0) * -1.0;
-		vec4 rk = vec4(screen_x,screen_y, 1.0, 1.0);
+		float screen_y = (2.0 * ((gl_FragCoord.y - 0)/900.0 ) - 1.0) * 1.0;
+		vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
 		/*
 		float l_w = 1.0 / (rk.x * u_rk_to_rf[3][0] +
 							rk.y * u_rk_to_rf[3][1] + 
@@ -110,74 +170,223 @@ void main() {
 
 		diffuse = vec4(0,0,0,0);
 		int valid = 0;
+		float accumulateWeight = 0.0;
 
 		float initCameraX = -1.0 + 0.5 * spanX;
 		float initCameraY = -1.0 + 0.5 * spanY;
 
 		// for each D(s,t)
-		for(int i=0;i<cols;++i){
-			for(int j=0;j<rows;++j){
+		for(int i=0;i<u_cols;++i){
+			for(int j=0;j<u_rows;++j){
 
 
-				float cameraX = initCameraX + i * spanX;
-				float cameraY = initCameraY + j * spanY;
-				float s2 = v_diffuseUV.s * 2.0 - 1.0;
-				float t2 = v_diffuseUV.t * 2.0 - 1.0;
-				float dx = cameraX - s2;
-				float dy = cameraY - t2;
-				if((dx * dx +  dy * dy) < u_apertureSize){
+				float cameraX = (initCameraX + i * spanX) * u_positionFactor;
+				float cameraY = (initCameraY + j * spanY) * u_positionFactor;
+				float dx = cameraX - u_cameraPositionX;
+				float dy = cameraY - u_cameraPositionY;
+				float dist = dx * dx +  dy * dy;
+				if(dist < u_apertureSize){
 
 					// RC(s,t) = v_diffuseUV
 					// compute RD(s,t)
 					vec4 rd;
+					
+
 					if(i == 0 && j == 0){
 						rd = u_rf_to_rd0_0 * rf;
 					}
-					else if(i == 0 && j == 1){
+					if(i == 0 && j == 1){
 						rd = u_rf_to_rd0_1 * rf;
 					}
-					else if(i == 0 && j == 2){
+					if(i == 0 && j == 2){
 						rd = u_rf_to_rd0_2 * rf;
 					}
-					else if(i == 0 && j == 3){
+					if(i == 0 && j == 3){
 						rd = u_rf_to_rd0_3 * rf;
 					}
-					else if(i == 1 && j == 0){
+					if(i == 0 && j == 4){
+						rd = u_rf_to_rd0_4 * rf;
+					}
+					if(i == 0 && j == 5){
+						rd = u_rf_to_rd0_5 * rf;
+					}
+					if(i == 0 && j == 6){
+						rd = u_rf_to_rd0_6 * rf;
+					}
+					if(i == 0 && j == 7){
+						rd = u_rf_to_rd0_7 * rf;
+					}
+					if(i == 1 && j == 0){
 						rd = u_rf_to_rd1_0 * rf;
 					}
-					else if(i == 1 && j == 1){
+					if(i == 1 && j == 1){
 						rd = u_rf_to_rd1_1 * rf;
 					}
-					else if(i == 1 && j == 2){
+					if(i == 1 && j == 2){
 						rd = u_rf_to_rd1_2 * rf;
 					}
-					else if(i == 1 && j == 3){
+					if(i == 1 && j == 3){
 						rd = u_rf_to_rd1_3 * rf;
 					}
-					else if(i == 2 && j == 0){
+					if(i == 1 && j == 4){
+						rd = u_rf_to_rd1_4 * rf;
+					}
+					if(i == 1 && j == 5){
+						rd = u_rf_to_rd1_5 * rf;
+					}
+					if(i == 1 && j == 6){
+						rd = u_rf_to_rd1_6 * rf;
+					}
+					if(i == 1 && j == 7){
+						rd = u_rf_to_rd1_7 * rf;
+					}
+					if(i == 2 && j == 0){
 						rd = u_rf_to_rd2_0 * rf;
 					}
-					else if(i == 2 && j == 1){
+					if(i == 2 && j == 1){
 						rd = u_rf_to_rd2_1 * rf;
 					}
-					else if(i == 2 && j == 2){
+					if(i == 2 && j == 2){
 						rd = u_rf_to_rd2_2 * rf;
 					}
-					else if(i == 2 && j == 3){
+					if(i == 2 && j == 3){
 						rd = u_rf_to_rd2_3 * rf;
 					}
-					else if(i == 3 && j == 0){
+					if(i == 2 && j == 4){
+						rd = u_rf_to_rd2_4 * rf;
+					}
+					if(i == 2 && j == 5){
+						rd = u_rf_to_rd2_5 * rf;
+					}
+					if(i == 2 && j == 6){
+						rd = u_rf_to_rd2_6 * rf;
+					}
+					if(i == 2 && j == 7){
+						rd = u_rf_to_rd2_7 * rf;
+					}
+					if(i == 3 && j == 0){
 						rd = u_rf_to_rd3_0 * rf;
 					}
-					else if(i == 3 && j == 1){
+					if(i == 3 && j == 1){
 						rd = u_rf_to_rd3_1 * rf;
 					}
-					else if(i == 3 && j == 2){
+					if(i == 3 && j == 2){
 						rd = u_rf_to_rd3_2 * rf;
 					}
-					else if(i == 3 && j == 3){
+					if(i == 3 && j == 3){
 						rd = u_rf_to_rd3_3 * rf;
 					}
+					if(i == 3 && j == 4){
+						rd = u_rf_to_rd3_4 * rf;
+					}
+					if(i == 3 && j == 5){
+						rd = u_rf_to_rd3_5 * rf;
+					}
+					if(i == 3 && j == 6){
+						rd = u_rf_to_rd3_6 * rf;
+					}
+					if(i == 3 && j == 7){
+						rd = u_rf_to_rd3_7 * rf;
+					}
+					if(i == 4 && j == 0){
+						rd = u_rf_to_rd4_0 * rf;
+					}
+					if(i == 4 && j == 1){
+						rd = u_rf_to_rd4_1 * rf;
+					}
+					if(i == 4 && j == 2){
+						rd = u_rf_to_rd4_2 * rf;
+					}
+					if(i == 4 && j == 3){
+						rd = u_rf_to_rd4_3 * rf;
+					}
+					if(i == 4 && j == 4){
+						rd = u_rf_to_rd4_4 * rf;
+					}
+					if(i == 4 && j == 5){
+						rd = u_rf_to_rd4_5 * rf;
+					}
+					if(i == 4 && j == 6){
+						rd = u_rf_to_rd4_6 * rf;
+					}
+					if(i == 4 && j == 7){
+						rd = u_rf_to_rd4_7 * rf;
+					}
+					if(i == 5 && j == 0){
+						rd = u_rf_to_rd5_0 * rf;
+					}
+					if(i == 5 && j == 1){
+						rd = u_rf_to_rd5_1 * rf;
+					}
+					if(i == 5 && j == 2){
+						rd = u_rf_to_rd5_2 * rf;
+					}
+					if(i == 5 && j == 3){
+						rd = u_rf_to_rd5_3 * rf;
+					}
+					if(i == 5 && j == 4){
+						rd = u_rf_to_rd5_4 * rf;
+					}
+					if(i == 5 && j == 5){
+						rd = u_rf_to_rd5_5 * rf;
+					}
+					if(i == 5 && j == 6){
+						rd = u_rf_to_rd5_6 * rf;
+					}
+					if(i == 5 && j == 7){
+						rd = u_rf_to_rd5_7 * rf;
+					}
+					if(i == 6 && j == 0){
+						rd = u_rf_to_rd6_0 * rf;
+					}
+					if(i == 6 && j == 1){
+						rd = u_rf_to_rd6_1 * rf;
+					}
+					if(i == 6 && j == 2){
+						rd = u_rf_to_rd6_2 * rf;
+					}
+					if(i == 6 && j == 3){
+						rd = u_rf_to_rd6_3 * rf;
+					}
+					if(i == 6 && j == 4){
+						rd = u_rf_to_rd6_4 * rf;
+					}
+					if(i == 6 && j == 5){
+						rd = u_rf_to_rd6_5 * rf;
+					}
+					if(i == 6 && j == 6){
+						rd = u_rf_to_rd6_6 * rf;
+					}
+					if(i == 6 && j == 7){
+						rd = u_rf_to_rd6_7 * rf;
+					}
+					if(i == 7 && j == 0){
+						rd = u_rf_to_rd7_0 * rf;
+					}
+					if(i == 7 && j == 1){
+						rd = u_rf_to_rd7_1 * rf;
+					}
+					if(i == 7 && j == 2){
+						rd = u_rf_to_rd7_2 * rf;
+					}
+					if(i == 7 && j == 3){
+						rd = u_rf_to_rd7_3 * rf;
+					}
+					if(i == 7 && j == 4){
+						rd = u_rf_to_rd7_4 * rf;
+					}
+					if(i == 7 && j == 5){
+						rd = u_rf_to_rd7_5 * rf;
+					}
+					if(i == 7 && j == 6){
+						rd = u_rf_to_rd7_6 * rf;
+					}
+					if(i == 7 && j == 7){
+						rd = u_rf_to_rd7_7 * rf;
+					}
+    
+
+
 					// RF(s,t) -> RD(s,t): Given
 					// sample texture with RD(s,t)
 					// RD is in clip space
@@ -189,30 +398,50 @@ void main() {
 					UV.t = ndc_pos.t / 2.0 + 0.5;
 
 					if(UV.s >= 0.0 && UV.s <= 1.0 && UV.t >= 0.0 && UV.t <= 1.0){
+						// compute weight
+						float weight = (u_apertureSize - dist)/u_apertureSize;
+						accumulateWeight += weight;
+						
 						// UV valid, sample D-ij(s,t)
 						// v scaling
 						vec2 realUV;
 						realUV.s = UV.s;
-						realUV.t = j * spanY + UV.t * spanY;
-						//if(i == 0 && j == 0){
-						if(i == 0 && u_texture_valid0 == 1){
+						realUV.t = 1.0 - (j * spanY + UV.t * spanY) / 2.0;
+						
+						if(i == 0 && u_texture_valid0 == 1 && colLimit <= 0){
 							valid += 1;
-							diffuse += texture2D(u_custom_texture0, realUV);
+							diffuse += texture2D(u_custom_texture0, realUV) * weight;
 						}
-						else if(i == 1 && u_texture_valid1 == 1){
+						else if(i == 1 && u_texture_valid1 == 1 && colLimit <= 1){
 							valid += 1;
-							diffuse += texture2D(u_custom_texture1, realUV);
+							diffuse += texture2D(u_custom_texture1, realUV) * weight;
 						}
-						else if(i == 2 && u_texture_valid2 == 1){
+						else if(i == 2 && u_texture_valid2 == 1 && colLimit <= 2){
 							valid += 1;
-							diffuse += texture2D(u_custom_texture2, realUV);
+							diffuse += texture2D(u_custom_texture2, realUV) * weight;
 						}
-						else if(i == 3 && u_texture_valid3 == 1){
+						else if(i == 3 && u_texture_valid3 == 1 && colLimit <= 3){
 							valid += 1;
-							diffuse += texture2D(u_custom_texture3, realUV);
+							diffuse += texture2D(u_custom_texture3, realUV) * weight;
 						}
-						//}
-
+						else if(i == 4 && u_texture_valid4 == 1 && colLimit <= 4){
+							valid += 1;
+							diffuse += texture2D(u_custom_texture4, realUV) * weight;
+						}
+						else if(i == 5 && u_texture_valid5 == 1 && colLimit <= 5){
+							valid += 1;
+							diffuse += texture2D(u_custom_texture5, realUV) * weight;
+						}
+						else if(i == 6 && u_texture_valid6 == 1 && colLimit <= 6){
+							valid += 1;
+							diffuse += texture2D(u_custom_texture6, realUV) * weight;
+						}
+						
+						else if(i == 7 && u_texture_valid7 == 1 && colLimit <= 7){
+							valid += 1;
+							diffuse += texture2D(u_custom_texture7, realUV) * weight;
+						}
+						
 					}
 					/*
 					//vec2 testUv = v_diffuseUV;
@@ -241,8 +470,12 @@ void main() {
 			}
 		}
 		
-		if(valid > 0){
-			diffuse = diffuse / valid;
+		if(valid > 0 && accumulateWeight > 0.0){
+			// use weight instead
+			// diffuse = diffuse / valid;
+			
+			// output color maybe overweight
+			diffuse = diffuse / accumulateWeight;
 		}
 		else{
 			diffuse = vec4(0.2,0,0,1);

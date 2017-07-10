@@ -73,6 +73,10 @@ public class Display implements Disposable{
 
     public LightFieldShaderProvider shaderProvider;
 
+
+    private float lastScreenX;
+    private float lastScreenY;
+
     public Display(){
 
         batch = new SpriteBatch();
@@ -116,7 +120,7 @@ public class Display implements Disposable{
         projectionMatrixLeft.setToOrtho(-1.0f, 3.0f , -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
 
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam = new PerspectiveCamera(67/1.0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 0f, 3f);
         cam.lookAt(0,0,-1);
         cam.near = 0.1f;
@@ -134,16 +138,45 @@ public class Display implements Disposable{
         camController.pinchZoomFactor = 1f;
         camController.rotateAngle = 30;
         camController.translateUnits = 1;
+        camController.target.set(0,0,-1);
+        camController.translateTarget = false;
+        camController.forwardTarget = false;
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
 
         InputAdapter localInput = new InputAdapter() {
             @Override
+            public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+                    lastScreenX = screenX;
+                    lastScreenY = screenY;
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            }
+
+            @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 Display.screenX = screenX;
                 Display.screenY = screenY;
-                return false;
+                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+                    // do move
+                    float dx = -(screenX - lastScreenX) / Gdx.graphics.getWidth();
+                    float dy = (screenY - lastScreenY) / Gdx.graphics.getHeight();
+                    cam.translate(dx, dy, 0);
+                    // update  screen XY
+                    lastScreenX = screenX;
+                    lastScreenY = screenY;
+
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         };
         inputMultiplexer.addProcessor(localInput);
@@ -157,12 +190,14 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
+        float radius = 4f;
+
         model = modelBuilder.createRect(
-                -1,-1,0,
-                1,-1,0,
-                1,1,0,
-                -1,1,0,
-                0,0,1,
+                -radius,-radius,0,
+                radius,-radius,0,
+                radius,radius,0,
+                -radius,radius,0,
+                0,0,radius,
                 new Material(TextureAttribute.createDiffuse(tempTexture)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
         );

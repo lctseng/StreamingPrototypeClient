@@ -25,6 +25,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.StringPool;
+
+import java.util.Locale;
 
 /**
  * See: http://blog.xoppa.com/creating-a-shader-with-libgdx
@@ -66,7 +69,15 @@ public class LightFieldShader extends DefaultShader{
     public void render(Renderable renderable, Attributes combinedAttributes) {
         bindProjections();
         bindTexture();
-        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 20.0f);
+        program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
+        program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
+        program.setUniformi("colLimit", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 50.0f);
+        program.setUniformf("u_cameraPositionX", -camera.position.x);
+        program.setUniformf("u_cameraPositionY", -camera.position.y);
+        program.setUniformf("u_positionFactor",ConfigManager.getCameraStepY() * 1);
+
+        StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
         super.render(renderable, combinedAttributes);
     }
 
@@ -99,17 +110,25 @@ public class LightFieldShader extends DefaultShader{
     private void bindRfRdProjections(){
         int totalCols = ConfigManager.getNumOfLFs();
         int totalRows = ConfigManager.getNumOfSubLFImgs();
+
+        float spanX = 2.0f / totalCols;
+        float spanY = 2.0f / totalRows;
+
+
+
+        float initCameraX = -1.0f + 0.5f * spanX;
+        float initCameraY = -1.0f + 0.5f * spanY;
         for(int i=0;i< totalCols;++i){
             for(int j=0;j<totalRows;++j){
 
                 PerspectiveCamera cam = new PerspectiveCamera(67, ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
 
-                float camera_x = ( -1f + (1 + i)*(2f/(totalCols + 1)) ) * ConfigManager.getCameraStepY() * 100f;
-                float camera_y = ( -1f + (1 + j)*(2f/(totalRows + 1)) ) * ConfigManager.getCameraStepY() * 100f;
+                float camera_x = ( initCameraX + i * spanX ) * ConfigManager.getCameraStepY() * 1;
+                float camera_y = ( initCameraY + j * spanY ) * ConfigManager.getCameraStepY() * 1;
                 cam.position.set( camera_x, camera_y, 0f);
                 cam.lookAt(camera_x,camera_y,-1);
                 cam.near = 0.1f;
-                cam.far = 10f;
+                cam.far = 100f;
                 /*
                 PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 cam.position.set(0f, 0f, 1f);
