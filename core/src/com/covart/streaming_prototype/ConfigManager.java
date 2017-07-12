@@ -56,15 +56,11 @@ public class ConfigManager {
     // variables
 
     private static StreamingPrototype app;
+    private static float cameraStep = 1f;
 
-    private static float cameraStepX = 0.001f; // 0.00759f * 2f * 4
-    private static float cameraStepY = 1f; // 0.0097f * 2f
+    private static float apertureSize = 1.5f;
 
-    private static float apertureSize = 76.0f;
-
-    private static float focusChangeRatio = 17.347f;
-
-    private static int numOfMaxInterpolatedLFRadius = 0;
+    private static float focusChangeRatio = 20.0f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -95,6 +91,10 @@ public class ConfigManager {
 
     private static float editingReportInterval = 0.01f;
 
+    private static float virtualCameraFOV = 67.0f;
+
+    private static float dataCameraFOV = 67.0f;
+
 
     // getters and setters
 
@@ -114,20 +114,12 @@ public class ConfigManager {
         return numOfSubLFImgs;
     }
 
-    public static float getCameraStepX() {
-        return cameraStepX;
+    public static float getCameraStep() {
+        return cameraStep;
     }
 
-    public static void setCameraStepX(float cameraStepX) {
-        ConfigManager.cameraStepX = cameraStepX;
-    }
-
-    public static float getCameraStepY() {
-        return cameraStepY;
-    }
-
-    public static void setCameraStepY(float cameraStepY) {
-        ConfigManager.cameraStepY = cameraStepY;
+    public static void setCameraStep(float cameraStep) {
+        ConfigManager.cameraStep = cameraStep;
     }
 
     public static float getApertureSize() {
@@ -165,14 +157,6 @@ public class ConfigManager {
 
     public static Sensor.MoveType[] getSensorMoveTypeList() {
         return sensorMoveTypeList;
-    }
-
-    public static int getNumOfMaxInterpolatedLFRadius() {
-        return numOfMaxInterpolatedLFRadius;
-    }
-
-    public static void setNumOfMaxInterpolatedLFRadius(int numOfMaxInterpolatedLFRadius) {
-        ConfigManager.numOfMaxInterpolatedLFRadius = numOfMaxInterpolatedLFRadius;
     }
 
     public static boolean isStopOnDisconnected() {
@@ -314,6 +298,22 @@ public class ConfigManager {
 
     public static void setEditingReportInterval(float editingReportInterval) {
         ConfigManager.editingReportInterval = editingReportInterval;
+    }
+
+    public static float getVirtualCameraFOV() {
+        return virtualCameraFOV;
+    }
+
+    public static void setVirtualCameraFOV(float virtualCameraFOV) {
+        ConfigManager.virtualCameraFOV = virtualCameraFOV;
+    }
+
+    public static float getDataCameraFOV() {
+        return dataCameraFOV;
+    }
+
+    public static void setDataCameraFOV(float dataCameraFOV) {
+        ConfigManager.dataCameraFOV = dataCameraFOV;
     }
 
     // end of getters and setters

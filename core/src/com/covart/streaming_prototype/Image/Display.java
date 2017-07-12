@@ -30,6 +30,7 @@ import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
 import com.covart.streaming_prototype.UI.UIManager;
 
+
 import StreamingFormat.Message;
 
 
@@ -120,11 +121,11 @@ public class Display implements Disposable{
         projectionMatrixLeft.setToOrtho(-1.0f, 3.0f , -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
 
-        cam = new PerspectiveCamera(67/1.0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 0f, 3f);
         cam.lookAt(0,0,-1);
         cam.near = 0.1f;
-        cam.far = 3 + (ConfigManager.getFocusChangeRatio() - 0f) * (ConfigManager.getCameraStepX() * 1000);
+        cam.far = ConfigManager.getFocusChangeRatio();
         cam.update();
 
 
@@ -207,7 +208,6 @@ public class Display implements Disposable{
     public void start(){
         disposeExistingTexture();
         textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
-        ConfigManager.setFocusChangeRatio(1.0f);
     }
 
 
@@ -291,14 +291,11 @@ public class Display implements Disposable{
         // set camera params
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
         shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
         shaderProgram.setUniformf("cameraPositionX", leftX);
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
         shaderProgram.setUniformi("enable_distortion_correction", 1);
         shaderProgram.setUniformf("lensFactorX", ConfigManager.getDisplayLensFactorX());
         shaderProgram.setUniformf("lensFactorY", ConfigManager.getDisplayLensFactorY());
@@ -317,14 +314,11 @@ public class Display implements Disposable{
         // set camera params
         shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
         shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
         shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
         shaderProgram.setUniformf("cameraPositionX", rightX);
         shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
         shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
         shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
         shaderProgram.setUniformi("enable_distortion_correction", 1);
         shaderProgram.setUniformf("lensFactorX", ConfigManager.getDisplayLensFactorX());
         shaderProgram.setUniformf("lensFactorY", ConfigManager.getDisplayLensFactorY());
@@ -344,9 +338,10 @@ public class Display implements Disposable{
 
         collectImages();
 
-        cam.far = 3 + (ConfigManager.getFocusChangeRatio() - 0f) * (ConfigManager.getCameraStepX() * 1000);
-        cam.fieldOfView = 67f * ConfigManager.getDisplayLensFactorY() * 10f;
+        cam.far = ConfigManager.getFocusChangeRatio();
+        cam.fieldOfView = ConfigManager.getVirtualCameraFOV();
         cam.update();
+        StringPool.addField("Far", "" + cam.far);
 
         drawNormalView();
         /*

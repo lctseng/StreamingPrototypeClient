@@ -36,10 +36,13 @@ import java.util.Locale;
 public class LightFieldShader extends DefaultShader{
 
     private TextureManager textureManager;
+    private PerspectiveCamera[][] dataCameras;
 
     public TextureManager getTextureManager() {
         return textureManager;
     }
+
+
 
     public void setTextureManager(TextureManager textureManager) {
         this.textureManager = textureManager;
@@ -66,21 +69,48 @@ public class LightFieldShader extends DefaultShader{
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        initDataCameras();
+
+    }
+
+    private void initDataCameras() {
+        int totalCols = ConfigManager.getNumOfLFs();
+        int totalRows = ConfigManager.getNumOfSubLFImgs();
+
+        dataCameras = new PerspectiveCamera[totalCols][totalRows];
+        for (int i = 0; i < totalCols; ++i) {
+            for (int j = 0; j < totalRows; ++j) {
+                dataCameras[i][j] = new PerspectiveCamera(ConfigManager.getDataCameraFOV(), ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
+            }
+        }
+    }
+
+    @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
+        bindConfiguration();
+        bindPosition();
         bindProjections();
         bindTexture();
+
+        StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
+        super.render(renderable, combinedAttributes);
+    }
+
+    private void bindPosition(){
+        program.setUniformf("u_cameraPositionX", -camera.position.x);
+        program.setUniformf("u_cameraPositionY", -camera.position.y);
+    }
+
+    private void bindConfiguration(){
         program.setUniformi("u_screenWidth", Gdx.graphics.getWidth());
         program.setUniformi("u_screenHeight", Gdx.graphics.getHeight());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
-        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 50.0f);
-        program.setUniformf("u_cameraPositionX", -camera.position.x);
-        program.setUniformf("u_cameraPositionY", -camera.position.y);
-        program.setUniformf("u_positionFactor",ConfigManager.getCameraStepY() * 1);
-
-
-        StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
-        super.render(renderable, combinedAttributes);
+        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
+        program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
     }
 
     private void bindTexture(){
@@ -114,29 +144,20 @@ public class LightFieldShader extends DefaultShader{
         float spanX = 2.0f / totalCols;
         float spanY = 2.0f / totalRows;
 
-
-
         float initCameraX = -1.0f + 0.5f * spanX;
         float initCameraY = -1.0f + 0.5f * spanY;
         for(int i=0;i< totalCols;++i){
             for(int j=0;j<totalRows;++j){
 
-                PerspectiveCamera cam = new PerspectiveCamera(67, ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
+                PerspectiveCamera cam = dataCameras[i][j];
 
-                float camera_x = ( initCameraX + i * spanX ) * ConfigManager.getCameraStepY() * 1;
-                float camera_y = ( initCameraY + j * spanY ) * ConfigManager.getCameraStepY() * 1;
+                float camera_x = ( initCameraX + i * spanX ) * ConfigManager.getCameraStep() * 1;
+                float camera_y = ( initCameraY + j * spanY ) * ConfigManager.getCameraStep() * 1;
                 cam.position.set( camera_x, camera_y, 0f);
                 cam.lookAt(camera_x,camera_y,-1);
                 cam.near = 0.1f;
-                cam.far = 100f ;//+ (ConfigManager.getDisplayLensFactorX()-0.1f) * 1000f;
-                /*
-                PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                cam.position.set(0f, 0f, 1f);
-                cam.lookAt(0,0,-1);
-                cam.near = 1f;
-                cam.far = 3f;
-                */
-
+                cam.far = 100f ;
+                cam.fieldOfView = ConfigManager.getDataCameraFOV();
 
                 cam.update();
                 String name = "u_rf_to_rd" + i + "_" + j;

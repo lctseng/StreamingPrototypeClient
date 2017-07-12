@@ -141,12 +141,13 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
 
         addFocusChangeUI();
-        addStepXChangeUI();
-        addStepYChangeUI();
+        addStepChangeUI();
+        addApertureSizeUI();
         canvas.row().height(commonRowHeight);
 
-        addApertureSizeUI();
-        addInterpolateChangeUI();
+
+        addVirtualCameraFOVUI();
+        addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
         canvas.row().height(commonRowHeight);
 
@@ -424,7 +425,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 20.0f, 0.001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 80.0f, 0.1f, false, skin);
         slider.setValue(ConfigManager.getFocusChangeRatio());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -445,19 +446,19 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
     }
 
-    private void addStepXChangeUI(){
+    private void addStepChangeUI(){
         // label
-        final Label name = new Label(getStepXChangeText(), largeLabelStyle);
+        final Label name = new Label(getStepChangeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.001f, 0.150f, 0.00001f, false, skin);
-        slider.setValue(ConfigManager.getCameraStepX());
+        final HorzSlider slider = new HorzSlider(0.1f, 6.0f, 0.1f, false, skin);
+        slider.setValue(ConfigManager.getCameraStep());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setCameraStepX(slider.getValue());
-                name.setText(getStepXChangeText());
+                ConfigManager.setCameraStep(slider.getValue());
+                name.setText(getStepChangeText());
             }
         });
 
@@ -467,59 +468,8 @@ public class MainMenu extends UIComponent {
 
     }
 
-    private String getStepXChangeText(){
-        return String.format(Locale.TAIWAN,"Step X ratio: %.5f",ConfigManager.getCameraStepX());
-    }
-
-    private void addStepYChangeUI(){
-        // label
-        final Label name = new Label(getStepYChangeText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.1f, 10.0f, 0.1f, false, skin);
-        slider.setValue(ConfigManager.getCameraStepY());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setCameraStepY(slider.getValue());
-                name.setText(getStepYChangeText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-
-    }
-
-    private String getStepYChangeText(){
-        return String.format(Locale.TAIWAN,"Step Y ratio: %.5f",ConfigManager.getCameraStepY());
-    }
-
-    private void addInterpolateChangeUI(){
-        // label
-        final Label name = new Label(getInterpolateRadiusText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0, 5, 1, false, skin);
-        slider.setValue(ConfigManager.getNumOfMaxInterpolatedLFRadius());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setNumOfMaxInterpolatedLFRadius(((int)slider.getValue()));
-                name.setText(getInterpolateRadiusText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getInterpolateRadiusText(){
-        return String.format(Locale.TAIWAN,"Interpolate span: %d", ConfigManager.getNumOfMaxInterpolatedLFRadius());
+    private String getStepChangeText(){
+        return String.format(Locale.TAIWAN,"Step ratio: %.5f",ConfigManager.getCameraStep());
     }
 
     private void addFreeUnusedTextureControlUI(){
@@ -628,7 +578,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 80.0f, 1.0f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 20.0f, 0.001f, false, skin);
         slider.setValue(ConfigManager.getApertureSize());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -648,6 +598,55 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
     }
 
+    private void addVirtualCameraFOVUI(){
+        // label
+        final Label name = new Label(getVirtualCameraFOVText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(5.0f, 180.0f, 1f, false, skin);
+        slider.setValue(ConfigManager.getVirtualCameraFOV());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setVirtualCameraFOV(slider.getValue());
+                name.setText(getVirtualCameraFOVText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getVirtualCameraFOVText(){
+        return String.format(Locale.TAIWAN,"Virtual FOV: %.3f", ConfigManager.getVirtualCameraFOV());
+    }
+
+    private void addDataCameraFOVUI(){
+        // label
+        final Label name = new Label(getDataCameraFOVText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(5.0f, 180.0f, 1f, false, skin);
+        slider.setValue(ConfigManager.getDataCameraFOV());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDataCameraFOV(slider.getValue());
+                name.setText(getDataCameraFOVText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getDataCameraFOVText(){
+        return String.format(Locale.TAIWAN,"Data FOV: %.3f", ConfigManager.getDataCameraFOV());
+    }
 
 
     private void addSensorAutoMoveSpeedUI(){

@@ -22,7 +22,7 @@ uniform mat4 u_rk_to_rf;
 uniform float u_cameraPositionX;
 uniform float u_cameraPositionY;
 
-uniform float u_positionFactor;
+uniform float u_cameraStep;
 
 uniform float u_apertureSize;
 
@@ -149,8 +149,8 @@ void main() {
 		for(int i=0;i<u_cols;++i){
 			for(int j=0;j<u_rows;++j){
 				
-				float cameraX = (initCameraX + i * spanX) * u_positionFactor;
-				float cameraY = (initCameraY + j * spanY) * u_positionFactor;
+				float cameraX = (initCameraX + i * spanX) * u_cameraStep;
+				float cameraY = (initCameraY + j * spanY) * u_cameraStep;
 
 				float dx = cameraX - u_cameraPositionX;
 				float dy = cameraY - u_cameraPositionY;

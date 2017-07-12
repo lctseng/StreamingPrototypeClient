@@ -174,13 +174,13 @@ public class TextureManager implements Disposable {
             // compute index
             int leftIndex = (int)((dh + 0.5 - disparity) * nSlots);
             int rightIndex = (int)((dh + 0.5 + disparity) * nSlots);
-            columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
+            //columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            //columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         else{
             // Normal
-            columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
+            //columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            //columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         if(columnStart < 0) columnStart = 0;
         else if(columnStart >= nSlots) columnStart = nSlots - 1;
