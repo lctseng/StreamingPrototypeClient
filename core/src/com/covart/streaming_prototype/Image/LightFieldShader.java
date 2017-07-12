@@ -23,7 +23,6 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.StringPool;
 
@@ -126,14 +125,6 @@ public class LightFieldShader extends DefaultShader{
 
     private void bindRkRfProjection(){
         Matrix4 inverseProj = camera.invProjectionView;
-        float screen_x = Display.screenX / Gdx.graphics.getWidth();//(Display.screenX - ((Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2))/ Gdx.graphics.getHeight();
-        float screen_y = Display.screenY / Gdx.graphics.getHeight();
-        float ndc_x = 2.0f*(screen_x) - 1.0f;
-        float ndc_y = -2.0f*(screen_y) + 1.0f;
-        Vector3 posScreen = new Vector3(ndc_x,ndc_y,0);
-        posScreen.prj(inverseProj);
-        //Gdx.app.log("Shader", "NDC X:" + ndc_x + ", NDC Y: " + ndc_y + ", Converted: (" + posScreen.x + "," + posScreen.y + ", " + posScreen.z + ")");
-        float[] data = {posScreen.x, posScreen.y, posScreen.z};
         program.setUniformMatrix("u_rk_to_rf",inverseProj);
     }
 

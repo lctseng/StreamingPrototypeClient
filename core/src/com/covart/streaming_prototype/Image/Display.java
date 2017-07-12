@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,12 +14,9 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Buffer;
 import com.covart.streaming_prototype.BufferPool;
@@ -29,7 +25,6 @@ import com.covart.streaming_prototype.Profiler;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
 import com.covart.streaming_prototype.UI.UIManager;
-
 
 import StreamingFormat.Message;
 
@@ -52,28 +47,14 @@ public class Display implements Disposable{
     // texture manager
     private TextureManager textureManager;
 
-    private ShaderProgram shaderProgram;
+    private PerspectiveCamera cam;
+    private Model model;
+    private ModelInstance instance;
+    private ModelBatch modelBatch;
+    private CameraInputController camController;
+    private Environment environment;
 
-    private Matrix4 modelviewMatrix;
-    private Matrix4 projectionMatrix;
-    private Matrix4 projectionMatrixLeft;
-    private Matrix4 projectionMatrixRight;
-
-    private Texture tempTexture;
-
-    public PerspectiveCamera cam;
-    public Model model;
-    public ModelInstance instance;
-    public ModelBatch modelBatch;
-    public CameraInputController camController;
-    public Environment environment;
-
-
-    public static float screenX;
-    public static float screenY;
-
-    public LightFieldShaderProvider shaderProvider;
-
+    private LightFieldShaderProvider shaderProvider;
 
     private float lastScreenX;
     private float lastScreenY;
@@ -87,39 +68,19 @@ public class Display implements Disposable{
         // multi-texture
         textureManager = new TextureManager(this);
 
-        tempTexture = new Texture("grid.jpg");
-
 
         String vertexShader = Gdx.files.internal("shaders/lightfield_new.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield_new.frag").readString();
-        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-        Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
-        Gdx.app.error("GLSL", shaderProgram.getLog());
-        if(!shaderProgram.isCompiled()) {
-            throw new RuntimeException("GLSL Compile failed!");
-        }
-        ShaderProgram.pedantic = false;
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-
-
-        // create matrix
-        modelviewMatrix = new Matrix4();
-        projectionMatrix = new Matrix4();
-        projectionMatrixLeft = new Matrix4();
-        projectionMatrixRight = new Matrix4();
-        float ratio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
-        projectionMatrix.setToOrtho(ratio * -1, ratio, -1.0f, 1.0f, -1.0f, 1.0f);
-        //projectionMatrix.setToLookAt(new Vector3(0,0,-10),new Vector3(0,0,0),new Vector3(-1,0,0));
 
         // create VR two-eye projection
-        // TODO: handle widere screen?
+        // FIXME: New VR mode
+        /*
         int vrRectWidth;
         vrRectWidth = Gdx.graphics.getWidth() / 2;
         float vrRatio = Gdx.graphics.getHeight() / (float)vrRectWidth;
         projectionMatrixLeft.setToOrtho(-1.0f, 3.0f , -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
+        */
 
         cam = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 0f, 3f);
@@ -162,8 +123,6 @@ public class Display implements Disposable{
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
-                Display.screenX = screenX;
-                Display.screenY = screenY;
                 if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
                     // do move
                     float dx = -(screenX - lastScreenX) / Gdx.graphics.getWidth();
@@ -199,7 +158,7 @@ public class Display implements Disposable{
                 radius,radius,0,
                 -radius,radius,0,
                 0,0,radius,
-                new Material(TextureAttribute.createDiffuse(tempTexture)),
+                new Material(),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
         );
         instance = new ModelInstance(model);
@@ -224,58 +183,14 @@ public class Display implements Disposable{
     }
 
     private void drawNormalView(){
-
-        /*
-        shaderProgram.begin();
-        // set matrix
-
-        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-
-        // set camera params
-
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-        shaderProgram.setUniformi("enable_distortion_correction", 0);
-        shaderProgram.setUniformf("lensFactorX", 0);
-        shaderProgram.setUniformf("lensFactorY", 0);
-
-
-        // binding texture
-        //textureManager.bindTextures(shaderProgram);
-        tempTexture.bind(0);
-        // draw!
-
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        shaderProgram.end();
-        */
-
-
-
-
-        camController.update();
-
-        Gdx.graphics.getGL20().glEnable(GL20.GL_TEXTURE_2D);
-        tempTexture.bind();
-
-
         modelBatch.begin(cam);
         modelBatch.render(instance, environment);
-        //modelBatch.render(instance2, environment);
         modelBatch.end();
     }
 
 
     private void drawVRView(){
+        /*
         float disparity = ConfigManager.getDisplayVRDisparity();
         float centerX = textureManager.getCameraPositionX();
 
@@ -328,6 +243,7 @@ public class Display implements Disposable{
         //mesh.render(shaderProgram, GL20.GL_TRIANGLES);
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         shaderProgram.end();
+        */
     }
 
     public void updateStart(){
@@ -335,6 +251,7 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
         collectImages();
 
@@ -343,8 +260,7 @@ public class Display implements Disposable{
         cam.update();
         StringPool.addField("Far", "" + cam.far);
 
-        drawNormalView();
-        /*
+        camController.update();
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:
                 drawNormalView();
@@ -353,7 +269,6 @@ public class Display implements Disposable{
                 drawVRView();
                 break;
         }
-        */
         Profiler.reportOnDisplay();
 
 
@@ -379,10 +294,6 @@ public class Display implements Disposable{
 
         // end batch
         batch.end();
-
-
-
-
     }
 
     @Override
@@ -390,7 +301,6 @@ public class Display implements Disposable{
         batch.dispose();
         font.dispose();
         textureManager.dispose();
-        tempTexture.dispose();
         model.dispose();
         modelBatch.dispose();
     }
