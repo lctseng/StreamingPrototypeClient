@@ -28,6 +28,7 @@ uniform vec3 u_test_position;
 uniform mat4 u_myProjView;
 uniform int colLimit;
 
+uniform int u_apertureMode;
 // end of testing
 
 
@@ -154,18 +155,7 @@ void main() {
 		float screen_x = 2.0 * ((gl_FragCoord.x - 0)/1600.0) - 1.0;
 		float screen_y = (2.0 * ((gl_FragCoord.y - 0)/900.0 ) - 1.0) * 1.0;
 		vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
-		/*
-		float l_w = 1.0 / (rk.x * u_rk_to_rf[3][0] +
-							rk.y * u_rk_to_rf[3][1] + 
-							rk.z * u_rk_to_rf[3][2] + 
-							u_rk_to_rf[3][3]);
 
-									
-		vec4 rf = vec4((rk.x * u_rk_to_rf[0][0] + rk.y * u_rk_to_rf[0][1] + rk.z * u_rk_to_rf[0][2] +  u_rk_to_rf[0][3])*l_w,
-					   (rk.x * u_rk_to_rf[1][0] + rk.y * u_rk_to_rf[1][1] + rk.z * u_rk_to_rf[1][2] +  u_rk_to_rf[1][3])*l_w,
-					   (rk.x * u_rk_to_rf[2][0] + rk.y * u_rk_to_rf[2][1] + rk.z * u_rk_to_rf[2][2] +  u_rk_to_rf[2][3])*l_w,
-			1.0);
-		*/
 		vec4 rf = u_rk_to_rf * rk;
 
 		diffuse = vec4(0,0,0,0);
@@ -180,12 +170,52 @@ void main() {
 			for(int j=0;j<u_rows;++j){
 
 
-				float cameraX = (initCameraX + i * spanX) * u_positionFactor;
-				float cameraY = (initCameraY + j * spanY) * u_positionFactor;
-				float dx = cameraX - u_cameraPositionX;
-				float dy = cameraY - u_cameraPositionY;
-				float dist = dx * dx +  dy * dy;
-				if(dist < u_apertureSize){
+				
+				int aperturePass;
+				float dist;
+
+				if(u_apertureMode == 1){
+					// s,t aperture
+					float RC_x = (v_diffuseUV.x * 2.0 - 1.0) * 1.0;
+			 		float RC_y = (v_diffuseUV.y * 2.0 - 1.0) * 1.0;
+
+					float cameraX = (initCameraX + i * spanX) * u_positionFactor;
+					float cameraY = (initCameraY + j * spanY) * u_positionFactor;
+
+					float dx = cameraX - RC_x;
+					float dy = cameraY - RC_y;
+
+					dist = dx * dx +  dy * dy;
+
+					/*
+					if(abs(dx) < u_apertureSize/5.0 && abs(dy) < u_apertureSize/5.0){
+						aperturePass = 1;
+					}
+					else{
+						aperturePass = 0;
+					}
+					*/
+					aperturePass = dist < u_apertureSize ? 1 : 0;
+
+					//dist = 0;
+				}
+				else{
+					// position aperture
+					
+					float cameraX = (initCameraX + i * spanX) * u_positionFactor;
+					float cameraY = (initCameraY + j * spanY) * u_positionFactor;
+
+					float dx = cameraX - u_cameraPositionX;
+					float dy = cameraY - u_cameraPositionY;
+
+					dist = dx * dx +  dy * dy;
+
+					aperturePass = dist < u_apertureSize ? 1 : 0;
+				}
+				
+				
+				
+				if(aperturePass == 1){
 
 					// RC(s,t) = v_diffuseUV
 					// compute RD(s,t)

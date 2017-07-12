@@ -424,7 +424,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 2.0f, 0.001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 20.0f, 0.001f, false, skin);
         slider.setValue(ConfigManager.getFocusChangeRatio());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -476,7 +476,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getStepYChangeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0001f, 0.050f, 0.00001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.1f, 10.0f, 0.1f, false, skin);
         slider.setValue(ConfigManager.getCameraStepY());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {

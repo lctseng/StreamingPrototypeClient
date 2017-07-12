@@ -345,8 +345,11 @@ public class Display implements Disposable{
         collectImages();
 
         cam.far = 3 + (ConfigManager.getFocusChangeRatio() - 0f) * (ConfigManager.getCameraStepX() * 1000);
+        cam.fieldOfView = 67f * ConfigManager.getDisplayLensFactorY() * 10f;
         cam.update();
 
+        drawNormalView();
+        /*
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:
                 drawNormalView();
@@ -355,6 +358,7 @@ public class Display implements Disposable{
                 drawVRView();
                 break;
         }
+        */
         Profiler.reportOnDisplay();
 
 

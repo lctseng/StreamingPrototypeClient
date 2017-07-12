@@ -76,6 +76,8 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_cameraPositionX", -camera.position.x);
         program.setUniformf("u_cameraPositionY", -camera.position.y);
         program.setUniformf("u_positionFactor",ConfigManager.getCameraStepY() * 1);
+        program.setUniformi("u_apertureMode", ConfigManager.getDisplayMode() == Display.Mode.NORMAL ? 0 : 1);
+
 
         StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
         super.render(renderable, combinedAttributes);
@@ -128,7 +130,7 @@ public class LightFieldShader extends DefaultShader{
                 cam.position.set( camera_x, camera_y, 0f);
                 cam.lookAt(camera_x,camera_y,-1);
                 cam.near = 0.1f;
-                cam.far = 100f;
+                cam.far = 100f ;//+ (ConfigManager.getDisplayLensFactorX()-0.1f) * 1000f;
                 /*
                 PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 cam.position.set(0f, 0f, 1f);

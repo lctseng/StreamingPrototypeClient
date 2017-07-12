@@ -59,9 +59,13 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
             Scanner s = new Scanner(file.nameWithoutExtension()).useDelimiter("[^0-9]+");
             int row = s.nextInt();
             int col = s.nextInt();
-            if(row < ConfigManager.getNumOfSubLFImgs() && col < ConfigManager.getNumOfLFs()){
-                files.add(file);
-            }
+            //if(row % 2 == 0 && col % 2 == 0) {
+                //row /= 2;
+                //col /= 2;
+                if (row < ConfigManager.getNumOfSubLFImgs() && col < ConfigManager.getNumOfLFs()) {
+                    files.add(file);
+                }
+            //}
         }
 
 
