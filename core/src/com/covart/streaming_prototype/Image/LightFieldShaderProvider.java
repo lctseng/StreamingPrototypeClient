@@ -14,16 +14,15 @@ import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 public class LightFieldShaderProvider extends BaseShaderProvider {
     public final DefaultShader.Config config;
 
-    private TextureManager textureManager;
+    private Display display;
 
-    public TextureManager getTextureManager() {
-        return textureManager;
+    public Display getDisplay() {
+        return display;
     }
 
-    public void setTextureManager(TextureManager textureManager) {
-        this.textureManager = textureManager;
+    public void setDisplay(Display display) {
+        this.display = display;
     }
-
 
     public LightFieldShaderProvider (final DefaultShader.Config config) {
         this.config = (config == null) ? new DefaultShader.Config() : config;
@@ -44,7 +43,7 @@ public class LightFieldShaderProvider extends BaseShaderProvider {
     @Override
     protected Shader createShader (final Renderable renderable) {
         LightFieldShader shader = new LightFieldShader(renderable, config);
-        shader.setTextureManager(this.textureManager);
+        shader.setDisplay(display);
         return shader;
     }
 }

@@ -16,7 +16,6 @@
 
 package com.covart.streaming_prototype.Image;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -34,17 +33,16 @@ import java.util.Locale;
  */
 public class LightFieldShader extends DefaultShader{
 
-    private TextureManager textureManager;
+    private Display display;
     private PerspectiveCamera[][] dataCameras;
 
-    public TextureManager getTextureManager() {
-        return textureManager;
+
+    public Display getDisplay() {
+        return display;
     }
 
-
-
-    public void setTextureManager(TextureManager textureManager) {
-        this.textureManager = textureManager;
+    public void setDisplay(Display display) {
+        this.display = display;
     }
 
     public LightFieldShader(Renderable renderable) {
@@ -104,8 +102,10 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindConfiguration(){
-        program.setUniformi("u_screenWidth", Gdx.graphics.getWidth());
-        program.setUniformi("u_screenHeight", Gdx.graphics.getHeight());
+        program.setUniformi("u_screenWidth", display.getScreenWidth());
+        program.setUniformi("u_screenHeight", display.getScreenHeight());
+        program.setUniformi("u_screenOffsetX", display.getScreenOffsetX());
+        program.setUniformi("u_screenOffsetY", display.getScreenOffsetY());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
@@ -113,8 +113,8 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindTexture(){
-        if(textureManager != null) {
-            textureManager.bindTextures(program);
+        if(display != null) {
+            display.getTextureManager().bindTextures(program);
         }
     }
 

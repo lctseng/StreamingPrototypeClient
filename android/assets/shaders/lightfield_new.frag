@@ -24,6 +24,9 @@ uniform int u_rows;
 uniform int u_screenWidth;
 uniform int u_screenHeight;
 
+uniform int u_screenOffsetX;
+uniform int u_screenOffsetY;
+
 uniform mat4 u_rf_to_rd0_0; 
 uniform mat4 u_rf_to_rd0_1; 
 uniform mat4 u_rf_to_rd0_2; 
@@ -122,8 +125,8 @@ void main() {
 
 	// project 
 	// RK(s,t) -> RF(s,t)
-	float screen_x = 2.0 * ((gl_FragCoord.x - 0)/float(u_screenWidth)) - 1.0;
-	float screen_y = (2.0 * ((gl_FragCoord.y - 0)/float(u_screenHeight) ) - 1.0) * 1.0;
+	float screen_x = 2.0 * ((gl_FragCoord.x - u_screenOffsetX)/float(u_screenWidth)) - 1.0;
+	float screen_y = (2.0 * ((gl_FragCoord.y - u_screenOffsetY)/float(u_screenHeight) ) - 1.0) * 1.0;
 	vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
 
 	vec4 rf = u_rk_to_rf * rk;

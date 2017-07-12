@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Buffer;
 import com.covart.streaming_prototype.BufferPool;
@@ -47,17 +48,28 @@ public class Display implements Disposable{
     // texture manager
     private TextureManager textureManager;
 
-    private PerspectiveCamera cam;
+    // cameras
+    private PerspectiveCamera camMain;
+    private PerspectiveCamera[] vrCameras;
+    private int vrRectWidth;
+
+    // models
     private Model model;
     private ModelInstance instance;
     private ModelBatch modelBatch;
     private CameraInputController camController;
     private Environment environment;
 
-    private LightFieldShaderProvider shaderProvider;
-
     private float lastScreenX;
     private float lastScreenY;
+
+    private int vrScreenOffsetsX[];
+    private int vrScreenOffsetsY[];
+    private int vrEyeIndex;
+
+
+    private Vector3 tmpVector1;
+    private Vector3 tmpVector2;
 
     public Display(){
 
@@ -65,6 +77,8 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
+        tmpVector1 = new Vector3();
+        tmpVector2 = new Vector3();
         // multi-texture
         textureManager = new TextureManager(this);
 
@@ -82,21 +96,38 @@ public class Display implements Disposable{
         projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
         */
 
-        cam = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 0f, 3f);
-        cam.lookAt(0,0,-1);
-        cam.near = 0.1f;
-        cam.far = ConfigManager.getFocusChangeRatio();
-        cam.update();
 
 
+        // main camera
+        Vector3 initLookAt = new Vector3(0,0,-1);
+        camMain = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camMain.position.set(0f, 0f, 3f);
+        camMain.lookAt(initLookAt);
+        camMain.near = 0.1f;
+        camMain.far = ConfigManager.getFocusChangeRatio();
 
-        shaderProvider = new LightFieldShaderProvider(vertexShader, fragmentShader);
-        shaderProvider.setTextureManager(textureManager);
+        // VR mode settings
+        vrEyeIndex = 0;
+        vrRectWidth = Gdx.graphics.getWidth() / 2;
+        vrScreenOffsetsX = new int[]{0, vrRectWidth};
+        int vrYOffset = (Gdx.graphics.getHeight() - vrRectWidth)/2;
+        vrScreenOffsetsY = new int[]{vrYOffset, vrYOffset};
+        // VR mode camera
+        vrCameras = new PerspectiveCamera[2];
+        for(int i=0;i<2;i++) {
+            vrCameras[i] = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), vrRectWidth, vrRectWidth);
+            vrCameras[i].position.set(camMain.position);
+            vrCameras[i].lookAt(initLookAt);
+            vrCameras[i].near = camMain.near;
+            vrCameras[i].far = camMain.far;
+        }
+
+        LightFieldShaderProvider shaderProvider = new LightFieldShaderProvider(vertexShader, fragmentShader);
+        shaderProvider.setDisplay(this);
 
         modelBatch = new ModelBatch(shaderProvider);
 
-        camController = new CameraInputController(cam);
+        camController = new CameraInputController(camMain);
         camController.pinchZoomFactor = 1f;
         camController.rotateAngle = 30;
         camController.translateUnits = 1;
@@ -127,7 +158,7 @@ public class Display implements Disposable{
                     // do move
                     float dx = -(screenX - lastScreenX) / Gdx.graphics.getWidth();
                     float dy = (screenY - lastScreenY) / Gdx.graphics.getHeight();
-                    cam.translate(dx, dy, 0);
+                    camMain.translate(dx, dy, 0);
                     // update  screen XY
                     lastScreenX = screenX;
                     lastScreenY = screenY;
@@ -170,7 +201,7 @@ public class Display implements Disposable{
     }
 
 
-    public void collectImages(){
+    private void collectImages(){
         Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(src != null){
             // copy images from buffer
@@ -183,13 +214,45 @@ public class Display implements Disposable{
     }
 
     private void drawNormalView(){
-        modelBatch.begin(cam);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        modelBatch.begin(camMain);
         modelBatch.render(instance, environment);
         modelBatch.end();
     }
 
 
+    private void updateVRCameras(){
+        // compute right vector of main
+        tmpVector1.set(camMain.direction).crs(camMain.up).nor();
+        tmpVector1.scl(ConfigManager.getDisplayVRDisparity());
+        // update cameras
+        for(int i=0;i<2;i++) {
+            vrCameras[i].fieldOfView = camMain.fieldOfView;
+            vrCameras[i].far = camMain.far;
+            vrCameras[i].position.set(camMain.position);
+            vrCameras[i].direction.set(camMain.direction);
+            vrCameras[i].up.set(camMain.up);
+            if(i == 0){
+                vrCameras[i].translate(-tmpVector1.x, -tmpVector1.y, -tmpVector1.z);
+            }
+            else{
+                vrCameras[i].translate(tmpVector1.x, tmpVector1.y, tmpVector1.z);
+            }
+            vrCameras[i].update();
+        }
+    }
+
     private void drawVRView(){
+        updateVRCameras();
+        for(int i=0;i<2;i++){
+            vrEyeIndex = i;
+            Gdx.gl.glViewport(i * vrRectWidth, (Gdx.graphics.getHeight() - vrRectWidth)/2, vrRectWidth, vrRectWidth);
+            modelBatch.begin(vrCameras[i]);
+            modelBatch.render(instance, environment);
+            modelBatch.end();
+        }
+
+
         /*
         float disparity = ConfigManager.getDisplayVRDisparity();
         float centerX = textureManager.getCameraPositionX();
@@ -248,17 +311,15 @@ public class Display implements Disposable{
 
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
         collectImages();
 
-        cam.far = ConfigManager.getFocusChangeRatio();
-        cam.fieldOfView = ConfigManager.getVirtualCameraFOV();
-        cam.update();
-        StringPool.addField("Far", "" + cam.far);
+        camMain.far = ConfigManager.getFocusChangeRatio();
+        camMain.fieldOfView = ConfigManager.getVirtualCameraFOV();
+        camMain.update();
+        StringPool.addField("Far", "" + camMain.far);
 
         camController.update();
         switch(ConfigManager.getDisplayMode()){
@@ -271,10 +332,7 @@ public class Display implements Disposable{
         }
         Profiler.reportOnDisplay();
 
-
-
-
-
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         // clear flash messages
         StringPool.clearFlashMessages();
@@ -305,7 +363,7 @@ public class Display implements Disposable{
         modelBatch.dispose();
     }
 
-    public void disposeExistingTexture(){
+    private void disposeExistingTexture(){
         textureManager.disposeExistingTextures();
     }
 
@@ -328,4 +386,44 @@ public class Display implements Disposable{
         return textureManager.checkControlFrameRequired();
     }
 
+
+    public TextureManager getTextureManager() {
+        return textureManager;
+    }
+
+    public int getScreenWidth(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrRectWidth;
+        }
+        else{
+            return Gdx.graphics.getWidth();
+        }
+    }
+
+    public int getScreenHeight(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrRectWidth;
+        }
+        else{
+            return Gdx.graphics.getHeight();
+        }
+    }
+
+    public int getScreenOffsetX(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrScreenOffsetsX[vrEyeIndex];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public int getScreenOffsetY(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrScreenOffsetsY[vrEyeIndex];
+        }
+        else{
+            return 0;
+        }
+    }
 }
