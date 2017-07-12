@@ -69,14 +69,14 @@ public class LightFieldShader extends DefaultShader{
     public void render(Renderable renderable, Attributes combinedAttributes) {
         bindProjections();
         bindTexture();
+        program.setUniformi("u_screenWidth", Gdx.graphics.getWidth());
+        program.setUniformi("u_screenHeight", Gdx.graphics.getHeight());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
-        program.setUniformi("colLimit", ConfigManager.getNumOfMaxInterpolatedLFRadius());
         program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 50.0f);
         program.setUniformf("u_cameraPositionX", -camera.position.x);
         program.setUniformf("u_cameraPositionY", -camera.position.y);
         program.setUniformf("u_positionFactor",ConfigManager.getCameraStepY() * 1);
-        program.setUniformi("u_apertureMode", ConfigManager.getDisplayMode() == Display.Mode.NORMAL ? 0 : 1);
 
 
         StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
@@ -104,9 +104,7 @@ public class LightFieldShader extends DefaultShader{
         posScreen.prj(inverseProj);
         //Gdx.app.log("Shader", "NDC X:" + ndc_x + ", NDC Y: " + ndc_y + ", Converted: (" + posScreen.x + "," + posScreen.y + ", " + posScreen.z + ")");
         float[] data = {posScreen.x, posScreen.y, posScreen.z};
-        program.setUniform3fv("u_test_position",data, 0, 3);
         program.setUniformMatrix("u_rk_to_rf",inverseProj);
-        program.setUniformMatrix("u_myProjView",camera.combined);
     }
 
     private void bindRfRdProjections(){

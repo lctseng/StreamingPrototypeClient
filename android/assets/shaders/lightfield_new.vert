@@ -13,10 +13,6 @@
 attribute vec3 a_position;
 uniform mat4 u_projViewTrans;
 
-uniform mat4 u_viewTrans;
-varying vec4 v_wordCoord;
-varying vec4 v_position;
-
 #if defined(colorFlag)
 varying vec4 v_color;
 attribute vec4 a_color;
@@ -337,6 +333,4 @@ void main() {
 			}
 		#endif // numPointLights
 	#endif // lightingFlag
-	v_wordCoord = vec4(a_position, 1.0);
-	v_position = u_projViewTrans * vec4(a_position, 1.0);
 }

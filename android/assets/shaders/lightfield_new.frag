@@ -9,28 +9,13 @@ precision highp float;
 #define HIGH
 #endif
 
-
-
 #ifdef diffuseTextureFlag
-varying HIGH vec4 v_wordCoord;
-varying HIGH vec4 v_position;
 varying HIGH vec2 v_diffuseUV;
 #endif
 
 #ifdef diffuseTextureFlag
 uniform sampler2D u_diffuseTexture;
 #endif
-
-
-// testing
-
-uniform vec3 u_test_position;
-uniform mat4 u_myProjView;
-uniform int colLimit;
-
-uniform int u_apertureMode;
-// end of testing
-
 
 uniform mat4 u_rk_to_rf;
 
@@ -43,6 +28,9 @@ uniform float u_apertureSize;
 
 uniform int u_cols;
 uniform int u_rows;
+
+uniform int u_screenWidth;
+uniform int u_screenHeight;
 
 uniform mat4 u_rf_to_rd0_0; 
 uniform mat4 u_rf_to_rd0_1; 
@@ -137,23 +125,15 @@ uniform int u_texture_valid7;
 
 void main() {
 	#if defined(diffuseTextureFlag)
-		vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV);
-		
-		
-		if(u_texture_valid0 == 1){
-			diffuse = texture2D(u_custom_texture0, v_diffuseUV);
-		}
-		//diffuse = vec4(gl_FragCoord.x / 1600.0,gl_FragCoord.y / 900.0,0,1);
-
-
+		vec4 diffuse;
 
 		float spanX = 2.0 / float(u_cols);
 		float spanY = 2.0 / float(u_rows);
 
 		// project 
 		// RK(s,t) -> RF(s,t)
-		float screen_x = 2.0 * ((gl_FragCoord.x - 0)/1600.0) - 1.0;
-		float screen_y = (2.0 * ((gl_FragCoord.y - 0)/900.0 ) - 1.0) * 1.0;
+		float screen_x = 2.0 * ((gl_FragCoord.x - 0)/float(u_screenWidth)) - 1.0;
+		float screen_y = (2.0 * ((gl_FragCoord.y - 0)/float(u_screenHeight) ) - 1.0) * 1.0;
 		vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
 
 		vec4 rf = u_rk_to_rf * rk;
@@ -168,59 +148,18 @@ void main() {
 		// for each D(s,t)
 		for(int i=0;i<u_cols;++i){
 			for(int j=0;j<u_rows;++j){
-
-
 				
-				int aperturePass;
-				float dist;
+				float cameraX = (initCameraX + i * spanX) * u_positionFactor;
+				float cameraY = (initCameraY + j * spanY) * u_positionFactor;
 
-				if(u_apertureMode == 1){
-					// s,t aperture
-					float RC_x = (v_diffuseUV.x * 2.0 - 1.0) * 1.0;
-			 		float RC_y = (v_diffuseUV.y * 2.0 - 1.0) * 1.0;
+				float dx = cameraX - u_cameraPositionX;
+				float dy = cameraY - u_cameraPositionY;
 
-					float cameraX = (initCameraX + i * spanX) * u_positionFactor;
-					float cameraY = (initCameraY + j * spanY) * u_positionFactor;
+				float dist = dx * dx +  dy * dy;
 
-					float dx = cameraX - RC_x;
-					float dy = cameraY - RC_y;
-
-					dist = dx * dx +  dy * dy;
-
-					/*
-					if(abs(dx) < u_apertureSize/5.0 && abs(dy) < u_apertureSize/5.0){
-						aperturePass = 1;
-					}
-					else{
-						aperturePass = 0;
-					}
-					*/
-					aperturePass = dist < u_apertureSize ? 1 : 0;
-
-					//dist = 0;
-				}
-				else{
-					// position aperture
-					
-					float cameraX = (initCameraX + i * spanX) * u_positionFactor;
-					float cameraY = (initCameraY + j * spanY) * u_positionFactor;
-
-					float dx = cameraX - u_cameraPositionX;
-					float dy = cameraY - u_cameraPositionY;
-
-					dist = dx * dx +  dy * dy;
-
-					aperturePass = dist < u_apertureSize ? 1 : 0;
-				}
-				
-				
-				
-				if(aperturePass == 1){
-
-					// RC(s,t) = v_diffuseUV
+				if(dist < u_apertureSize){
 					// compute RD(s,t)
 					vec4 rd;
-					
 
 					if(i == 0 && j == 0){
 						rd = u_rf_to_rd0_0 * rf;
@@ -414,8 +353,6 @@ void main() {
 					if(i == 7 && j == 7){
 						rd = u_rf_to_rd7_7 * rf;
 					}
-    
-
 
 					// RF(s,t) -> RD(s,t): Given
 					// sample texture with RD(s,t)
@@ -438,136 +375,52 @@ void main() {
 						realUV.s = UV.s;
 						realUV.t = 1.0 - (j * spanY + UV.t * spanY) / 2.0;
 						
-						if(i == 0 && u_texture_valid0 == 1 && colLimit <= 0){
+						if(i == 0 && u_texture_valid0 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture0, realUV) * weight;
 						}
-						else if(i == 1 && u_texture_valid1 == 1 && colLimit <= 1){
+						else if(i == 1 && u_texture_valid1 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture1, realUV) * weight;
 						}
-						else if(i == 2 && u_texture_valid2 == 1 && colLimit <= 2){
+						else if(i == 2 && u_texture_valid2 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture2, realUV) * weight;
 						}
-						else if(i == 3 && u_texture_valid3 == 1 && colLimit <= 3){
+						else if(i == 3 && u_texture_valid3 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture3, realUV) * weight;
 						}
-						else if(i == 4 && u_texture_valid4 == 1 && colLimit <= 4){
+						else if(i == 4 && u_texture_valid4 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture4, realUV) * weight;
 						}
-						else if(i == 5 && u_texture_valid5 == 1 && colLimit <= 5){
+						else if(i == 5 && u_texture_valid5 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture5, realUV) * weight;
 						}
-						else if(i == 6 && u_texture_valid6 == 1 && colLimit <= 6){
+						else if(i == 6 && u_texture_valid6 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture6, realUV) * weight;
 						}
 						
-						else if(i == 7 && u_texture_valid7 == 1 && colLimit <= 7){
+						else if(i == 7 && u_texture_valid7 == 1){
 							valid += 1;
 							diffuse += texture2D(u_custom_texture7, realUV) * weight;
 						}
-						
 					}
-					/*
-					//vec2 testUv = v_diffuseUV;
-					if(i == 0 && j == 0){
-						//if(v_diffuseUV.s < 0.5 && v_diffuseUV.t < 0.5){
-							diffuse = vec4(UV.s,UV.t,0,1);
-						//}
-					}
-					else if(i == 0 && j == 1){
-						if(v_diffuseUV.s < 0.5 && v_diffuseUV.t > 0.5){
-							diffuse = vec4(UV.s,UV.t,0,1);
-						}
-					}
-					else if(i == 1 && j == 0){
-						if(v_diffuseUV.s > 0.5 && v_diffuseUV.t < 0.5){
-							diffuse = vec4(UV.s,UV.t,0,1);
-						}
-					}
-					else if(i == 1 && j == 1){
-						if(v_diffuseUV.s > 0.5 && v_diffuseUV.t > 0.5){
-							diffuse = vec4(UV.s,UV.t,0,1);
-						}
-					}
-					*/
 				}
 			}
 		}
 		
 		if(valid > 0 && accumulateWeight > 0.0){
-			// use weight instead
-			// diffuse = diffuse / valid;
-			
 			// output color maybe overweight
 			diffuse = diffuse / accumulateWeight;
 		}
 		else{
-			diffuse = vec4(0.2,0,0,1);
+			diffuse = vec4(0.4,0,0,1);
 		}
 		
-
-		float diff_x = u_test_position.x - v_wordCoord.x;
-		float diff_y = u_test_position.y - v_wordCoord.y;
-		if(abs(diff_x) < 0.05 && abs(diff_y) < 0.05){
-		  diffuse = vec4(1,0,0,1);
-		}
-		else{
-			//diffuse = vec4(v_wordCoord.x ,v_wordCoord.y,0,1);
-		}
-		
-		/*
-		if(v_diffuseUV.t > 0.67){
-			diffuse = vec4(rf.x, 0,0,1);
-			
-		}
-		else if(v_diffuseUV.t > 0.33){
-			diffuse = vec4(v_wordCoord.x ,0,0,1);
-		}
-		else{
-			diffuse = vec4(rk.x, 0,0,1);
-		}
-		if(diffuse.x >= 1.0){
-			diffuse.x = 0;
-		}
-		*/
-
-		//diffuse = vec4(v_wordCoord.x ,v_wordCoord.y,0,1);
-		//diffuse = vec4(v_diffuseUV.x, v_diffuseUV.y,0,1);
-		//diffuse = texture2D(u_diffuseTexture, v_diffuseUV);
-		/*
-		if(v_diffuseUV.s > 0.50){
-			vec4 temp = u_myProjView * v_wordCoord;
-			//temp.xyz /= temp.w;
-			diffuse = vec4(temp.y / temp.w ,0,0,1);
-		}
-		if(v_diffuseUV.s > 0.60){
-			vec4 temp = u_myProjView * rf;
-			//temp.xyz /= temp.w;
-			diffuse = vec4(temp.y / temp.w ,0,0,1);
-			
-		}
-		if(v_diffuseUV.s > 0.70){
-			diffuse = vec4(rk.y ,0,0,1);
-		}
-		if(v_diffuseUV.s > 0.80){
-			diffuse = vec4(0 ,v_wordCoord.z + 0.5,0,1);
-		}
-		if(v_diffuseUV.s > 0.90){
-			diffuse = vec4(rf.z + 0.5,0,0,1);
-		}
-		if(v_diffuseUV.t > 0.80){
-			diffuse = vec4(0 ,v_wordCoord.w,0,1);
-		}
-		if(v_diffuseUV.t > 0.90){
-			diffuse = vec4(rf.w ,0,0,1);
-		}
-		*/
 	#else
 		vec4 diffuse = vec4(1.0);
 	#endif
