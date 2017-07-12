@@ -100,8 +100,8 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindPosition(){
-        program.setUniformf("u_cameraPositionX", -camera.position.x);
-        program.setUniformf("u_cameraPositionY", -camera.position.y);
+        program.setUniformf("u_cameraPositionX", camera.position.x);
+        program.setUniformf("u_cameraPositionY", camera.position.y);
     }
 
     private void bindConfiguration(){

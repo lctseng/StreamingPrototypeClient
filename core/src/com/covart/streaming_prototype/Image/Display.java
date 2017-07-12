@@ -191,7 +191,7 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        float radius = 4f;
+        float radius = 10f;
 
         model = modelBuilder.createRect(
                 -radius,-radius,0,
