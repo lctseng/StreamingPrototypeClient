@@ -135,7 +135,7 @@ void main() {
 
 	
 	if(u_enableDistortionCorrection != 0){
-		// distortion
+		// lens distortion correction
 		// ref: http://paulbourke.net/miscellaneous/lenscorrection/
 		
 		float r2 = screen_x * screen_x + screen_y * screen_y;
@@ -380,27 +380,6 @@ void main() {
 					// RD is in clip space
 					// Map RD into NDC(-1,1)
 					vec3 ndc_pos = rd.xyz / rd.w;
-
-					/*
-					if(u_enableDistortionCorrection != 0){
-						// distortion
-						// ref: http://paulbourke.net/miscellaneous/lenscorrection/
-						
-						float r2 = ndc_pos.s * ndc_pos.s + ndc_pos.t * ndc_pos.t;
-						float rScaleX = 1.0 - u_lensFactorX*r2;
-						float rScaleY = 1.0 - u_lensFactorY*r2;
-						
-						vec2 P;
-						P.x = ndc_pos.s / rScaleX;
-						P.y = ndc_pos.t / rScaleY;
-						
-						
-						float rr2 = dot(P, P);
-						ndc_pos.s = ndc_pos.s / ( 1.0 - (u_lensFactorX * rr2 )  );
-						ndc_pos.t = ndc_pos.t / ( 1.0 - (u_lensFactorY * rr2 )  );
-					}
-					*/
-					
 
 					// need to map [-1,1] to [0,1] for sampling
 					vec2 UV;
