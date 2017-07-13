@@ -116,6 +116,47 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindTexture(){
+        // compute valid column index range
+        int cols = ConfigManager.getNumOfLFs();
+        int rows = ConfigManager.getNumOfSubLFImgs();
+
+        float spanX = 2f /cols;
+        float spanY = 2f / rows;
+
+        float initCameraX = -1.0f + 0.5f * spanX;
+        float initCameraY = -1.0f + 0.5f * spanY;
+
+        float cameraStep = ConfigManager.getCameraStep();
+
+        int startIndex = -1, endIndex = -1;
+        // find first index that fall into aperture
+        for(int i=0;i<cols;i++){
+            float cameraX = (initCameraX + i * spanX) * cameraStep;
+            float dx = cameraX - camera.position.x;
+            float dist = dx * dx; // assume dy is zero
+            if(dist < ConfigManager.getApertureSize()){
+                startIndex = i;
+                break;
+            }
+        }
+        // find last index that fall into aperture
+        for(int i=cols - 1;i>= 0;i--){
+            float cameraX = (initCameraX + i * spanX) * cameraStep;
+            float dx = cameraX - camera.position.x;
+            float dist = dx * dx; // assume dy is zero
+            if(dist < ConfigManager.getApertureSize()){
+                endIndex = i;
+                break;
+            }
+        }
+
+        StringPool.addField("Column Range", ""+ startIndex + " - " + endIndex);
+
+
+
+
+
+
         if(display != null) {
             display.getTextureManager().bindTextures(program);
         }
