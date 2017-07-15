@@ -143,6 +143,7 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
 
         addEditingReportIntervalUI();
+        addManualMoveUI();
         canvas.row().height(commonRowHeight);
 
         addButtons();
@@ -684,6 +685,35 @@ public class MainMenu extends UIComponent {
 
     private String getEditingReportIntervalText(){
         return String.format(Locale.TAIWAN,"Editing report interval: %.3f", ConfigManager.getEditingReportInterval());
+    }
+
+    private void addManualMoveUI(){
+        // label
+        Label name = new Label("Manually Move:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isEnableManuallyMove());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEnableManuallyMove(box.isChecked());
+                if(box.isChecked()){
+                    ConfigManager.getApp().positionController.show();
+                }
+                else{
+                    ConfigManager.getApp().positionController.hide();
+                }
+
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
     }
 
 

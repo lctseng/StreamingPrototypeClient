@@ -108,6 +108,8 @@ public class ConfigManager {
 
     private static PositionController.Direction currentMoveDirection = NONE;
 
+    private static boolean enableManuallyMove = false;
+
 
     // getters and setters
 
@@ -351,6 +353,14 @@ public class ConfigManager {
 
     public static void setCurrentMoveDirection(PositionController.Direction currentMoveDirection) {
         ConfigManager.currentMoveDirection = currentMoveDirection;
+    }
+
+    public static boolean isEnableManuallyMove() {
+        return enableManuallyMove;
+    }
+
+    public static void setEnableManuallyMove(boolean enableManuallyMove) {
+        ConfigManager.enableManuallyMove = enableManuallyMove;
     }
 
     // end of getters and setters
