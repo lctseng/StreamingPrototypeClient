@@ -67,6 +67,7 @@ public class Display implements Disposable{
     private int vrScreenOffsetsY[];
     private int vrEyeIndex;
 
+    private Vector3 initLookAt;
 
     private Vector3 tmpVector1;
 
@@ -83,10 +84,9 @@ public class Display implements Disposable{
         textureManager = new TextureManager(this);
 
         // main camera
-        Vector3 initLookAt = new Vector3(0,0,-1);
+        initLookAt = new Vector3(0,0,-1);
         camMain = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camMain.position.set(0f, 0f, 3f);
-        camMain.lookAt(initLookAt);
+        recenterCamera();
         camMain.near = 0.1f;
         camMain.far = ConfigManager.getFocusChangeRatio();
 
@@ -282,6 +282,13 @@ public class Display implements Disposable{
 
         // end batch
         batch.end();
+    }
+
+    public void recenterCamera(){
+        camMain.position.set(0f, 0f, 3f);
+        camMain.up.set(0,1,0);
+        camMain.lookAt(initLookAt);
+        camMain.update();
     }
 
     @Override

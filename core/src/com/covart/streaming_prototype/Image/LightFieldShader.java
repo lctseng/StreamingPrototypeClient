@@ -35,6 +35,8 @@ public class LightFieldShader extends DefaultShader{
 
     private Display display;
     private PerspectiveCamera[][] dataCameras;
+    private int startIndex;
+    private int endIndex;
 
 
     public Display getDisplay() {
@@ -68,7 +70,8 @@ public class LightFieldShader extends DefaultShader{
     @Override
     public void init() {
         super.init();
-
+        startIndex = -1;
+        endIndex = -1;
         initDataCameras();
 
     }
@@ -87,6 +90,7 @@ public class LightFieldShader extends DefaultShader{
 
     @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
+        updateColumnIndex();
         bindConfiguration();
         bindPosition();
         bindProjections();
@@ -108,6 +112,7 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_screenOffsetY", display.getScreenOffsetY());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
+        program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
         program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
         program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
         program.setUniformi("u_enableDistortionCorrection", display.getEnableDistortionCorrection() ? 1 : 0);
@@ -115,20 +120,18 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_lensFactorY", ConfigManager.getDisplayLensFactorY());
     }
 
-    private void bindTexture(){
+    private void updateColumnIndex(){
         // compute valid column index range
         int cols = ConfigManager.getNumOfLFs();
-        int rows = ConfigManager.getNumOfSubLFImgs();
 
         float spanX = 2f /cols;
-        float spanY = 2f / rows;
 
         float initCameraX = -1.0f + 0.5f * spanX;
-        float initCameraY = -1.0f + 0.5f * spanY;
 
         float cameraStep = ConfigManager.getCameraStep();
 
-        int startIndex = -1, endIndex = -1;
+        startIndex = -1;
+        endIndex = -1;
         // find first index that fall into aperture
         for(int i=0;i<cols;i++){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
@@ -150,15 +153,33 @@ public class LightFieldShader extends DefaultShader{
             }
         }
 
+
+        if(startIndex >= 0){
+            // ensure the range falls into numOfMaxLFTextures
+            // this assume numOfMaxLFTextures to be a even number
+            int middleIndex = (startIndex + endIndex) / 2;
+            int radius = ConfigManager.getNumOfMaxLFTextures() / 2;
+            if(middleIndex - startIndex >= radius){
+                startIndex = middleIndex - radius + 1;
+            }
+            if(endIndex - middleIndex > radius){
+                endIndex = middleIndex + radius ;
+            }
+
+        }
+
         StringPool.addField("Column Range", ""+ startIndex + " - " + endIndex);
 
 
+        program.setUniformi("u_colTextureOffset", startIndex);
+        program.setUniformi("u_colStart",startIndex);
+        program.setUniformi("u_colEnd",endIndex);
 
+    }
 
-
-
-        if(display != null) {
-            display.getTextureManager().bindTextures(program);
+    private void bindTexture(){
+        if(display != null && startIndex >= 0) {
+            display.getTextureManager().bindTextures(program, startIndex, endIndex);
         }
     }
 
@@ -173,32 +194,35 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindRfRdProjections(){
-        int totalCols = ConfigManager.getNumOfLFs();
-        int totalRows = ConfigManager.getNumOfSubLFImgs();
+        if(startIndex >= 0) {
+            int totalCols = ConfigManager.getNumOfLFs();
+            int totalRows = ConfigManager.getNumOfSubLFImgs();
 
-        float spanX = 2.0f / totalCols;
-        float spanY = 2.0f / totalRows;
+            float columnRatio = ConfigManager.getColumnPositionRatio();
+            float spanX = 2.0f * columnRatio / totalCols;
+            float spanY = 2.0f / totalRows;
 
-        float initCameraX = -1.0f + 0.5f * spanX;
-        float initCameraY = -1.0f + 0.5f * spanY;
-        for(int i=0;i< totalCols;++i){
-            for(int j=0;j<totalRows;++j){
+            float initCameraX = -1.0f * columnRatio + 0.5f * spanX;
+            float initCameraY = -1.0f + 0.5f * spanY;
+            for (int i = startIndex; i <= endIndex; ++i) {
+                for (int j = 0; j < totalRows; ++j) {
 
-                PerspectiveCamera cam = dataCameras[i][j];
+                    PerspectiveCamera cam = dataCameras[i][j];
 
-                float camera_x = ( initCameraX + i * spanX ) * ConfigManager.getCameraStep() * 1;
-                float camera_y = ( initCameraY + j * spanY ) * ConfigManager.getCameraStep() * 1;
-                cam.position.set( camera_x, camera_y, 0f);
-                cam.lookAt(camera_x,camera_y,-1);
-                cam.near = 0.1f;
-                cam.far = 100f ;
-                cam.fieldOfView = ConfigManager.getDataCameraFOV();
+                    float camera_x = (initCameraX + i * spanX) * ConfigManager.getCameraStep() * 1;
+                    float camera_y = (initCameraY + j * spanY) * ConfigManager.getCameraStep() * 1;
+                    cam.position.set(camera_x, camera_y, 0f);
+                    cam.lookAt(camera_x, camera_y, -1);
+                    cam.near = 0.1f;
+                    cam.far = 100f;
+                    cam.fieldOfView = ConfigManager.getDataCameraFOV();
 
-                cam.update();
-                String name = "u_rf_to_rd" + i + "_" + j;
-                program.setUniformMatrix(name, cam.combined);
+                    cam.update();
+                    String name = "u_rf_to_rd" + (i - startIndex) + "_" + j;
+                    program.setUniformMatrix(name, cam.combined);
 
 
+                }
             }
         }
     }

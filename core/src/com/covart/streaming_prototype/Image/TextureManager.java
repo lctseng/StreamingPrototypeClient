@@ -212,12 +212,12 @@ public class TextureManager implements Disposable {
     }
     */
 
-    public void bindTextures(ShaderProgram shaderProgram){
+    public void bindTextures(ShaderProgram shaderProgram, int startIndex, int endIndex){
         if(textures == null){
             return;
         }
-        for(int i=0;i<ConfigManager.getNumOfLFs();i++){
-            int textureIndex = i;
+        for(int i=startIndex;i<=endIndex;i++){
+            int textureIndex = i - startIndex;
             if(textures[i] != null) {
                 textures[i].bind(textureIndex);
                 shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);

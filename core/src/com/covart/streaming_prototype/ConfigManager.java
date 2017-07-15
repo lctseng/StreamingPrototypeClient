@@ -20,8 +20,14 @@ public class ConfigManager {
     private static final int imageWidth = 1024;
     private static final int imageHeight = 1024;
 
-    private static final int numOfLFs = 8;
+    // Must be an EVEN number
+    // This value is limited by shader
+    private static final int numOfMaxLFTextures = 8;
+
+    private static final int numOfLFs = 16;
     private static final int numOfSubLFImgs = 8;
+
+    private static final float columnPositionRatio = (float)numOfLFs / numOfMaxLFTextures;
 
     private static final int bufferQueueSize = 3;
     private static final int imageBufferSize =  imageWidth * imageHeight * 3;
@@ -58,7 +64,7 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 1.5f;
+    private static float apertureSize = 0.95f;
 
     private static float focusChangeRatio = 20.0f;
 
@@ -112,6 +118,14 @@ public class ConfigManager {
 
     public static int getNumOfSubLFImgs() {
         return numOfSubLFImgs;
+    }
+
+    public static int getNumOfMaxLFTextures() {
+        return numOfMaxLFTextures;
+    }
+
+    public static float getColumnPositionRatio() {
+        return columnPositionRatio;
     }
 
     public static float getCameraStep() {

@@ -578,7 +578,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 20.0f, 0.001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 5.0f, 0.0001f, false, skin);
         slider.setValue(ConfigManager.getApertureSize());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -720,7 +720,7 @@ public class MainMenu extends UIComponent {
         return addButton("Re-center", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.getApp().recenterSensor();
+                ConfigManager.getApp().recenter();
             }
         });
     }

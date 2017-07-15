@@ -329,6 +329,15 @@ public class StreamingPrototype extends ApplicationAdapter
         }
     }
 
+    public void recenter() {
+        recenterDisplay();
+        recenterSensor();
+    }
+
+    public void recenterDisplay() {
+        display.recenterCamera();
+    }
+
     public void recenterSensor() {
         sensor.RecenterRotation();
     }
