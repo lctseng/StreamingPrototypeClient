@@ -10,6 +10,7 @@ import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
 import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
+import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
 
 import java.util.Locale;
@@ -51,6 +52,9 @@ public class StreamingPrototype extends ApplicationAdapter
     // editing
     private float editingReportTime;
 
+    // UI
+    private PositionController positionController;
+
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
             decoder = platform_decoder;
@@ -83,7 +87,11 @@ public class StreamingPrototype extends ApplicationAdapter
         }
 
         initializeInput();
+
+        // Setup UI
+        positionController = new PositionController();
         UIManager.getInstance().registerUI(new MainMenu());
+        UIManager.getInstance().registerUI(positionController);
 
         StringPool.addField("App", "Ready for start");
         updateEditingModeText();
@@ -171,6 +179,10 @@ public class StreamingPrototype extends ApplicationAdapter
                 sensorDisplayDataTime = 0f;
                 display.onSensorDataReady(sensor);
             }
+        }
+        // manually move
+        if(ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
+            manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
         }
 
         display.updateStart();
@@ -425,5 +437,21 @@ public class StreamingPrototype extends ApplicationAdapter
                 ).build();
         // send!
         network.sendMessageProtobufAsync(msg);
+    }
+
+    public void manuallyMoveCamera(PositionController.Direction direction){
+        display.manuallyMoveCamera(direction);
+    }
+
+    public void onMoveTypeChanged(){
+        if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+            // show move UI
+            positionController.show();
+        }
+        else{
+            // hide move UI
+            positionController.hide();
+        }
+        sensor.onMoveTypeChanged();
     }
 }

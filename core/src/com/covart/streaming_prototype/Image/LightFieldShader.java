@@ -238,10 +238,10 @@ public class LightFieldShader extends DefaultShader{
         for(int i=0;i<startIndex;i++){
             status += "=";
         }
-        for(int i=startIndex;i<endIndex;i++){
+        for(int i=startIndex;i<=endIndex;i++){
             status += "+";
         }
-        for(int i=endIndex;i<ConfigManager.getNumOfLFs();i++){
+        for(int i=endIndex+1;i<ConfigManager.getNumOfLFs();i++){
             status += "=";
         }
         StringPool.addField("Visible Status V", status);
