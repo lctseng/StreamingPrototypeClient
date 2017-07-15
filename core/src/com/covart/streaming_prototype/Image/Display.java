@@ -1,14 +1,23 @@
 package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Buffer;
 import com.covart.streaming_prototype.BufferPool;
@@ -16,6 +25,7 @@ import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Profiler;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
+import com.covart.streaming_prototype.UI.UIManager;
 
 import StreamingFormat.Message;
 
@@ -38,14 +48,28 @@ public class Display implements Disposable{
     // texture manager
     private TextureManager textureManager;
 
-    private ShaderProgram shaderProgram;
+    // cameras
+    private PerspectiveCamera camMain;
+    private PerspectiveCamera[] vrCameras;
+    private int vrRectWidth;
 
-    private Mesh mesh;
+    // models
+    private Model model;
+    private ModelInstance instance;
+    private ModelBatch modelBatch;
+    private CameraInputController camController;
+    private Environment environment;
 
-    private Matrix4 modelviewMatrix;
-    private Matrix4 projectionMatrix;
-    private Matrix4 projectionMatrixLeft;
-    private Matrix4 projectionMatrixRight;
+    private float lastScreenX;
+    private float lastScreenY;
+
+    private int vrScreenOffsetsX[];
+    private int vrScreenOffsetsY[];
+    private int vrEyeIndex;
+
+    private Vector3 initLookAt;
+
+    private Vector3 tmpVector1;
 
     public Display(){
 
@@ -53,118 +77,117 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
+        // temps
+        tmpVector1 = new Vector3();
+
         // multi-texture
         textureManager = new TextureManager(this);
 
+        // main camera
+        initLookAt = new Vector3(0,0,-1);
+        camMain = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        recenterCamera();
+        camMain.near = 0.1f;
+        camMain.far = ConfigManager.getFocusChangeRatio();
 
-
-
-        String vertexShader = Gdx.files.internal("shaders/lightfield.vert").readString();
-        String fragmentShader = Gdx.files.internal("shaders/lightfield.frag").readString();
-        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-        Gdx.app.error("GLSL", "Compiling:" + shaderProgram.isCompiled());
-        Gdx.app.error("GLSL", shaderProgram.getLog());
-        if(!shaderProgram.isCompiled()) {
-            throw new RuntimeException("GLSL Compile failed!");
-        }
-        ShaderProgram.pedantic = false;
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-
-
-        // create matrix
-        modelviewMatrix = new Matrix4();
-        projectionMatrix = new Matrix4();
-        projectionMatrixLeft = new Matrix4();
-        projectionMatrixRight = new Matrix4();
-        float ratio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
-        projectionMatrix.setToOrtho(ratio * -1, ratio, -1.0f, 1.0f, -1.0f, 1.0f);
-
-        // create VR two-eye projection
-        // TODO: handle widere screen?
-        int vrRectWidth;
+        // VR mode settings
+        vrEyeIndex = 0;
         vrRectWidth = Gdx.graphics.getWidth() / 2;
-        float vrRatio = Gdx.graphics.getHeight() / (float)vrRectWidth;
-        projectionMatrixLeft.setToOrtho(-1.0f, 3.0f , -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
-        projectionMatrixRight.setToOrtho(-3.0f, 1.0f, -1.0f * vrRatio, vrRatio, -1.0f, 1.0f);
+        vrScreenOffsetsX = new int[]{0, vrRectWidth};
+        int vrYOffset = (Gdx.graphics.getHeight() - vrRectWidth)/2;
+        vrScreenOffsetsY = new int[]{vrYOffset, vrYOffset};
+        // VR mode camera
+        vrCameras = new PerspectiveCamera[2];
+        for(int i=0;i<2;i++) {
+            vrCameras[i] = new PerspectiveCamera(ConfigManager.getVirtualCameraFOV(), vrRectWidth, vrRectWidth);
+            vrCameras[i].position.set(camMain.position);
+            vrCameras[i].lookAt(initLookAt);
+            vrCameras[i].near = camMain.near;
+            vrCameras[i].far = camMain.far;
+        }
+
+        String vertexShader = Gdx.files.internal("shaders/lightfield_new.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/lightfield_new.frag").readString();
+        LightFieldShaderProvider shaderProvider = new LightFieldShaderProvider(vertexShader, fragmentShader);
+        shaderProvider.setDisplay(this);
+
+        modelBatch = new ModelBatch(shaderProvider);
+
+        camController = new CameraInputController(camMain);
+        camController.pinchZoomFactor = 1f;
+        camController.rotateAngle = 30;
+        camController.translateUnits = 1;
+        camController.target.set(0,0,-1);
+        camController.translateTarget = false;
+        camController.forwardTarget = false;
+
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
+
+        InputAdapter localInput = new InputAdapter() {
+            @Override
+            public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+                    lastScreenX = screenX;
+                    lastScreenY = screenY;
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+                    // do move
+                    float dx = -(screenX - lastScreenX) / Gdx.graphics.getWidth();
+                    float dy = (screenY - lastScreenY) / Gdx.graphics.getHeight();
+                    camMain.translate(dx, dy, 0);
+                    // update  screen XY
+                    lastScreenX = screenX;
+                    lastScreenY = screenY;
+
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        };
+        inputMultiplexer.addProcessor(localInput);
+        inputMultiplexer.addProcessor(camController);
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
 
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        // create mesh
-        float[] verts = new float[36];
-        int i = 0;
-        float x,y; // Mesh location in the world
-        float width,height; // Mesh width and height
+        ModelBuilder modelBuilder = new ModelBuilder();
 
-        x = y = -1.0f;
-        width = height = 2f;
+        float radius = 10f;
 
-        //Top Left Vertex Triangle 1
-        verts[i++] = x;   //X
-        verts[i++] = y + height; //Y
-        verts[i++] = 0;    //Z
-        verts[i++] = 1.0f; // W
-        verts[i++] = 0f;   //U
-        verts[i++] = 0f;   //V
-
-        //Top Right Vertex Triangle 1
-        verts[i++] = x + width;
-        verts[i++] = y + height;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
-
-        //Bottom Left Vertex Triangle 1
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 0f;
-        verts[i++] = 1f;
-
-        //Top Right Vertex Triangle 2
-        verts[i++] = x + width;
-        verts[i++] = y + height;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
-
-        //Bottom Right Vertex Triangle 2
-        verts[i++] = x + width;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 1f;
-        verts[i++] = 1f;
-
-        //Bottom Left Vertex Triangle 2
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1.0f;
-        verts[i++] = 0f;
-        verts[i] = 1f;
-
-        // Create a mesh out of two triangles rendered clockwise without indices
-        mesh = new Mesh( true, 6, 0,
-                new VertexAttribute( VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE ),
-                new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
-
-        mesh.setVertices(verts);
-
+        model = modelBuilder.createRect(
+                -radius,-radius,0,
+                radius,-radius,0,
+                radius,radius,0,
+                -radius,radius,0,
+                0,0,radius,
+                new Material(),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
+        );
+        instance = new ModelInstance(model);
     }
 
     public void start(){
         disposeExistingTexture();
         textureManager.createTextureSlots(ConfigManager.getNumOfLFs());
-        ConfigManager.setFocusChangeRatio(1.0f);
     }
 
 
-    public void collectImages(){
+    private void collectImages(){
         Buffer src = BufferPool.getInstance().queueDecoderToDisplay.poll();
         if(src != null){
             // copy images from buffer
@@ -177,101 +200,58 @@ public class Display implements Disposable{
     }
 
     private void drawNormalView(){
-        shaderProgram.begin();
-        // set matrix
-        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrix);
-        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-        // set camera params
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", textureManager.getCameraPositionX());
-        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-        shaderProgram.setUniformi("enable_distortion_correction", 0);
-        shaderProgram.setUniformf("lensFactorX", 0);
-        shaderProgram.setUniformf("lensFactorY", 0);
-
-        // binding texture
-        textureManager.bindTextures(shaderProgram);
-        // draw!
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        shaderProgram.end();
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        modelBatch.begin(camMain);
+        modelBatch.render(instance, environment);
+        modelBatch.end();
     }
 
 
+    private void updateVRCameras(){
+        // compute right vector of main
+        tmpVector1.set(camMain.direction).crs(camMain.up).nor();
+        tmpVector1.scl(ConfigManager.getDisplayVRDisparity());
+        // update cameras
+        for(int i=0;i<2;i++) {
+            vrCameras[i].fieldOfView = camMain.fieldOfView;
+            vrCameras[i].far = camMain.far;
+            vrCameras[i].position.set(camMain.position);
+            vrCameras[i].direction.set(camMain.direction);
+            vrCameras[i].up.set(camMain.up);
+            if(i == 0){
+                vrCameras[i].translate(-tmpVector1.x, -tmpVector1.y, -tmpVector1.z);
+            }
+            else{
+                vrCameras[i].translate(tmpVector1.x, tmpVector1.y, tmpVector1.z);
+            }
+            vrCameras[i].update();
+        }
+    }
+
     private void drawVRView(){
-        float disparity = ConfigManager.getDisplayVRDisparity();
-        float centerX = textureManager.getCameraPositionX();
-
-        // compute left and right X
-        float leftX = centerX - disparity;
-        float rightX = centerX + disparity;
-
-        // draw left eye
-        shaderProgram.begin();
-        // set matrix
-        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixLeft);
-        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-        // set camera params
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", leftX);
-        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-        shaderProgram.setUniformi("enable_distortion_correction", 1);
-        shaderProgram.setUniformf("lensFactorX", ConfigManager.getDisplayLensFactorX());
-        shaderProgram.setUniformf("lensFactorY", ConfigManager.getDisplayLensFactorY());
-        // binding texture
-        textureManager.bindTextures(shaderProgram);
-        // draw!
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        shaderProgram.end();
-
-        // draw right eye
-        shaderProgram.begin();
-        // set matrix
-        shaderProgram.setUniformMatrix("projectionMatrix", projectionMatrixRight);
-        shaderProgram.setUniformMatrix("modelviewMatrix", modelviewMatrix);
-        // set camera params
-        shaderProgram.setUniformi("rows", ConfigManager.getNumOfSubLFImgs());
-        shaderProgram.setUniformi("cols", ConfigManager.getNumOfLFs());
-        shaderProgram.setUniformf("focusPointX", ConfigManager.getCameraStepX() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("focusPointY", ConfigManager.getCameraStepY() * ConfigManager.getFocusChangeRatio());
-        shaderProgram.setUniformf("apertureSize", ConfigManager.getApertureSize());
-        shaderProgram.setUniformf("cameraPositionX", rightX);
-        shaderProgram.setUniformf("cameraPositionY", textureManager.getCameraPositionY());
-        shaderProgram.setUniformi("col_start", textureManager.getColumnStart());
-        shaderProgram.setUniformi("col_end", textureManager.getColumnEnd());
-        shaderProgram.setUniformi("interop_span", ConfigManager.getNumOfMaxInterpolatedLFRadius());
-        shaderProgram.setUniformi("enable_distortion_correction", 1);
-        shaderProgram.setUniformf("lensFactorX", ConfigManager.getDisplayLensFactorX());
-        shaderProgram.setUniformf("lensFactorY", ConfigManager.getDisplayLensFactorY());
-        // binding texture
-        textureManager.bindTextures(shaderProgram);
-        // draw!
-        mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        shaderProgram.end();
+        updateVRCameras();
+        for(int i=0;i<2;i++){
+            vrEyeIndex = i;
+            Gdx.gl.glViewport(i * vrRectWidth, (Gdx.graphics.getHeight() - vrRectWidth)/2, vrRectWidth, vrRectWidth);
+            modelBatch.begin(vrCameras[i]);
+            modelBatch.render(instance, environment);
+            modelBatch.end();
+        }
     }
 
     public void updateStart(){
         Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
         collectImages();
 
+        camMain.far = ConfigManager.getFocusChangeRatio();
+        camMain.fieldOfView = ConfigManager.getVirtualCameraFOV();
+        camMain.update();
+        StringPool.addField("Far", "" + camMain.far);
+
+        camController.update();
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:
                 drawNormalView();
@@ -282,10 +262,7 @@ public class Display implements Disposable{
         }
         Profiler.reportOnDisplay();
 
-
-
-
-
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         // clear flash messages
         StringPool.clearFlashMessages();
@@ -305,10 +282,13 @@ public class Display implements Disposable{
 
         // end batch
         batch.end();
+    }
 
-
-
-
+    public void recenterCamera(){
+        camMain.position.set(0f, 0f, 3f);
+        camMain.up.set(0,1,0);
+        camMain.lookAt(initLookAt);
+        camMain.update();
     }
 
     @Override
@@ -316,9 +296,11 @@ public class Display implements Disposable{
         batch.dispose();
         font.dispose();
         textureManager.dispose();
+        model.dispose();
+        modelBatch.dispose();
     }
 
-    public void disposeExistingTexture(){
+    private void disposeExistingTexture(){
         textureManager.disposeExistingTextures();
     }
 
@@ -341,4 +323,52 @@ public class Display implements Disposable{
         return textureManager.checkControlFrameRequired();
     }
 
+
+    public TextureManager getTextureManager() {
+        return textureManager;
+    }
+
+    public int getScreenWidth(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrRectWidth;
+        }
+        else{
+            return Gdx.graphics.getWidth();
+        }
+    }
+
+    public int getScreenHeight(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrRectWidth;
+        }
+        else{
+            return Gdx.graphics.getHeight();
+        }
+    }
+
+    public int getScreenOffsetX(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrScreenOffsetsX[vrEyeIndex];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public int getScreenOffsetY(){
+        if(ConfigManager.getDisplayMode() == Mode.VR){
+            return vrScreenOffsetsY[vrEyeIndex];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public boolean getEnableDistortionCorrection(){
+        return ConfigManager.getDisplayMode() == Display.Mode.VR;
+    }
+
+    public PerspectiveCamera getMainCamera(){
+        return camMain;
+    }
 }

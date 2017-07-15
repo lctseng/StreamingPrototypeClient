@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import static com.badlogic.gdx.Gdx.files;
+
 /**
  * Created by lctseng on 2017/2/11.
  * NTU COV-ART Lab, for NCP project
@@ -26,10 +28,10 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
     @Override
     public void run() {
         // open all files
-        FileHandle dirHandle = Gdx.files.internal("lightfield");;
-        ArrayList<FileHandle> files = new ArrayList<FileHandle>();
-        Collections.addAll(files, dirHandle.list());
-        Collections.sort(files, new Comparator<FileHandle>() {
+        FileHandle dirHandle = files.internal("lightfield");;
+        ArrayList<FileHandle> allFiles = new ArrayList<FileHandle>();
+        Collections.addAll(allFiles, dirHandle.list());
+        Collections.sort(allFiles, new Comparator<FileHandle>() {
             @Override
             public int compare(FileHandle file1, FileHandle file2)
             {
@@ -50,6 +52,23 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                 }
             }
         });
+        // filter files
+        ArrayList<FileHandle> files = new ArrayList<FileHandle>();
+        for(int i=0;i<allFiles.size();i++){
+            FileHandle file = allFiles.get(i);
+            Scanner s = new Scanner(file.nameWithoutExtension()).useDelimiter("[^0-9]+");
+            int row = s.nextInt();
+            int col = s.nextInt();
+            //if(row % 2 == 0 && col % 2 == 0) {
+                //row /= 2;
+                //col /= 2;
+                if (row < ConfigManager.getNumOfSubLFImgs() && col < ConfigManager.getNumOfLFs()) {
+                    files.add(file);
+                }
+            //}
+        }
+
+
         int max_size = files.size();
         int count = 0;
 
@@ -62,7 +81,7 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     // blocking return to network
                     BufferPool.getInstance().queueDecoderToNetwork.put(encodedBuf);
                 }
-                Thread.sleep(200);
+                //Thread.sleep(0);
                 FileHandle file = null;
                 int index = count / ConfigManager.getNumOfSubLFImgs();
                 if(count >= max_size){

@@ -174,13 +174,13 @@ public class TextureManager implements Disposable {
             // compute index
             int leftIndex = (int)((dh + 0.5 - disparity) * nSlots);
             int rightIndex = (int)((dh + 0.5 + disparity) * nSlots);
-            columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
+            //columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            //columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         else{
             // Normal
-            columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
+            //columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
+            //columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
         }
         if(columnStart < 0) columnStart = 0;
         else if(columnStart >= nSlots) columnStart = nSlots - 1;
@@ -193,6 +193,7 @@ public class TextureManager implements Disposable {
         visualizeColumnStatus();
     }
 
+    /*
     public void bindTextures(ShaderProgram shaderProgram){
         for(int i=columnStart;i<columnEnd;i++){
             int textureIndex = i - columnStart;
@@ -200,6 +201,7 @@ public class TextureManager implements Disposable {
                 textures[i].bind(textureIndex);
                 shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
                 shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                Gdx.app.log("Tex", "Binding:" + textureIndex);
             }
             else{
                 Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
@@ -208,6 +210,28 @@ public class TextureManager implements Disposable {
             }
         }
     }
+    */
+
+    public void bindTextures(ShaderProgram shaderProgram, int startIndex, int endIndex){
+        if(textures == null){
+            return;
+        }
+        for(int i=startIndex;i<=endIndex;i++){
+            int textureIndex = i - startIndex;
+            if(textures[i] != null) {
+                textures[i].bind(textureIndex);
+                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                //Gdx.app.log("Tex", "Binding:" + textureIndex);
+            }
+            else{
+                Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
+                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
+            }
+        }
+    }
+
 
     public void visualizeColumnStatus(){
         visualizeVisibleColumn();
