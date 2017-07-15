@@ -1,7 +1,12 @@
 package com.covart.streaming_prototype.UI;
 
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -10,6 +15,25 @@ import com.badlogic.gdx.utils.Disposable;
  */
 
 public abstract class UIComponent implements Disposable {
+
+    protected Skin skin;
+
+    protected BitmapFont largeFont;
+    protected Label.LabelStyle largeLabelStyle;
+
+    UIComponent(){
+        // resources
+        largeFont = new BitmapFont();
+        largeFont.getData().setScale(1.5f);
+
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+        largeFont = new BitmapFont();
+        largeFont.getData().setScale(1.5f);
+
+        largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
+    }
+
     void registerActors(Stage stage){
 
     }
@@ -20,5 +44,10 @@ public abstract class UIComponent implements Disposable {
 
     void onAppStateChanged(){
 
+    }
+
+    @Override
+    public void dispose() {
+        largeFont.dispose();
     }
 }

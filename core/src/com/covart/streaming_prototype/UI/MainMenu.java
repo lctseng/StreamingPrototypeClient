@@ -1,8 +1,6 @@
 package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -29,12 +26,9 @@ import java.util.Locale;
  */
 
 public class MainMenu extends UIComponent {
+
+
     private Table canvas;
-
-    private Skin skin;
-
-    private BitmapFont largeFont;
-    private Label.LabelStyle largeLabelStyle;
 
     private int tableColumnSpan = 2;
     private int buttonWidth = 250;
@@ -52,13 +46,7 @@ public class MainMenu extends UIComponent {
     private float fadeTime = 0.2f;
 
     public MainMenu(){
-        // resources
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        largeFont = new BitmapFont();
-        largeFont.getData().setScale(1.5f);
-
-        largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
 
         // canvas
         createCanvas();
@@ -66,7 +54,7 @@ public class MainMenu extends UIComponent {
         // canvas control button
         createCanvasControlButton();
 
-        showMenu();
+        show();
     }
 
     private void createCanvas(){
@@ -94,11 +82,11 @@ public class MainMenu extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if(canvas.isVisible()){
-                    hideMenu();
+                    hide();
                     canvasControlButton.setText("Open Menu");
                 }
                 else{
-                    showMenu();
+                    show();
                     canvasControlButton.setText("Hide Menu");
                 }
 
@@ -106,11 +94,11 @@ public class MainMenu extends UIComponent {
         });
     }
 
-    private void showMenu(){
+    private void show(){
         canvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(),Actions.fadeIn(fadeTime)));
     }
 
-    private void hideMenu(){
+    private void hide(){
         canvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
     }
 
@@ -287,7 +275,7 @@ public class MainMenu extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setSensorMoveType(selectBox.getSelected());
-                ConfigManager.getApp().sensor.onMoveTypeChanged();
+                ConfigManager.getApp().onMoveTypeChanged();
             }
         });
 
@@ -772,7 +760,7 @@ public class MainMenu extends UIComponent {
 
     private void enlargeSlider(HorzSlider slider){
         slider.setCustomWidth(buttonWidth);
-        slider.setDebug(canvas.getDebug());
+        slider.setDebug(false);
         slider.getStyle().background.setMinHeight(slideBarSize);
         slider.getStyle().knob.setMinWidth(slideBarSize);
         slider.getStyle().knob.setMinHeight(slideBarSize);
@@ -782,7 +770,7 @@ public class MainMenu extends UIComponent {
     private void enlargeCheckBoxFont(CheckBox box){
         box.getStyle().font = largeFont;
         box.setStyle(box.getStyle());
-        box.getImage().setDebug(canvas.getDebug());
+        box.getImage().setDebug(false);
         box.getImage().setOriginX(20);
         box.getImage().setOriginY(7);
         box.getImage().setScale(4f);
@@ -801,10 +789,5 @@ public class MainMenu extends UIComponent {
     void registerActors(Stage stage) {
         stage.addActor(canvas);
         stage.addActor(canvasControlButton);
-    }
-
-    @Override
-    public void dispose() {
-        largeFont.dispose();
     }
 }

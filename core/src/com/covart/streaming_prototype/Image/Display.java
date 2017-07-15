@@ -1,7 +1,6 @@
 package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -25,7 +24,7 @@ import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Profiler;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
-import com.covart.streaming_prototype.UI.UIManager;
+import com.covart.streaming_prototype.UI.PositionController;
 
 import StreamingFormat.Message;
 
@@ -59,9 +58,6 @@ public class Display implements Disposable{
     private ModelBatch modelBatch;
     private CameraInputController camController;
     private Environment environment;
-
-    private float lastScreenX;
-    private float lastScreenY;
 
     private int vrScreenOffsetsX[];
     private int vrScreenOffsetsY[];
@@ -121,44 +117,7 @@ public class Display implements Disposable{
         camController.translateTarget = false;
         camController.forwardTarget = false;
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
 
-        InputAdapter localInput = new InputAdapter() {
-            @Override
-            public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
-                    lastScreenX = screenX;
-                    lastScreenY = screenY;
-                    return true;
-                }
-                else{
-                    return false;
-                }
-
-            }
-
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
-                if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
-                    // do move
-                    float dx = -(screenX - lastScreenX) / Gdx.graphics.getWidth();
-                    float dy = (screenY - lastScreenY) / Gdx.graphics.getHeight();
-                    camMain.translate(dx, dy, 0);
-                    // update  screen XY
-                    lastScreenX = screenX;
-                    lastScreenY = screenY;
-
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        };
-        inputMultiplexer.addProcessor(localInput);
-        inputMultiplexer.addProcessor(camController);
-        Gdx.input.setInputProcessor(inputMultiplexer);
 
 
         environment = new Environment();
@@ -179,6 +138,10 @@ public class Display implements Disposable{
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
         );
         instance = new ModelInstance(model);
+    }
+
+    public void attachInputProcessors(InputMultiplexer inputMultiplexer){
+        inputMultiplexer.addProcessor(camController);
     }
 
     public void start(){
@@ -232,6 +195,7 @@ public class Display implements Disposable{
         updateVRCameras();
         for(int i=0;i<2;i++){
             vrEyeIndex = i;
+            // for VR mode, we use width == height now
             Gdx.gl.glViewport(i * vrRectWidth, (Gdx.graphics.getHeight() - vrRectWidth)/2, vrRectWidth, vrRectWidth);
             modelBatch.begin(vrCameras[i]);
             modelBatch.render(instance, environment);
@@ -249,7 +213,6 @@ public class Display implements Disposable{
         camMain.far = ConfigManager.getFocusChangeRatio();
         camMain.fieldOfView = ConfigManager.getVirtualCameraFOV();
         camMain.update();
-        StringPool.addField("Far", "" + camMain.far);
 
         camController.update();
         switch(ConfigManager.getDisplayMode()){
@@ -370,5 +333,23 @@ public class Display implements Disposable{
 
     public PerspectiveCamera getMainCamera(){
         return camMain;
+    }
+
+    public void manuallyMoveCamera(PositionController.Direction direction){
+        switch(direction){
+            case LEFT:
+                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
+                break;
+            case RIGHT:
+                camMain.translate(ConfigManager.getManuallyMoveStep(), 0, 0);
+                break;
+            case UP:
+                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
+                break;
+            case DOWN:
+                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
+                break;
+
+        }
     }
 }

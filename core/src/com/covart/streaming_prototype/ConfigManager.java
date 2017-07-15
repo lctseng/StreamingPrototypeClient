@@ -2,6 +2,9 @@ package com.covart.streaming_prototype;
 
 
 import com.covart.streaming_prototype.Image.Display;
+import com.covart.streaming_prototype.UI.PositionController;
+
+import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 
 /**
  * Created by lctseng on 2017/4/28.
@@ -70,7 +73,7 @@ public class ConfigManager {
 
     private static boolean stopOnDisconnected = false;
 
-    private static float sensorReportInterval = 0.150f;
+    private static float sensorReportInterval = 0.8f;
 
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
@@ -100,6 +103,10 @@ public class ConfigManager {
     private static float virtualCameraFOV = 67.0f;
 
     private static float dataCameraFOV = 67.0f;
+
+    private static float manuallyMoveStep = 0.01f;
+
+    private static PositionController.Direction currentMoveDirection = NONE;
 
 
     // getters and setters
@@ -328,6 +335,22 @@ public class ConfigManager {
 
     public static void setDataCameraFOV(float dataCameraFOV) {
         ConfigManager.dataCameraFOV = dataCameraFOV;
+    }
+
+    public static float getManuallyMoveStep() {
+        return manuallyMoveStep;
+    }
+
+    public static void setManuallyMoveStep(float manuallyMoveStep) {
+        ConfigManager.manuallyMoveStep = manuallyMoveStep;
+    }
+
+    public static PositionController.Direction getCurrentMoveDirection() {
+        return currentMoveDirection;
+    }
+
+    public static void setCurrentMoveDirection(PositionController.Direction currentMoveDirection) {
+        ConfigManager.currentMoveDirection = currentMoveDirection;
     }
 
     // end of getters and setters
