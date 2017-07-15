@@ -190,7 +190,6 @@ public class TextureManager implements Disposable {
         // TODO: cameraX should map deltaMin ~ deltaMax to 0 ~ 1
         cameraPositionX = dh + 0.5f;
         cameraPositionY = dv + 0.5f;
-        visualizeColumnStatus();
     }
 
     /*
@@ -232,13 +231,7 @@ public class TextureManager implements Disposable {
         }
     }
 
-
     public void visualizeColumnStatus(){
-        visualizeVisibleColumn();
-        visualizeTextureStatus();
-    }
-
-    public void visualizeTextureStatus(){
         String status = "";
         for(int i=0;i<nSlots;i++){
             if(textures[i] == null){
@@ -249,20 +242,6 @@ public class TextureManager implements Disposable {
             }
         }
         StringPool.addField("Visible Status T", status);
-    }
-
-    public void visualizeVisibleColumn(){
-        String status = "";
-        for(int i=0;i<columnStart;i++){
-            status += "=";
-        }
-        for(int i=columnStart;i<columnEnd;i++){
-            status += "+";
-        }
-        for(int i=columnEnd;i<nSlots;i++){
-            status += "=";
-        }
-        StringPool.addField("Visible Status V", status);
     }
 
     public float getCameraPositionX(){

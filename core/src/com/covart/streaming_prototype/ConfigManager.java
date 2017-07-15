@@ -70,7 +70,7 @@ public class ConfigManager {
 
     private static boolean stopOnDisconnected = false;
 
-    private static float sensorReportInterval = 0.150f;
+    private static float sensorReportInterval = 0.8f;
 
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];

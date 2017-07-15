@@ -99,12 +99,13 @@ public class StreamingPrototype extends ApplicationAdapter
                 if (ConfigManager.isEditingModeEnabled()) {
                     return editingTouchDragged(screenX, screenY, pointer);
                 } else {
-                    return sensor.touchDragged(screenX, screenY, pointer);
+                    return false;
                 }
             }
         };
         inputMultiplexer.addProcessor(localInput);
-        //Gdx.input.setInputProcessor(inputMultiplexer);
+        display.attachInputProcessors(inputMultiplexer);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 

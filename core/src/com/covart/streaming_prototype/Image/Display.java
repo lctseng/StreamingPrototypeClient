@@ -25,7 +25,6 @@ import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Profiler;
 import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StringPool;
-import com.covart.streaming_prototype.UI.UIManager;
 
 import StreamingFormat.Message;
 
@@ -121,9 +120,30 @@ public class Display implements Disposable{
         camController.translateTarget = false;
         camController.forwardTarget = false;
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(UIManager.getInstance().getInputProcessor());
 
+
+
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+
+        float radius = 10f;
+
+        model = modelBuilder.createRect(
+                -radius,-radius,0,
+                radius,-radius,0,
+                radius,radius,0,
+                -radius,radius,0,
+                0,0,radius,
+                new Material(),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
+        );
+        instance = new ModelInstance(model);
+    }
+
+    public void attachInputProcessors(InputMultiplexer inputMultiplexer){
         InputAdapter localInput = new InputAdapter() {
             @Override
             public boolean touchDown (int screenX, int screenY, int pointer, int button) {
@@ -158,27 +178,6 @@ public class Display implements Disposable{
         };
         inputMultiplexer.addProcessor(localInput);
         inputMultiplexer.addProcessor(camController);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
-
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-        ModelBuilder modelBuilder = new ModelBuilder();
-
-        float radius = 10f;
-
-        model = modelBuilder.createRect(
-                -radius,-radius,0,
-                radius,-radius,0,
-                radius,radius,0,
-                -radius,radius,0,
-                0,0,radius,
-                new Material(),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
-        );
-        instance = new ModelInstance(model);
     }
 
     public void start(){
@@ -232,6 +231,7 @@ public class Display implements Disposable{
         updateVRCameras();
         for(int i=0;i<2;i++){
             vrEyeIndex = i;
+            // for VR mode, we use width == height now
             Gdx.gl.glViewport(i * vrRectWidth, (Gdx.graphics.getHeight() - vrRectWidth)/2, vrRectWidth, vrRectWidth);
             modelBatch.begin(vrCameras[i]);
             modelBatch.render(instance, environment);
@@ -249,7 +249,6 @@ public class Display implements Disposable{
         camMain.far = ConfigManager.getFocusChangeRatio();
         camMain.fieldOfView = ConfigManager.getVirtualCameraFOV();
         camMain.update();
-        StringPool.addField("Far", "" + camMain.far);
 
         camController.update();
         switch(ConfigManager.getDisplayMode()){

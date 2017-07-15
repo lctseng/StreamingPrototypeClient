@@ -97,6 +97,7 @@ public class LightFieldShader extends DefaultShader{
         bindTexture();
 
         StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
+        visualizeLightFieldStatus();
         super.render(renderable, combinedAttributes);
     }
 
@@ -123,10 +124,11 @@ public class LightFieldShader extends DefaultShader{
     private void updateColumnIndex(){
         // compute valid column index range
         int cols = ConfigManager.getNumOfLFs();
+        float columnRatio = ConfigManager.getColumnPositionRatio();
 
-        float spanX = 2f /cols;
+        float spanX = 2f * columnRatio /cols;
 
-        float initCameraX = -1.0f + 0.5f * spanX;
+        float initCameraX = -1.0f * columnRatio + 0.5f * spanX;
 
         float cameraStep = ConfigManager.getCameraStep();
 
@@ -167,9 +169,6 @@ public class LightFieldShader extends DefaultShader{
             }
 
         }
-
-        StringPool.addField("Column Range", ""+ startIndex + " - " + endIndex);
-
 
         program.setUniformi("u_colTextureOffset", startIndex);
         program.setUniformi("u_colStart",startIndex);
@@ -225,5 +224,26 @@ public class LightFieldShader extends DefaultShader{
                 }
             }
         }
+    }
+
+    private void visualizeLightFieldStatus(){
+        visualizeVisibleColumn();
+        if(display != null){
+            display.getTextureManager().visualizeColumnStatus();
+        }
+    }
+
+    private void visualizeVisibleColumn(){
+        String status = "";
+        for(int i=0;i<startIndex;i++){
+            status += "=";
+        }
+        for(int i=startIndex;i<endIndex;i++){
+            status += "+";
+        }
+        for(int i=endIndex;i<ConfigManager.getNumOfLFs();i++){
+            status += "=";
+        }
+        StringPool.addField("Visible Status V", status);
     }
 }
