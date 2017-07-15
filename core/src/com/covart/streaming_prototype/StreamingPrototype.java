@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -228,16 +227,17 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
 
-    private Message.StreamingMessage makeSensorPacket(Vector3 direction, Quaternion rotation) {
+    private Message.StreamingMessage makeSensorPacket(Vector3 position, Vector3 direction) {
 
         Vector3 initDirection = sensor.getInitDirection();
         // setup builder
         Message.Camera.Builder cameraBuilder = Message.Camera.newBuilder()
-                .setDeltaX(sensor.getTranslationMagnitudeHorz())
-                .setDeltaY(sensor.getTranslationMagnitudeVert())
-                .setDeltaVx(direction.x - initDirection.x)
-                .setDeltaVy(direction.y - initDirection.y)
-                .setDeltaVz(direction.y - initDirection.z)
+                .setDeltaX(position.x / 1.5f)
+                .setDeltaY(position.y / 1.5f)
+                .setDeltaZ(position.z)
+                .setDeltaVx(direction.x)
+                .setDeltaVy(direction.y)
+                .setDeltaVz(direction.z)
                 .setSerialNumber(sensor.getSerialNumber());
 
         // crafting packet
@@ -250,7 +250,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void sendSenserData() {
-        Message.StreamingMessage msg = makeSensorPacket(sensor.getDirecton(), sensor.getRotation());
+        Message.StreamingMessage msg = makeSensorPacket(display.getMainCamera().position, display.getMainCamera().direction);
         if (msg != null) {
             network.sendMessageProtobufAsync(msg);
         }

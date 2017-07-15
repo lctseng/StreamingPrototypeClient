@@ -17,14 +17,14 @@ public class ConfigManager {
 
     // constants
 
-    private static final int imageWidth = 1024;
-    private static final int imageHeight = 1024;
+    private static final int imageWidth = 256;
+    private static final int imageHeight = 256;
 
     // Must be an EVEN number
     // This value is limited by shader
     private static final int numOfMaxLFTextures = 8;
 
-    private static final int numOfLFs = 16;
+    private static final int numOfLFs = 8;
     private static final int numOfSubLFImgs = 8;
 
     private static final float columnPositionRatio = (float)numOfLFs / numOfMaxLFTextures;

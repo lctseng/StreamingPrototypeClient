@@ -67,8 +67,6 @@ public class MainMenu extends UIComponent {
         createCanvasControlButton();
 
         showMenu();
-        hideMenu();
-
     }
 
     private void createCanvas(){
@@ -425,7 +423,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 80.0f, 0.1f, false, skin);
+        final HorzSlider slider = new HorzSlider(1.0f, 200.0f, 0.1f, false, skin);
         slider.setValue(ConfigManager.getFocusChangeRatio());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {

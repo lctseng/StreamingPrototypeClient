@@ -367,4 +367,8 @@ public class Display implements Disposable{
     public boolean getEnableDistortionCorrection(){
         return ConfigManager.getDisplayMode() == Display.Mode.VR;
     }
+
+    public PerspectiveCamera getMainCamera(){
+        return camMain;
+    }
 }
