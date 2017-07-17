@@ -29,13 +29,10 @@ public class Sensor implements Component {
     private Quaternion initRotation;
 
     // current status
-    private Vector3 positionDelta;
     private Vector3 rightVector;
-    private Vector3 directon;
+    private Vector3 upVector;
+    private Vector3 direction;
     private Quaternion rotation;
-    private float translationMagnitudeHorz;
-    private float translationMagnitudeVert;
-
 
     // temp data for computation
     private Matrix4 tempMatrix;
@@ -60,6 +57,15 @@ public class Sensor implements Component {
 
     private boolean flipHorzAndVert = false;
 
+    private float horzRotateDiff = 0f;
+    private float vertRotateDiff = 0f;
+
+    private float lastHorzRotate = 0f;
+    private float lastVertRotate = 0f;
+
+    private float angleHorz;
+    private float angleVert;
+
     Sensor(){
 
         initDirection = Vector3.Z;
@@ -69,12 +75,10 @@ public class Sensor implements Component {
         updateInitRightVector();
 
         initPosition = new Vector3(0,0,0);
-        positionDelta = new Vector3(0,0,0);
         rightVector = new Vector3(1,0,0);
-        directon = new Vector3(initDirection);
+        upVector = new Vector3(0,1,0);
+        direction = new Vector3(initDirection);
         rotation = new Quaternion();
-        translationMagnitudeHorz = 0.f;
-        translationMagnitudeVert = 0.f;
 
         tempMatrix = new Matrix4();
         tempQuaternion = new Quaternion();
@@ -112,16 +116,24 @@ public class Sensor implements Component {
 
     public void setInitDirection(float vx, float vy, float vz){
         initDirection.set(vx, vy, vz);
+        upVector.set(initUp);
         Gdx.app.log("Sensor", String.format(Locale.TAIWAN, "Init direction: X = %6.4f, Y = %6.4f, Z = %6.4f", initDirection.x, initDirection.y, initDirection.z));
         updateInitRightVector();
-        Gdx.input.getRotationMatrix(tempMatrix.val);
         RecenterRotation();
         setInitDataReady(true);
     }
 
     public void RecenterRotation(){
+        Gdx.input.getRotationMatrix(tempMatrix.val);
         initRotation.setFromMatrix(true, tempMatrix);
         //initRotation.conjugate();
+        lastHorzRotate = angleHorz;
+        lastVertRotate = angleVert;
+        horzRotateDiff = 0f;
+        vertRotateDiff = 0f;
+        direction.set(initDirection);
+        rightVector.set(initRightVector);
+        upVector.set(initUp);
     }
 
     public void setInitPosition(float x, float y, float z){
@@ -135,9 +147,13 @@ public class Sensor implements Component {
     }
 
     private void updateRightVector(){
-        rightVector.set(directon);
-        rightVector.crs(initUp);
+        rightVector.set(direction);
+        rightVector.crs(upVector);
         rightVector.nor();
+        // update up vector
+        upVector.set(rightVector);
+        upVector.crs(direction);
+        upVector.nor();
     }
 
     public void onMoveTypeChanged(){
@@ -185,8 +201,8 @@ public class Sensor implements Component {
         // apply horz rotation
         float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
         tempQuaternion.set(Vector3.Y, angleHorz);
-        directon.set(initDirection);
-        tempQuaternion.transform(directon);
+        direction.set(initDirection);
+        tempQuaternion.transform(direction);
         // compute right-vector
         updateRightVector();
 
@@ -194,10 +210,10 @@ public class Sensor implements Component {
         float angleVert;
         angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30;
         tempQuaternion.set(rightVector, angleVert);
-        tempQuaternion.transform(directon);
+        tempQuaternion.transform(direction);
 
         // compute rotation
-        rotation.setFromCross(initDirection, directon);
+        rotation.setFromCross(initDirection, direction);
     }
 
     private void computeRealDirection(){
@@ -205,10 +221,11 @@ public class Sensor implements Component {
         tempQuaternion.set(initRotation);
         tempQuaternion.conjugate();
         Gdx.input.getRotationMatrix(tempMatrix.val);
-        rotation.setFromMatrix(true, tempMatrix);
+        rotation.setFromMatrix(false, tempMatrix);
         rotation.mul(tempQuaternion);
-        directon.set(initDirection);
-        rotation.transform(directon);
+        direction.set(initDirection);
+        rotation.transform(direction);
+
         updateRightVector();
     }
 
@@ -232,42 +249,37 @@ public class Sensor implements Component {
     }
 
     private void computeTranslation(){
-        float angleHorz, angleVert;
+        float prevRatio = ConfigManager.getTranslationAverageFactor();
+        float currentRatio = 1f - prevRatio;
+        float currentHorz = rotation.getAngleAround(rightVector);
+        if(currentHorz > 180f){
+            currentHorz -= 360f;
+        }
+        if(currentHorz < -180f){
+            currentHorz += 360f;
+        }
+        float currentVert = rotation.getAngleAround(initUp);
+        if(currentVert > 180f){
+            currentVert -= 360f;
+        }
+        if(currentVert < -180f){
+            currentVert += 360f;
+        }
+
+        angleVert = currentHorz * currentRatio + angleVert * prevRatio;
+        angleHorz = currentVert * currentRatio + angleHorz * prevRatio;
         if(flipHorzAndVert){
-            angleHorz = rotation.getAngleAroundRad(rightVector) ;
-            angleVert = rotation.getAngleAroundRad(initUp) ;
+            float temp = angleVert;
+            angleVert = angleHorz;
+            angleHorz = temp;
         }
-        else{
-            angleVert = rotation.getAngleAroundRad(rightVector) ;
-            angleHorz = rotation.getAngleAroundRad(initUp) ;
-
-        }
-        // compute vertical translation
-        // scale the angle
-        // use the scaled angle to compute magnitude
-        if(angleVert > (Math.PI / 6) && angleVert <= Math.PI) angleVert = ((float)Math.PI/6);
-        if(angleVert >= Math.PI && angleVert < 2*Math.PI) angleVert -= 2*Math.PI ;
-        if(angleVert < -(Math.PI/6)) angleVert = -((float)Math.PI/6);
-        translationMagnitudeVert = translationMagnitudeVert * ConfigManager.getTranslationAverageFactor() +  (float)Math.sin(angleVert)  * (1 - ConfigManager.getTranslationAverageFactor());
-
-        // compute horizontal  translation
-        // scale the angle
-
-        if(angleHorz > (Math.PI / 3) && angleHorz <= Math.PI) angleHorz = ((float)Math.PI/3);
-        if(angleHorz >= Math.PI && angleHorz < 2*Math.PI) angleHorz -= 2*Math.PI ;
-        if(angleHorz < -(Math.PI/3)) angleHorz = -((float)Math.PI/3);
-        translationMagnitudeHorz =  translationMagnitudeHorz * ConfigManager.getTranslationAverageFactor() + (angleHorz / ((float)Math.PI/3) / 2) * (1f - ConfigManager.getTranslationAverageFactor()) * -1;
-        // apply on position delta
-        positionDelta.set(initRightVector.x * translationMagnitudeHorz, initRightVector.y * translationMagnitudeHorz, initRightVector.z * translationMagnitudeHorz);
-
 
         infoPrintTimeCurrent += Gdx.graphics.getDeltaTime();
         if(infoPrintTimeCurrent > infoPrintTimeMax) {
             infoPrintTimeCurrent = 0f;
-            StringPool.addField("SensorAngle", "Vert angle:" + angleVert * 57.2957795 + ", Horz: " + angleHorz * 57.2957795);
+            StringPool.addField("SensorAngle", "Vert angle:" + angleVert + ", Horz: " + angleHorz );
             StringPool.addField("Rotation", String.format(Locale.TAIWAN, "Yaw = %6.4f, Pitch = %6.4f, Roll = %6.4f", rotation.getYaw(), rotation.getPitch(), rotation.getRoll()));
-            StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", directon.x, directon.y, directon.z));
-            StringPool.addField("Translation", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f (Mag = %6.4f)", positionDelta.x, positionDelta.y, positionDelta.z, translationMagnitudeHorz));
+            StringPool.addField("Direction", String.format(Locale.TAIWAN, "X = %6.4f, Y = %6.4f, Z = %6.4f", direction.x, direction.y, direction.z));
         }
 
     }
@@ -276,8 +288,8 @@ public class Sensor implements Component {
         return initDirection;
     }
 
-    public Vector3 getDirecton(){
-        return directon;
+    public Vector3 getDirection(){
+        return direction;
     }
 
     public Quaternion getRotation(){
@@ -288,23 +300,47 @@ public class Sensor implements Component {
         return serialNumber;
     }
 
-    public float getTranslationMagnitudeHorz(){
-        return translationMagnitudeHorz;
+
+    public float getHorzRotateDiff() {
+        return horzRotateDiff;
     }
 
-
-    public float getTranslationMagnitudeVert() {
-        return translationMagnitudeVert;
+    public float getVertRotateDiff() {
+        return vertRotateDiff;
     }
 
+    public void makeRotateDiff(){
+        // diff is valid only larger than threshold
 
-    public float getScreenX() {
-        return screenX;
-    }
+        float tempHorzRotateDiff = angleHorz - lastHorzRotate;
+        float tempVertRotateDiff = angleVert - lastVertRotate;
 
+        float tempHorzRotateDiffAbs = Math.abs(tempHorzRotateDiff);
+        float tempVertRotateDiffAbs = Math.abs(tempVertRotateDiff);
 
-    public float getScreenY() {
-        return screenY;
+        if(tempHorzRotateDiffAbs > 0.0f){
+            horzRotateDiff = tempHorzRotateDiff;
+            lastHorzRotate = angleHorz;
+        }
+        else{
+            // discard small variance
+            if(tempHorzRotateDiffAbs < 0.2f){
+                lastHorzRotate = angleHorz;
+            }
+            horzRotateDiff = 0f;
+        }
+
+        if(tempVertRotateDiffAbs > 0.0f){
+            vertRotateDiff = tempVertRotateDiff;
+            lastVertRotate = angleVert;
+        }
+        else{
+            // discard small variance
+            if(tempVertRotateDiffAbs < 0.2f){
+                lastVertRotate = angleVert;
+            }
+            vertRotateDiff = 0f;
+        }
     }
 
 }

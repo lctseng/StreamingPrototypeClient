@@ -343,7 +343,9 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void recenter() {
-        recenterDisplay();
+        if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
+            recenterDisplay();
+        }
         recenterSensor();
     }
 

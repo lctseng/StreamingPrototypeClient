@@ -215,6 +215,8 @@ public class Display implements Disposable{
         camMain.update();
 
         camController.update();
+
+        // Render
         switch(ConfigManager.getDisplayMode()){
             case NORMAL:
                 drawNormalView();
@@ -275,7 +277,12 @@ public class Display implements Disposable{
 
     public void onSensorDataReady(Sensor sensor){
         // update texture manager
-        textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
+        //textureManager.updateDelta(sensor.getTranslationMagnitudeHorz(), sensor.getTranslationMagnitudeVert());
+        sensor.makeRotateDiff();
+        StringPool.addField("Rotate Diff", "Horz:" + sensor.getHorzRotateDiff() + ", Vert:" + sensor.getVertRotateDiff());
+        tmpVector1.set(camMain.direction).crs(camMain.up).y = 0f;
+        camMain.rotateAround(camController.target, tmpVector1.nor(), sensor.getVertRotateDiff());
+        //camMain.rotateAround(camController.target, Vector3.Y, sensor.getHorzRotateDiff());
     }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
