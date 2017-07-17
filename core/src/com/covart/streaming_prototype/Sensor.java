@@ -7,8 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.util.Locale;
 
-import static com.badlogic.gdx.math.MathUtils.clamp;
-
 /**
  * Created by lctseng on 2017/2/12.
  * NTU COV-ART Lab, for NCP project
@@ -40,22 +38,12 @@ public class Sensor implements Component {
 
     private int serialNumber;
 
-    // for fake data generation
-
-    private float screenX;
-    private float screenY;
-
     private boolean initDataReady;
 
 
     private float infoPrintTimeMax = 1f;
     private float infoPrintTimeCurrent;
 
-    private float autoMoveScreenX = 0.0f;
-    private boolean autoMoveForward;
-    private float autoMovePausingTime;
-
-    private boolean flipHorzAndVert = false;
 
     private float horzRotateDiff = 0f;
     private float vertRotateDiff = 0f;
@@ -127,8 +115,8 @@ public class Sensor implements Component {
         Gdx.input.getRotationMatrix(tempMatrix.val);
         initRotation.setFromMatrix(true, tempMatrix);
         //initRotation.conjugate();
-        lastHorzRotate = angleHorz;
-        lastVertRotate = angleVert;
+        lastHorzRotate = angleHorz = 0f;
+        lastVertRotate = angleVert = 0f;
         horzRotateDiff = 0f;
         vertRotateDiff = 0f;
         direction.set(initDirection);
@@ -140,13 +128,9 @@ public class Sensor implements Component {
         initPosition.set(x, y, z);
     }
 
-    boolean touchDragged (int screenX, int screenY, int pointer){
-        this.screenX = clamp(screenX, 0, Gdx.graphics.getWidth());
-        this.screenY = clamp(screenY, 0, Gdx.graphics.getHeight()-100);
-        return true;
-    }
 
-    private void updateRightVector(){
+    private void updateRightAndUpVector(){
+        // update right vector
         rightVector.set(direction);
         rightVector.crs(upVector);
         rightVector.nor();
@@ -157,67 +141,9 @@ public class Sensor implements Component {
     }
 
     public void onMoveTypeChanged(){
-        switch(ConfigManager.getSensorMoveType()){
-            case AUTO:
-                // reset auto move
-                autoMoveScreenX = 0.0f;
-                autoMoveForward = true;
-                autoMovePausingTime = 1.0f;
-                flipHorzAndVert = false;
-                break;
-            case MANUAL:
-                flipHorzAndVert = false;
-                break;
-            case REAL:
-                flipHorzAndVert = true;
-                break;
-        }
     }
 
-    private void updateAutoMoveScreenX(){
-        if(autoMovePausingTime > 0.0f){
-            autoMovePausingTime -= Gdx.graphics.getDeltaTime();
-        }
-        else {
-            if (autoMoveForward) {
-                autoMoveScreenX += Gdx.graphics.getDeltaTime() * ConfigManager.getSensorAutoMoveSpeed();
-                if (autoMoveScreenX >= Gdx.graphics.getWidth() - 10) {
-                    autoMoveScreenX = Gdx.graphics.getWidth() - 10;
-                    autoMoveForward = false;
-                    autoMovePausingTime = 0.5f;
-                }
-            } else {
-                autoMoveScreenX -= Gdx.graphics.getDeltaTime() * ConfigManager.getSensorAutoMoveSpeed();
-                if (autoMoveScreenX <= 10) {
-                    autoMoveScreenX = 10;
-                    autoMoveForward = true;
-                    autoMovePausingTime = 0.5f;
-                }
-            }
-        }
-    }
-
-    private void computeFakeDirectionUsingScreenXY(float screenX, float screenY){
-        // apply horz rotation
-        float angleHorz = screenX / (float)(Gdx.graphics.getWidth()) * 120 - 60;
-        tempQuaternion.set(Vector3.Y, angleHorz);
-        direction.set(initDirection);
-        tempQuaternion.transform(direction);
-        // compute right-vector
-        updateRightVector();
-
-        // apply vert rotation
-        float angleVert;
-        angleVert = screenY / (float)(Gdx.graphics.getHeight()) * 60 - 30;
-        tempQuaternion.set(rightVector, angleVert);
-        tempQuaternion.transform(direction);
-
-        // compute rotation
-        rotation.setFromCross(initDirection, direction);
-    }
-
-    private void computeRealDirection(){
-        // FIXME: clean code
+    private void computerotation(){
         tempQuaternion.set(initRotation);
         tempQuaternion.conjugate();
         Gdx.input.getRotationMatrix(tempMatrix.val);
@@ -226,42 +152,31 @@ public class Sensor implements Component {
         direction.set(initDirection);
         rotation.transform(direction);
 
-        updateRightVector();
+        updateRightAndUpVector();
     }
 
     public void updateSensorData(){
-        // Goal: compute rotation and direction
-        switch(ConfigManager.getSensorMoveType()){
-            case AUTO:
-                updateAutoMoveScreenX();
-                computeFakeDirectionUsingScreenXY(autoMoveScreenX, screenY);
-                break;
-            case MANUAL:
-                computeFakeDirectionUsingScreenXY(screenX, screenY);
-                break;
-            case REAL:
-                computeRealDirection();
-                break;
+        if(ConfigManager.getSensorMoveType() == MoveType.REAL) {
+            computerotation();
+            computeAngles();
         }
-        // compute translation from rotation
-        computeTranslation();
 
     }
 
-    private void computeTranslation(){
+    private void computeAngles(){
         Quaternion relativeRotation = new Quaternion();
         relativeRotation.setFromCross(initDirection, direction);
         float prevRatio = ConfigManager.getTranslationAverageFactor();
         float currentRatio = 1f - prevRatio;
 
-        float currentHorz = relativeRotation.getAngleAround(initUp);
+        float currentHorz = relativeRotation.getAngleAround(initRightVector);
         if(currentHorz > 180f){
             currentHorz -= 360f;
         }
         if(currentHorz < -180f){
             currentHorz += 360f;
         }
-        float currentVert = relativeRotation.getAngleAround(initRightVector);
+        float currentVert = relativeRotation.getAngleAround(initUp);
         if(currentVert > 180f){
             currentVert -= 360f;
         }
@@ -269,14 +184,8 @@ public class Sensor implements Component {
             currentVert += 360f;
         }
 
-        if(flipHorzAndVert){
-            angleVert = currentHorz * currentRatio + angleVert * prevRatio;
-            angleHorz = currentVert * currentRatio + angleHorz * prevRatio;
-        }
-        else{
-            angleVert = currentVert * currentRatio + angleVert * prevRatio;
-            angleHorz = currentHorz * currentRatio + angleHorz * prevRatio;
-        }
+        angleVert = currentVert * currentRatio + angleVert * prevRatio;
+        angleHorz = currentHorz * currentRatio + angleHorz * prevRatio;
 
         infoPrintTimeCurrent += Gdx.graphics.getDeltaTime();
         if(infoPrintTimeCurrent > infoPrintTimeMax) {
@@ -294,10 +203,6 @@ public class Sensor implements Component {
 
     public Vector3 getDirection(){
         return direction;
-    }
-
-    public Quaternion getRotation(){
-        return rotation;
     }
 
     public int getSerialNumber(){
