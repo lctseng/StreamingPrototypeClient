@@ -131,17 +131,17 @@ public class MainMenu extends UIComponent {
         addApertureSizeUI();
         canvas.row().height(commonRowHeight);
 
-
         addVirtualCameraFOVUI();
         addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorTranslationAverageFactorUI();
+        addSensorToCameraRatioUI();
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         canvas.row().height(commonRowHeight);
 
+        addSensorTranslationAverageFactorUI();
         addEditingReportIntervalUI();
         addManualMoveUI();
         canvas.row().height(commonRowHeight);
@@ -507,6 +507,31 @@ public class MainMenu extends UIComponent {
 
     private String getSensorTranslationAverageFactorText(){
         return String.format(Locale.TAIWAN,"Translation average factor: %.3f", ConfigManager.getTranslationAverageFactor());
+    }
+
+    private void addSensorToCameraRatioUI(){
+        // label
+        final Label name = new Label(getSensorToCameraRatioText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.01f, 1.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getSensorRotationToCameraRatio());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setSensorRotationToCameraRatio(slider.getValue());
+                name.setText(getSensorToCameraRatioText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getSensorToCameraRatioText(){
+        return String.format(Locale.TAIWAN,"Sensor to camera ratio: %.2f", ConfigManager.getSensorRotationToCameraRatio());
     }
 
     private void addSensorUpdateDisplayUI(){

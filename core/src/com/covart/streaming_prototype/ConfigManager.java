@@ -84,7 +84,7 @@ public class ConfigManager {
 
     private static float sensorUpdateDisplayTime = 1f/60f;
 
-    private static float translationAverageFactor = 0.9f;
+    private static float translationAverageFactor = 0.25f;
 
     private static int freeUnusedTextureThreshold = 0;
 
@@ -109,6 +109,8 @@ public class ConfigManager {
     private static PositionController.Direction currentMoveDirection = NONE;
 
     private static boolean enableManuallyMove = false;
+
+    private static float sensorRotationToCameraRatio = 0.2f;
 
 
     // getters and setters
@@ -361,6 +363,14 @@ public class ConfigManager {
 
     public static void setEnableManuallyMove(boolean enableManuallyMove) {
         ConfigManager.enableManuallyMove = enableManuallyMove;
+    }
+
+    public static float getSensorRotationToCameraRatio() {
+        return sensorRotationToCameraRatio;
+    }
+
+    public static void setSensorRotationToCameraRatio(float sensorRotationToCameraRatio) {
+        ConfigManager.sensorRotationToCameraRatio = sensorRotationToCameraRatio;
     }
 
     // end of getters and setters

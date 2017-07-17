@@ -281,8 +281,8 @@ public class Display implements Disposable{
         sensor.makeRotateDiff();
         StringPool.addField("Rotate Diff", "Horz:" + sensor.getHorzRotateDiff() + ", Vert:" + sensor.getVertRotateDiff());
         tmpVector1.set(camMain.direction).crs(camMain.up).y = 0f;
-        camMain.rotateAround(camController.target, tmpVector1.nor(), sensor.getVertRotateDiff());
-        //camMain.rotateAround(camController.target, Vector3.Y, sensor.getHorzRotateDiff());
+        camMain.rotateAround(camController.target, tmpVector1.nor(), sensor.getVertRotateDiff() * ConfigManager.getSensorRotationToCameraRatio());
+        camMain.rotateAround(camController.target, Vector3.Y, sensor.getHorzRotateDiff() * ConfigManager.getSensorRotationToCameraRatio());
     }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){

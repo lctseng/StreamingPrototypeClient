@@ -249,16 +249,19 @@ public class Sensor implements Component {
     }
 
     private void computeTranslation(){
+        Quaternion relativeRotation = new Quaternion();
+        relativeRotation.setFromCross(initDirection, direction);
         float prevRatio = ConfigManager.getTranslationAverageFactor();
         float currentRatio = 1f - prevRatio;
-        float currentHorz = rotation.getAngleAround(rightVector);
+
+        float currentHorz = relativeRotation.getAngleAround(initUp);
         if(currentHorz > 180f){
             currentHorz -= 360f;
         }
         if(currentHorz < -180f){
             currentHorz += 360f;
         }
-        float currentVert = rotation.getAngleAround(initUp);
+        float currentVert = relativeRotation.getAngleAround(initRightVector);
         if(currentVert > 180f){
             currentVert -= 360f;
         }
@@ -266,12 +269,13 @@ public class Sensor implements Component {
             currentVert += 360f;
         }
 
-        angleVert = currentHorz * currentRatio + angleVert * prevRatio;
-        angleHorz = currentVert * currentRatio + angleHorz * prevRatio;
         if(flipHorzAndVert){
-            float temp = angleVert;
-            angleVert = angleHorz;
-            angleHorz = temp;
+            angleVert = currentHorz * currentRatio + angleVert * prevRatio;
+            angleHorz = currentVert * currentRatio + angleHorz * prevRatio;
+        }
+        else{
+            angleVert = currentVert * currentRatio + angleVert * prevRatio;
+            angleHorz = currentHorz * currentRatio + angleHorz * prevRatio;
         }
 
         infoPrintTimeCurrent += Gdx.graphics.getDeltaTime();
@@ -318,25 +322,25 @@ public class Sensor implements Component {
         float tempHorzRotateDiffAbs = Math.abs(tempHorzRotateDiff);
         float tempVertRotateDiffAbs = Math.abs(tempVertRotateDiff);
 
-        if(tempHorzRotateDiffAbs > 0.0f){
+        if(tempHorzRotateDiffAbs > 0.9f){
             horzRotateDiff = tempHorzRotateDiff;
             lastHorzRotate = angleHorz;
         }
         else{
             // discard small variance
-            if(tempHorzRotateDiffAbs < 0.2f){
+            if(tempHorzRotateDiffAbs < 0.5f){
                 lastHorzRotate = angleHorz;
             }
             horzRotateDiff = 0f;
         }
 
-        if(tempVertRotateDiffAbs > 0.0f){
+        if(tempVertRotateDiffAbs > 0.9f){
             vertRotateDiff = tempVertRotateDiff;
             lastVertRotate = angleVert;
         }
         else{
             // discard small variance
-            if(tempVertRotateDiffAbs < 0.2f){
+            if(tempVertRotateDiffAbs < 0.5f){
                 lastVertRotate = angleVert;
             }
             vertRotateDiff = 0f;
