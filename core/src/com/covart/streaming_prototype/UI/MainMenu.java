@@ -160,7 +160,7 @@ public class MainMenu extends UIComponent {
         startStopButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                switch (gettAppState()){
+                switch (getAppState()){
                     case Stopped:
                         ConfigManager.getApp().onStartCalled();
                         break;
@@ -182,7 +182,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getStartStopButtonText(){
-        switch (gettAppState()){
+        switch (getAppState()){
             case Running:
                 return "Stop";
             case ShuttingDown:
@@ -195,7 +195,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getStartStopLabelText(){
-        switch (gettAppState()){
+        switch (getAppState()){
             case Running:
                 return "Running";
             case ShuttingDown:
@@ -207,7 +207,7 @@ public class MainMenu extends UIComponent {
         }
     }
 
-    private State gettAppState(){
+    private State getAppState(){
         return ConfigManager.getApp().getState();
     }
 
