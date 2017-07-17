@@ -103,7 +103,6 @@ void main() {
 			vec4 rf = u_rk_to_rf * rk;
 
 			vec4 outputColor = vec4(0,0,0,0);
-			int valid = 0;
 			float accumulateWeight = 0.0;
 
 			float initCameraX = -1.0 * u_columnPositionRatio + 0.5 * spanX;
@@ -145,7 +144,7 @@ void main() {
 						if(UV.s >= 0.0 && UV.s <= 1.0 && UV.t >= 0.0 && UV.t <= 1.0){
 							// compute weight
 							float weight = (u_apertureSize - dist)/u_apertureSize;
-							accumulateWeight += weight;
+							
 							
 							// UV valid, sample D-ij(s,t)
 							// v scaling
@@ -154,35 +153,35 @@ void main() {
 							realUV.t = 1.0 - (float(j) * spanY + UV.t * spanY) / 2.0;
 							
 							if(columnTextureIndex == 0 && u_texture_valid0 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture0, realUV) * weight;
 							}
 							else if(columnTextureIndex == 1 && u_texture_valid1 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture1, realUV) * weight;
 							}
 							else if(columnTextureIndex == 2 && u_texture_valid2 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture2, realUV) * weight;
 							}
 							else if(columnTextureIndex == 3 && u_texture_valid3 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture3, realUV) * weight;
 							}
 							else if(columnTextureIndex == 4 && u_texture_valid4 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture4, realUV) * weight;
 							}
 							else if(columnTextureIndex == 5 && u_texture_valid5 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture5, realUV) * weight;
 							}
 							else if(columnTextureIndex == 6 && u_texture_valid6 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture6, realUV) * weight;
 							}
 							else if(columnTextureIndex == 7 && u_texture_valid7 == 1){
-								valid += 1;
+								accumulateWeight += weight;
 								outputColor += texture2D(u_custom_texture7, realUV) * weight;
 							}
 						}
@@ -190,7 +189,7 @@ void main() {
 				}
 			}
 			
-			if(valid > 0 && accumulateWeight > 0.0){
+			if(accumulateWeight > 0.0){
 				// output color maybe overweight
 				outputColor = outputColor / accumulateWeight;
 			}
