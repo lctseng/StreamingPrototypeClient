@@ -34,7 +34,7 @@ import java.util.Locale;
 public class LightFieldShader extends DefaultShader{
 
     private Display display;
-    private PerspectiveCamera[][] dataCameras;
+    private PerspectiveCamera dataCamera;
     private int startIndex;
     private int endIndex;
 
@@ -80,12 +80,11 @@ public class LightFieldShader extends DefaultShader{
         int totalCols = ConfigManager.getNumOfLFs();
         int totalRows = ConfigManager.getNumOfSubLFImgs();
 
-        dataCameras = new PerspectiveCamera[totalCols][totalRows];
-        for (int i = 0; i < totalCols; ++i) {
-            for (int j = 0; j < totalRows; ++j) {
-                dataCameras[i][j] = new PerspectiveCamera(ConfigManager.getDataCameraFOV(), ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
-            }
-        }
+        dataCamera = new PerspectiveCamera(ConfigManager.getDataCameraFOV(), ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
+        dataCamera.near = 0.1f;
+        dataCamera.far = 100f;
+        dataCamera.position.set(0, 0, 0);
+        dataCamera.lookAt(0, 0, -1);
     }
 
     @Override
@@ -194,35 +193,9 @@ public class LightFieldShader extends DefaultShader{
 
     private void bindRfRdProjections(){
         if(startIndex >= 0) {
-            int totalCols = ConfigManager.getNumOfLFs();
-            int totalRows = ConfigManager.getNumOfSubLFImgs();
-
-            float columnRatio = ConfigManager.getColumnPositionRatio();
-            float spanX = 2.0f * columnRatio / totalCols;
-            float spanY = 2.0f / totalRows;
-
-            float initCameraX = -1.0f * columnRatio + 0.5f * spanX;
-            float initCameraY = -1.0f + 0.5f * spanY;
-            for (int i = startIndex; i <= endIndex; ++i) {
-                for (int j = 0; j < totalRows; ++j) {
-
-                    PerspectiveCamera cam = dataCameras[i][j];
-
-                    float camera_x = (initCameraX + i * spanX) * ConfigManager.getCameraStep() * 1;
-                    float camera_y = (initCameraY + j * spanY) * ConfigManager.getCameraStep() * 1;
-                    cam.position.set(camera_x, camera_y, 0f);
-                    cam.lookAt(camera_x, camera_y, -1);
-                    cam.near = 0.1f;
-                    cam.far = 100f;
-                    cam.fieldOfView = ConfigManager.getDataCameraFOV();
-
-                    cam.update();
-                    String name = "u_rf_to_rd" + (i - startIndex) + "_" + j;
-                    program.setUniformMatrix(name, cam.combined);
-
-
-                }
-            }
+            dataCamera.fieldOfView = ConfigManager.getDataCameraFOV();
+            dataCamera.update();
+            program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
         }
     }
 

@@ -192,25 +192,6 @@ public class TextureManager implements Disposable {
         cameraPositionY = dv + 0.5f;
     }
 
-    /*
-    public void bindTextures(ShaderProgram shaderProgram){
-        for(int i=columnStart;i<columnEnd;i++){
-            int textureIndex = i - columnStart;
-            if(textures[i] != null) {
-                textures[i].bind(textureIndex);
-                shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
-                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
-                Gdx.app.log("Tex", "Binding:" + textureIndex);
-            }
-            else{
-                Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
-                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
-                shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
-            }
-        }
-    }
-    */
-
     public void bindTextures(ShaderProgram shaderProgram, int startIndex, int endIndex){
         if(textures == null){
             return;
@@ -242,21 +223,5 @@ public class TextureManager implements Disposable {
             }
         }
         StringPool.addField("Visible Status T", status);
-    }
-
-    public float getCameraPositionX(){
-        return cameraPositionX;
-    }
-
-    public float getCameraPositionY(){
-        return cameraPositionY;
-    }
-
-    public int getColumnStart(){
-        return columnStart;
-    }
-
-    public int getColumnEnd(){
-        return columnEnd;
     }
 }

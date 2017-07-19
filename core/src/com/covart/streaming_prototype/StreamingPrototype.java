@@ -53,7 +53,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private float editingReportTime;
 
     // UI
-    private PositionController positionController;
+    public PositionController positionController;
 
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
@@ -181,7 +181,7 @@ public class StreamingPrototype extends ApplicationAdapter
             }
         }
         // manually move
-        if(ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
+        if(ConfigManager.isEnableManuallyMove() && ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
             manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
         }
 
@@ -444,14 +444,6 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void onMoveTypeChanged(){
-        if(ConfigManager.getSensorMoveType() == Sensor.MoveType.MANUAL){
-            // show move UI
-            positionController.show();
-        }
-        else{
-            // hide move UI
-            positionController.hide();
-        }
         sensor.onMoveTypeChanged();
     }
 }

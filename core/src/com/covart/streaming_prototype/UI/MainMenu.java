@@ -131,18 +131,19 @@ public class MainMenu extends UIComponent {
         addApertureSizeUI();
         canvas.row().height(commonRowHeight);
 
-
         addVirtualCameraFOVUI();
         addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorTranslationAverageFactorUI();
+        addSensorToCameraRatioUI();
         addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         canvas.row().height(commonRowHeight);
 
+        addSensorTranslationAverageFactorUI();
         addEditingReportIntervalUI();
+        addManualMoveUI();
         canvas.row().height(commonRowHeight);
 
         addButtons();
@@ -159,7 +160,7 @@ public class MainMenu extends UIComponent {
         startStopButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                switch (gettAppState()){
+                switch (getAppState()){
                     case Stopped:
                         ConfigManager.getApp().onStartCalled();
                         break;
@@ -181,7 +182,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getStartStopButtonText(){
-        switch (gettAppState()){
+        switch (getAppState()){
             case Running:
                 return "Stop";
             case ShuttingDown:
@@ -194,7 +195,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getStartStopLabelText(){
-        switch (gettAppState()){
+        switch (getAppState()){
             case Running:
                 return "Running";
             case ShuttingDown:
@@ -206,7 +207,7 @@ public class MainMenu extends UIComponent {
         }
     }
 
-    private State gettAppState(){
+    private State getAppState(){
         return ConfigManager.getApp().getState();
     }
 
@@ -508,6 +509,31 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Translation average factor: %.3f", ConfigManager.getTranslationAverageFactor());
     }
 
+    private void addSensorToCameraRatioUI(){
+        // label
+        final Label name = new Label(getSensorToCameraRatioText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.01f, 1.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getSensorRotationToCameraRatio());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setSensorRotationToCameraRatio(slider.getValue());
+                name.setText(getSensorToCameraRatioText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getSensorToCameraRatioText(){
+        return String.format(Locale.TAIWAN,"Sensor to camera ratio: %.2f", ConfigManager.getSensorRotationToCameraRatio());
+    }
+
     private void addSensorUpdateDisplayUI(){
         // label
         final Label name = new Label(getSensorUpdateDisplayText(), largeLabelStyle);
@@ -684,6 +710,35 @@ public class MainMenu extends UIComponent {
 
     private String getEditingReportIntervalText(){
         return String.format(Locale.TAIWAN,"Editing report interval: %.3f", ConfigManager.getEditingReportInterval());
+    }
+
+    private void addManualMoveUI(){
+        // label
+        Label name = new Label("Manually Move:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isEnableManuallyMove());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEnableManuallyMove(box.isChecked());
+                if(box.isChecked()){
+                    ConfigManager.getApp().positionController.show();
+                }
+                else{
+                    ConfigManager.getApp().positionController.hide();
+                }
+
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
     }
 
 
