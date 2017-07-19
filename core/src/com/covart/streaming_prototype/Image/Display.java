@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.android.CardboardCamera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -68,10 +70,13 @@ public class Display implements Disposable{
 
     private Vector3 tmpVector1;
 
+    private Texture texture;
 
     public Eye currentEye;
 
     public Display(){
+
+        texture = new Texture("grid.jpg");
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -88,7 +93,7 @@ public class Display implements Disposable{
         camMain = new CardboardCamera();
         recenterCamera();
         camMain.near = 0.1f;
-        camMain.far = 1000f;//ConfigManager.getFocusChangeRatio();
+        camMain.far = ConfigManager.getFocusChangeRatio();
 
         // VR mode settings
         vrEyeIndex = 0;
@@ -141,7 +146,7 @@ public class Display implements Disposable{
                 radius,radius,-10,
                 -radius,radius,-10,
                 0,0,1,
-                new Material(),
+                new Material(TextureAttribute.createDiffuse(texture)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
         );
         instance = new ModelInstance(model);

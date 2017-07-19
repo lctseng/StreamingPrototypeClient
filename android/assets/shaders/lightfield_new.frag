@@ -59,16 +59,25 @@ uniform int u_texture_valid6;
 uniform sampler2D u_custom_texture7;
 uniform int u_texture_valid7;
 
+#ifdef diffuseTextureFlag
+varying vec2 v_diffuseUV;
+#endif
 
 void main() {
+
+	// project 
+	// RK(s,t) -> RF(s,t) , range: [-1,1]
+	float screen_x = 0.0; //2.0 * ((gl_FragCoord.x - float(u_screenOffsetX))/float(u_screenWidth)) - 1.0;
+	float screen_y = 0.0; //(2.0 * ((gl_FragCoord.y - float(u_screenOffsetY))/float(u_screenHeight) ) - 1.0) * 1.0;
+
 
 	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
 	float spanY = 2.0 / float(u_rows);
 
-	// project 
-	// RK(s,t) -> RF(s,t) , range: [-1,1]
-	float screen_x = 2.0 * ((gl_FragCoord.x - float(u_screenOffsetX))/float(u_screenWidth)) - 1.0;
-	float screen_y = (2.0 * ((gl_FragCoord.y - float(u_screenOffsetY))/float(u_screenHeight) ) - 1.0) * 1.0;
+#ifdef diffuseTextureFlag
+	screen_x = v_diffuseUV.x * 2.0 - 1.0;
+	screen_y = -1.0 * (v_diffuseUV.y * 2.0 - 1.0);
+#endif
 
 
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
@@ -182,8 +191,4 @@ void main() {
 	else{
 		gl_FragColor.rgb = vec3(0,0,1);
 	}
-
-	gl_FragColor.rgb = vec3(screen_x,0,0);
-
-	
 }

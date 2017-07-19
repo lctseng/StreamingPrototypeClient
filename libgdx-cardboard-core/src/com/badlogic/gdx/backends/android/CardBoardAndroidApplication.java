@@ -189,6 +189,7 @@ public class CardBoardAndroidApplication extends CardboardActivity implements An
             log("AndroidApplication", "Failed to create AndroidVisibilityListener", e);
          }
       }
+      getCardboardView().setVRModeEnabled(false);
    }
 
    @Override

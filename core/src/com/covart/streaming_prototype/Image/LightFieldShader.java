@@ -106,10 +106,10 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindConfiguration(){
-        program.setUniformi("u_screenWidth", display.getScreenWidth());
-        program.setUniformi("u_screenHeight", display.getScreenHeight());
-        program.setUniformi("u_screenOffsetX", display.getScreenOffsetX());
-        program.setUniformi("u_screenOffsetY", display.getScreenOffsetY());
+        //program.setUniformi("u_screenWidth", display.getScreenWidth());
+        //program.setUniformi("u_screenHeight", display.getScreenHeight());
+        //program.setUniformi("u_screenOffsetX", display.getScreenOffsetX());
+        //program.setUniformi("u_screenOffsetY", display.getScreenOffsetY());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());

@@ -107,7 +107,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
 
-        float[] perspective = eye.getPerspective(0.1f, 1000);
+        float[] perspective = eye.getPerspective(0.1f, ConfigManager.getFocusChangeRatio());
         cam.setEyeProjection(new Matrix4(perspective));
         cam.update();
 
@@ -143,6 +143,7 @@ public class StreamingPrototype extends ApplicationAdapter
             updateEditing();
             updateControlFrame();
         }
+        UIManager.getInstance().draw();
 
     }
 
@@ -253,7 +254,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void render() {
-        UIManager.getInstance().draw();
 
     }
 
