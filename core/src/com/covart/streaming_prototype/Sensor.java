@@ -14,6 +14,7 @@ import java.util.Locale;
 
 public class Sensor implements Component {
 
+    // TODO: Support AUTO mode
     public enum MoveType {
         REAL, MANUAL, AUTO, NONE
     }
@@ -114,7 +115,6 @@ public class Sensor implements Component {
     public void RecenterRotation(){
         Gdx.input.getRotationMatrix(tempMatrix.val);
         initRotation.setFromMatrix(true, tempMatrix);
-        //initRotation.conjugate();
         lastHorzRotate = angleHorz = 0f;
         lastVertRotate = angleVert = 0f;
         horzRotateDiff = 0f;
@@ -143,7 +143,7 @@ public class Sensor implements Component {
     public void onMoveTypeChanged(){
     }
 
-    private void computerotation(){
+    private void computeRotation(){
         tempQuaternion.set(initRotation);
         tempQuaternion.conjugate();
         Gdx.input.getRotationMatrix(tempMatrix.val);
@@ -157,7 +157,7 @@ public class Sensor implements Component {
 
     public void updateSensorData(){
         if(ConfigManager.getSensorMoveType() == MoveType.REAL) {
-            computerotation();
+            computeRotation();
             computeAngles();
         }
 
