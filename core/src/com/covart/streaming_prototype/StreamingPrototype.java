@@ -4,6 +4,9 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
+import com.badlogic.gdx.backends.android.CardboardCamera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -12,6 +15,8 @@ import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
+import com.google.vrtoolkit.cardboard.Eye;
+import com.google.vrtoolkit.cardboard.HeadTransform;
 
 import java.util.Locale;
 
@@ -24,7 +29,7 @@ import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDo
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter {
+        implements MasterComponentAdapter, CardBoardApplicationListener {
 
 
     public enum State {
@@ -55,6 +60,7 @@ public class StreamingPrototype extends ApplicationAdapter
     // UI
     public PositionController positionController;
 
+
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
             decoder = platform_decoder;
@@ -69,6 +75,92 @@ public class StreamingPrototype extends ApplicationAdapter
         this.state = state;
         UIManager.getInstance().onAppStateChanged();
     }
+
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void onNewFrame(HeadTransform paramHeadTransform) {
+
+    }
+
+    @Override
+    public void onDrawEye(Eye eye) {
+
+        display.currentEye = eye;
+        CardboardCamera cam = display.getMainCamera();
+
+        Matrix4 eyeMatrix = new Matrix4(eye.getEyeView());
+        cam.setEyeViewAdjustMatrix(eyeMatrix);
+
+
+
+        float[] perspective = eye.getPerspective(0.1f, 1000);
+        cam.setEyeProjection(new Matrix4(perspective));
+        cam.update();
+
+        if (startRequired) {
+            start();
+        }
+        if (stopRequired) {
+            stop();
+        }
+        if (sensor.isInitDataReady()) {
+            //sensor.updateSensorData();
+            sensorSendDataTime += Gdx.graphics.getDeltaTime();
+            if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
+                sensorSendDataTime = 0f;
+                sendSenserData();
+            }
+            sensorDisplayDataTime += Gdx.graphics.getDeltaTime();
+            if (sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()) {
+                sensorDisplayDataTime = 0f;
+                //display.onSensorDataReady(sensor);
+            }
+        }
+        // manually move
+        if(ConfigManager.isEnableManuallyMove() && ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
+            manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
+        }
+
+        display.updateStart();
+        //Profiler.generateProfilingStrings();
+        display.updateEnd();
+        // control frame update if started
+        if (state == Running) {
+            updateEditing();
+            updateControlFrame();
+        }
+
+    }
+
+    @Override
+    public void onFinishFrame(com.google.vrtoolkit.cardboard.Viewport paramViewport) {
+
+    }
+
+    @Override
+    public void onRendererShutdown() {
+
+    }
+
+    @Override
+    public void onCardboardTrigger() {
+
+    }
+
 
     @Override
     public void create() {
@@ -161,38 +253,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void render() {
-        if (startRequired) {
-            start();
-        }
-        if (stopRequired) {
-            stop();
-        }
-        if (sensor.isInitDataReady()) {
-            sensor.updateSensorData();
-            sensorSendDataTime += Gdx.graphics.getDeltaTime();
-            if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
-                sensorSendDataTime = 0f;
-                sendSenserData();
-            }
-            sensorDisplayDataTime += Gdx.graphics.getDeltaTime();
-            if (sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()) {
-                sensorDisplayDataTime = 0f;
-                display.onSensorDataReady(sensor);
-            }
-        }
-        // manually move
-        if(ConfigManager.isEnableManuallyMove() && ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
-            manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
-        }
-
-        display.updateStart();
-        //Profiler.generateProfilingStrings();
-        display.updateEnd();
-        // control frame update if started
-        if (state == Running) {
-            updateEditing();
-            updateControlFrame();
-        }
         UIManager.getInstance().draw();
 
     }
