@@ -191,6 +191,16 @@ public class LightFieldShader extends DefaultShader{
     private void bindRfRdProjections(){
         if(startIndex >= 0) {
             dataCamera.fieldOfView = ConfigManager.getDataCameraFOV();
+
+
+            float aspect = display.currentEye.getViewport().width / display.currentEye.getViewport().height;
+
+            dataCamera.viewportWidth = display.currentEye.getViewport().width;
+            dataCamera.viewportHeight = display.currentEye.getViewport().height;
+
+            //dataCamera.viewportWidth = aspect * dataCamera.viewportHeight;
+            //dataCamera.viewportHeight = dataCamera.viewportWidth / aspect;
+
             dataCamera.update();
 
             Matrix4 tmpMatrix = new Matrix4();
