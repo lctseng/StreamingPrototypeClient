@@ -97,6 +97,11 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     @Override
+    public boolean isVRModeEnabled() {
+        return ConfigManager.getDisplayMode() == Display.Mode.VR;
+    }
+
+    @Override
     public void onDrawEye(Eye eye) {
 
         display.currentEye = eye;

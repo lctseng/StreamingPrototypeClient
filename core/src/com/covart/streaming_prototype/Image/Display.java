@@ -205,20 +205,6 @@ public class Display implements Disposable{
         */
     }
 
-    private void drawVRView(){
-        /*
-        updateVRCameras();
-        for(int i=0;i<2;i++){
-            vrEyeIndex = i;
-            // for VR mode, we use width == height now
-            Gdx.gl.glViewport(i * vrRectWidth, (Gdx.graphics.getHeight() - vrRectWidth)/2, vrRectWidth, vrRectWidth);
-            modelBatch.begin(vrCameras[i]);
-            modelBatch.render(instance, environment);
-            modelBatch.end();
-        }
-        */
-    }
-
     public void updateStart(){
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
@@ -231,15 +217,8 @@ public class Display implements Disposable{
 
         //camController.update();
 
-        // Render
-        switch(ConfigManager.getDisplayMode()){
-            case NORMAL:
-                drawNormalView();
-                break;
-            case VR:
-                drawVRView();
-                break;
-        }
+        drawNormalView();
+
         Profiler.reportOnDisplay();
 
         //Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

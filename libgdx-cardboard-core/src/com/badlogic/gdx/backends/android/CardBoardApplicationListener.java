@@ -21,15 +21,17 @@ import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
 
-public interface CardBoardApplicationListener extends ApplicationListener{
+public interface CardBoardApplicationListener extends ApplicationListener {
 
-   public void onNewFrame(HeadTransform paramHeadTransform);
+    public void onNewFrame(HeadTransform paramHeadTransform);
 
-   public void onDrawEye(Eye paramEye);
+    public void onDrawEye(Eye paramEye);
 
-   public void onFinishFrame(Viewport paramViewport);
+    public void onFinishFrame(Viewport paramViewport);
 
-   public void onRendererShutdown();
+    public void onRendererShutdown();
 
-   public void onCardboardTrigger();
+    public void onCardboardTrigger();
+
+    public boolean isVRModeEnabled();
 }

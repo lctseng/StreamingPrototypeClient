@@ -42,6 +42,7 @@ public class CardboardCamera extends Camera {
 
     final Matrix4 tmpMatrix = new Matrix4();
     final Vector3 tmpVec = new Vector3();
+
     @Override
     public void update(boolean updateFrustum) {
         view.setToLookAt(position, tmpVec.set(position).add(direction), up);
