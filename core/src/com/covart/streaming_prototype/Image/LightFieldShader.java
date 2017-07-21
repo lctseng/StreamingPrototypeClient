@@ -192,7 +192,24 @@ public class LightFieldShader extends DefaultShader{
         if(startIndex >= 0) {
             dataCamera.fieldOfView = ConfigManager.getDataCameraFOV();
             dataCamera.update();
-            program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
+
+            Matrix4 tmpMatrix = new Matrix4();
+            Matrix4 combined = new Matrix4();
+
+            Matrix4 eyeMatrix = new Matrix4(display.currentEye.getEyeView());
+
+
+            tmpMatrix.set(eyeMatrix);
+            Matrix4.mul(tmpMatrix.val, dataCamera.view.val);
+            combined.set(dataCamera.projection);
+            Matrix4.mul(combined.val, tmpMatrix.val);
+
+            //program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
+            program.setUniformMatrix("u_rf_to_rd_center", combined);
+
+
+
+            //program.setUniformMatrix("u_rf_to_rd_center", camera.combined);
         }
     }
 

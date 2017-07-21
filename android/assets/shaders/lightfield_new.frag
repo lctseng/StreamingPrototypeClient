@@ -61,6 +61,7 @@ uniform int u_texture_valid7;
 
 #ifdef diffuseTextureFlag
 varying vec2 v_diffuseUV;
+uniform sampler2D u_diffuseTexture;
 #endif
 
 void main() {

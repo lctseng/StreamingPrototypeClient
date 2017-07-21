@@ -50,6 +50,7 @@ public class CardboardCamera extends Camera {
         combined.set(projection);
         Matrix4.mul(combined.val, tmpMatrix.val);
 
+
         if (updateFrustum) {
             invProjectionView.set(combined);
             Matrix4.inv(invProjectionView.val);
