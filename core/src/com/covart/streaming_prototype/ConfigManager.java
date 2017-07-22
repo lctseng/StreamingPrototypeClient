@@ -50,12 +50,6 @@ public class ConfigManager {
         0,1,2,3
     };
 
-
-
-    private static final Sensor.MoveType[] sensorMoveTypeList = new Sensor.MoveType[]{
-            Sensor.MoveType.REAL, Sensor.MoveType.MANUAL,Sensor.MoveType.AUTO,
-    };
-
     private static final Display.Mode[] displayModeList = new Display.Mode[] {
             Display.Mode.NORMAL, Display.Mode.VR
     };
@@ -65,11 +59,11 @@ public class ConfigManager {
     // variables
 
     private static StreamingPrototype app;
-    private static float cameraStep = 1.9f;
+    private static float cameraStep = 1f;
 
     private static float apertureSize = 0.306f;
 
-    private static float focusChangeRatio = 44.0f;
+    private static float focusChangeRatio = 20.0f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -78,29 +72,13 @@ public class ConfigManager {
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
 
-    private static Sensor.MoveType sensorMoveType = Sensor.MoveType.REAL;
-
-    private static float sensorAutoMoveSpeed = 500.0f;
-
-    private static float sensorUpdateDisplayTime = 1f/60f;
-
-    private static float translationAverageFactor = 0.25f;
-
     private static int freeUnusedTextureThreshold = 0;
 
     private static Display.Mode displayMode = Display.Mode.NORMAL;
 
-    private static float displayVRDisparity = 0.25f;
-
-    private static float displayLensFactorX = 0.1f;
-
-    private static float displayLensFactorY = 0.1f;
-
     private static boolean editingModeEnabled = false;
 
     private static float editingReportInterval = 0.01f;
-
-    private static float virtualCameraFOV = 67.0f;
 
     private static float dataCameraFOV = 67.0f;
 
@@ -109,8 +87,6 @@ public class ConfigManager {
     private static PositionController.Direction currentMoveDirection = NONE;
 
     private static boolean enableManuallyMove = false;
-
-    private static float sensorRotationToCameraRatio = 0.2f;
 
 
     // getters and setters
@@ -180,10 +156,6 @@ public class ConfigManager {
         return serverList;
     }
 
-    public static Sensor.MoveType[] getSensorMoveTypeList() {
-        return sensorMoveTypeList;
-    }
-
     public static boolean isStopOnDisconnected() {
         return stopOnDisconnected;
     }
@@ -228,22 +200,6 @@ public class ConfigManager {
         return sceneList;
     }
 
-    public static float getSensorUpdateDisplayTime() {
-        return sensorUpdateDisplayTime;
-    }
-
-    public static void setSensorUpdateDisplayTime(float sensorUpdateDisplayTime) {
-        ConfigManager.sensorUpdateDisplayTime = sensorUpdateDisplayTime;
-    }
-
-    public static float getTranslationAverageFactor() {
-        return translationAverageFactor;
-    }
-
-    public static void setTranslationAverageFactor(float translationAverageFactor) {
-        ConfigManager.translationAverageFactor = translationAverageFactor;
-    }
-
     public static Display.Mode getDisplayMode() {
         return displayMode;
     }
@@ -252,30 +208,6 @@ public class ConfigManager {
         ConfigManager.displayMode = displayMode;
     }
 
-    public static float getDisplayVRDisparity() {
-        return displayVRDisparity;
-    }
-
-    public static void setDisplayVRDisparity(float displayVRDisparity) {
-        ConfigManager.displayVRDisparity = displayVRDisparity;
-    }
-
-
-    public static Sensor.MoveType getSensorMoveType() {
-        return sensorMoveType;
-    }
-
-    public static void setSensorMoveType(Sensor.MoveType sensorMoveType) {
-        ConfigManager.sensorMoveType = sensorMoveType;
-    }
-
-    public static float getSensorAutoMoveSpeed() {
-        return sensorAutoMoveSpeed;
-    }
-
-    public static void setSensorAutoMoveSpeed(float sensorAutoMoveSpeed) {
-        ConfigManager.sensorAutoMoveSpeed = sensorAutoMoveSpeed;
-    }
 
     public static int getFreeUnusedTextureThreshold() {
         return freeUnusedTextureThreshold;
@@ -287,22 +219,6 @@ public class ConfigManager {
 
     public static Display.Mode[] getDisplayModeList() {
         return displayModeList;
-    }
-
-    public static float getDisplayLensFactorX() {
-        return displayLensFactorX;
-    }
-
-    public static void setDisplayLensFactorX(float displayLensFactorX) {
-        ConfigManager.displayLensFactorX = displayLensFactorX;
-    }
-
-    public static float getDisplayLensFactorY() {
-        return displayLensFactorY;
-    }
-
-    public static void setDisplayLensFactorY(float displayLensFactorY) {
-        ConfigManager.displayLensFactorY = displayLensFactorY;
     }
 
     public static boolean isEditingModeEnabled() {
@@ -323,14 +239,6 @@ public class ConfigManager {
 
     public static void setEditingReportInterval(float editingReportInterval) {
         ConfigManager.editingReportInterval = editingReportInterval;
-    }
-
-    public static float getVirtualCameraFOV() {
-        return virtualCameraFOV;
-    }
-
-    public static void setVirtualCameraFOV(float virtualCameraFOV) {
-        ConfigManager.virtualCameraFOV = virtualCameraFOV;
     }
 
     public static float getDataCameraFOV() {
@@ -363,14 +271,6 @@ public class ConfigManager {
 
     public static void setEnableManuallyMove(boolean enableManuallyMove) {
         ConfigManager.enableManuallyMove = enableManuallyMove;
-    }
-
-    public static float getSensorRotationToCameraRatio() {
-        return sensorRotationToCameraRatio;
-    }
-
-    public static void setSensorRotationToCameraRatio(float sensorRotationToCameraRatio) {
-        ConfigManager.sensorRotationToCameraRatio = sensorRotationToCameraRatio;
     }
 
     // end of getters and setters

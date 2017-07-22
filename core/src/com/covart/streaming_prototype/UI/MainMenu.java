@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Image.Display;
-import com.covart.streaming_prototype.Sensor;
 import com.covart.streaming_prototype.StreamingPrototype.State;
 
 import java.util.Locale;
@@ -113,17 +112,12 @@ public class MainMenu extends UIComponent {
 
         addIPSelectUI();
         addChangeSceneUI();
-        addSensorMoveTypeSelectUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorAutoMoveSpeedUI();
         //addDisplayModeSelectUI();
         addDisplayModeToggleUI();
-        addDisplayVRDisparityUI();
         canvas.row().height(commonRowHeight);
 
-        addDisplayLensFactorXUI();
-        addDisplayLensFactorYUI();
         addStopOnDisconnectedUI();
         canvas.row().height(commonRowHeight);
 
@@ -132,17 +126,13 @@ public class MainMenu extends UIComponent {
         addApertureSizeUI();
         canvas.row().height(commonRowHeight);
 
-        addVirtualCameraFOVUI();
         addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorToCameraRatioUI();
-        addSensorUpdateDisplayUI();
         addSensorReportIntervalUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorTranslationAverageFactorUI();
         addEditingReportIntervalUI();
         addManualMoveUI();
         canvas.row().height(commonRowHeight);
@@ -262,29 +252,6 @@ public class MainMenu extends UIComponent {
     }
 
 
-    private void addSensorMoveTypeSelectUI(){
-        // label
-        Label name = new Label("Sensor move type:", largeLabelStyle);
-
-        // create select box
-        final SelectBox<Sensor.MoveType> selectBox = new SelectBox<Sensor.MoveType>(skin);
-        selectBox.getStyle().font = largeFont;
-        selectBox.getStyle().listStyle.font = largeFont;
-
-        // add select list listener
-        selectBox.setItems(ConfigManager.getSensorMoveTypeList());
-        selectBox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setSensorMoveType(selectBox.getSelected());
-                ConfigManager.getApp().onMoveTypeChanged();
-            }
-        });
-
-        canvas.add(name);
-        canvas.add(selectBox).colspan(tableColumnSpan - 1);
-    }
-
     private void addDisplayModeSelectUI(){
         // label
         Label name = new Label("Display mode:", largeLabelStyle);
@@ -305,85 +272,6 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
-    }
-
-    private void addDisplayVRDisparityUI(){
-        // label
-        final Label name = new Label(getDisplayVRDisparityText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 0.50f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getDisplayVRDisparity());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setDisplayVRDisparity(slider.getValue());
-                name.setText(getDisplayVRDisparityText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-
-    }
-
-    private String getDisplayVRDisparityText(){
-        return String.format(Locale.TAIWAN,"Display disparity: %.2f",ConfigManager.getDisplayVRDisparity());
-    }
-
-    private void addDisplayLensFactorXUI(){
-        // label
-        final Label name = new Label(getDisplayLensFactorXText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 0.20f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getDisplayLensFactorX());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setDisplayLensFactorX(slider.getValue());
-                name.setText(getDisplayLensFactorXText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-
-    }
-
-    private String getDisplayLensFactorXText(){
-        return String.format(Locale.TAIWAN,"Lens factor X: %.2f",ConfigManager.getDisplayLensFactorX());
-    }
-
-
-    private void addDisplayLensFactorYUI(){
-        // label
-        final Label name = new Label(getDisplayLensFactorYText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 0.20f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getDisplayLensFactorY());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setDisplayLensFactorY(slider.getValue());
-                name.setText(getDisplayLensFactorYText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-
-    }
-
-    private String getDisplayLensFactorYText(){
-        return String.format(Locale.TAIWAN,"Lens factor Y: %.2f",ConfigManager.getDisplayLensFactorY());
     }
 
     private void addStopOnDisconnectedUI(){
@@ -508,81 +396,6 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Free texture threshold: %d", ConfigManager.getFreeUnusedTextureThreshold());
     }
 
-    private void addSensorTranslationAverageFactorUI(){
-        // label
-        final Label name = new Label(getSensorTranslationAverageFactorText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 1.0f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getTranslationAverageFactor());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setTranslationAverageFactor(slider.getValue());
-                name.setText(getSensorTranslationAverageFactorText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getSensorTranslationAverageFactorText(){
-        return String.format(Locale.TAIWAN,"Translation average factor: %.3f", ConfigManager.getTranslationAverageFactor());
-    }
-
-    private void addSensorToCameraRatioUI(){
-        // label
-        final Label name = new Label(getSensorToCameraRatioText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.01f, 1.0f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getSensorRotationToCameraRatio());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setSensorRotationToCameraRatio(slider.getValue());
-                name.setText(getSensorToCameraRatioText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getSensorToCameraRatioText(){
-        return String.format(Locale.TAIWAN,"Sensor to camera ratio: %.2f", ConfigManager.getSensorRotationToCameraRatio());
-    }
-
-    private void addSensorUpdateDisplayUI(){
-        // label
-        final Label name = new Label(getSensorUpdateDisplayText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(1f/60f, 0.2f, 0.001f, false, skin);
-        slider.setValue(ConfigManager.getSensorUpdateDisplayTime());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setSensorUpdateDisplayTime(slider.getValue());
-                name.setText(getSensorUpdateDisplayText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getSensorUpdateDisplayText(){
-        return String.format(Locale.TAIWAN,"Sensor update display: %.3f", ConfigManager.getSensorUpdateDisplayTime());
-    }
-
 
     private void addSensorReportIntervalUI(){
         // label
@@ -634,30 +447,6 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
     }
 
-    private void addVirtualCameraFOVUI(){
-        // label
-        final Label name = new Label(getVirtualCameraFOVText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(5.0f, 180.0f, 1f, false, skin);
-        slider.setValue(ConfigManager.getVirtualCameraFOV());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setVirtualCameraFOV(slider.getValue());
-                name.setText(getVirtualCameraFOVText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getVirtualCameraFOVText(){
-        return String.format(Locale.TAIWAN,"Virtual FOV: %.3f", ConfigManager.getVirtualCameraFOV());
-    }
 
     private void addDataCameraFOVUI(){
         // label
@@ -683,33 +472,6 @@ public class MainMenu extends UIComponent {
     private String getDataCameraFOVText(){
         return String.format(Locale.TAIWAN,"Data FOV: %.3f", ConfigManager.getDataCameraFOV());
     }
-
-
-    private void addSensorAutoMoveSpeedUI(){
-        // label
-        final Label name = new Label(getSensorAutoMoveSpeedText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 2000.0f, 10.0f, false, skin);
-        slider.setValue(ConfigManager.getSensorAutoMoveSpeed());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setSensorAutoMoveSpeed(slider.getValue());
-                name.setText(getSensorAutoMoveSpeedText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-    }
-
-    private String getSensorAutoMoveSpeedText(){
-        return String.format(Locale.TAIWAN,"Auto move speed: %d", (int)ConfigManager.getSensorAutoMoveSpeed());
-    }
-
 
     private void addEditingReportIntervalUI(){
         // label
