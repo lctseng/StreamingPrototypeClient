@@ -577,7 +577,8 @@ public class CardBoardGraphics implements Graphics, CardboardView.StereoRenderer
         if ((app.getApplicationListener() instanceof CardBoardApplicationListener)) {
             if (view instanceof CardboardView) {
                 CardboardView cardboardView = ((CardboardView) (view));
-                boolean currentVRModeReq = ((CardBoardApplicationListener) app.getApplicationListener()).isVRModeEnabled();
+                CardBoardApplicationListener cardBoardApplicationListener = ((CardBoardApplicationListener) app.getApplicationListener());
+                boolean currentVRModeReq = cardBoardApplicationListener.isVRModeEnabled();
                 if (currentVRModeReq != cardboardView.getVRMode()) {
                     cardboardView.setVRModeEnabled(currentVRModeReq);
                 }

@@ -79,6 +79,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void resize(int width, int height) {
+        UIManager.getInstance().resetViewport();
     }
 
     @Override
@@ -408,6 +409,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void recenter() {
+
         recenterDisplay();
         recenterSensor();
     }

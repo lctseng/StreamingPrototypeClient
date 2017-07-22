@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.covart.streaming_prototype.StringPool;
 
 import java.util.ArrayList;
 
@@ -46,6 +47,16 @@ public class UIManager implements Disposable{
     public void draw(){
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+
+        StringPool.addField("Graphics","W:" + Gdx.graphics.getWidth() + ", H:" + Gdx.graphics.getHeight());
+        StringPool.addField("Screen UI","W:" + stage.getWidth());
+    }
+
+    public void resetViewport(){
+
+
+        stage.getViewport().setWorldSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
     }
 
     public InputProcessor getInputProcessor(){
