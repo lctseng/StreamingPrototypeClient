@@ -59,6 +59,8 @@ uniform int u_texture_valid6;
 uniform sampler2D u_custom_texture7;
 uniform int u_texture_valid7;
 
+uniform mat4 u_eyeView;
+
 #ifdef diffuseTextureFlag
 varying vec2 v_diffuseUV;
 uniform sampler2D u_diffuseTexture;
@@ -76,9 +78,12 @@ void main() {
 	float spanY = 2.0 / float(u_rows);
 
 #ifdef diffuseTextureFlag
-	screen_x = v_diffuseUV.x * 2.0 - 1.0;
+	screen_x = 1.0 * (v_diffuseUV.x * 2.0 - 1.0);
 	screen_y = -1.0 * (v_diffuseUV.y * 2.0 - 1.0);
 #endif
+
+	vec4 camPos = u_eyeView * vec4(u_cameraPositionX, u_cameraPositionY, 0, 1.0);
+	
 
 
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
@@ -104,15 +109,15 @@ void main() {
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;
 					float cameraY = (initCameraY + float(j) * spanY) * u_cameraStep;
 
-					float dx = cameraX - u_cameraPositionX;
-					float dy = cameraY - u_cameraPositionY;
+					float dx = cameraX - camPos.x;
+					float dy = cameraY - camPos.y;
 
 					float dist = dx * dx +  dy * dy;
 
 					if(dist < u_apertureSize){
 						// prepare matrix from rf to rd
-						u_rf_to_rd[3][0] = -cameraX;
-						u_rf_to_rd[3][1] = -cameraY;
+						u_rf_to_rd[3][0] = -cameraX; // -
+						u_rf_to_rd[3][1] = -cameraY; // -
 						// compute RD(s,t)
 						vec4 rd = u_rf_to_rd * rf;
 
@@ -184,6 +189,7 @@ void main() {
 			}
 				
 			gl_FragColor.rgb = outputColor.rgb;
+			//gl_FragColor.rgb = vec3(rf.x, rf.y, 0);
 		}
 		else{
 			gl_FragColor.rgb = vec3(0.4,0,0);

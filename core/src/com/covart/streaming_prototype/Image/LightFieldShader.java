@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.StringPool;
+import com.google.vrtoolkit.cardboard.Eye;
 
 import java.util.Locale;
 
@@ -106,10 +107,6 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindConfiguration(){
-        //program.setUniformi("u_screenWidth", display.getScreenWidth());
-        //program.setUniformi("u_screenHeight", display.getScreenHeight());
-        //program.setUniformi("u_screenOffsetX", display.getScreenOffsetX());
-        //program.setUniformi("u_screenOffsetY", display.getScreenOffsetY());
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
@@ -185,6 +182,7 @@ public class LightFieldShader extends DefaultShader{
 
     private void bindRkRfProjection(){
         Matrix4 inverseProj = camera.invProjectionView;
+        //Gdx.app.log("RkToRf", "Eye:" + (display.currentEye.getType() == Eye.Type.LEFT ? "Left" : "Right") + ", inv:" + inverseProj.toString());
         program.setUniformMatrix("u_rk_to_rf",inverseProj);
     }
 
@@ -215,7 +213,17 @@ public class LightFieldShader extends DefaultShader{
             Matrix4.mul(combined.val, tmpMatrix.val);
 
             //program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
-            program.setUniformMatrix("u_rf_to_rd_center", combined);
+            if(display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR){
+                // update
+                display.rfrdProjection.set(combined);
+                program.setUniformMatrix("u_rf_to_rd_center", combined);
+            }
+            else{
+                // load
+                program.setUniformMatrix("u_rf_to_rd_center", display.rfrdProjection);
+            }
+
+            program.setUniformMatrix("u_eyeView", eyeMatrix);
 
 
 

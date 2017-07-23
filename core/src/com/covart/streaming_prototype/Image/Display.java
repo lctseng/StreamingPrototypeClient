@@ -68,6 +68,7 @@ public class Display implements Disposable{
     private Texture texture;
 
     public Eye currentEye;
+    public Matrix4 rfrdProjection;
 
     public Display(){
 
@@ -79,6 +80,7 @@ public class Display implements Disposable{
 
         // temps
         tmpVector1 = new Vector3();
+        rfrdProjection = new Matrix4();
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -107,13 +109,14 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        float radius = 5f;
+        float radius = 10f;
+        float depth = -5f;
 
         model = modelBuilder.createRect(
-                -radius,-radius,-10,
-                radius,-radius,-10,
-                radius,radius,-10,
-                -radius,radius,-10,
+                -radius,-radius,depth,
+                radius,-radius,depth,
+                radius,radius,depth,
+                -radius,radius,depth,
                 0,0,1,
                 new Material(TextureAttribute.createDiffuse(texture)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates
