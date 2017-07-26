@@ -107,9 +107,9 @@ public class LightFieldShader extends DefaultShader{
 
     @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
+        bindPosition();
         updateLFIndex();
         bindConfiguration();
-        bindPosition();
         bindProjections();
         bindTexture();
 
@@ -142,7 +142,7 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
-        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 20.f);
+        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
         program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
     }
 
@@ -167,7 +167,7 @@ public class LightFieldShader extends DefaultShader{
         // find first index that fall into aperture
         for(int i=0;i<cols;i++){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
-            float dx = cameraX - camera.position.x;
+            float dx = cameraX - eyePosition.x;
             float dist = dx * dx; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 startIndex = i;
@@ -177,7 +177,7 @@ public class LightFieldShader extends DefaultShader{
         // find last index that fall into aperture
         for(int i=cols - 1;i>= 0;i--){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
-            float dx = cameraX - camera.position.x;
+            float dx = cameraX - eyePosition.x;
             float dist = dx * dx; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 endIndex = i;
@@ -203,7 +203,7 @@ public class LightFieldShader extends DefaultShader{
         endRow = -1;
         for(int i=0;i<rows;i++){
             float cameraY = (initCameraY + i * spanY) * cameraStep;
-            float dy = cameraY - camera.position.y;
+            float dy = cameraY - eyePosition.y;
             float dist = dy * dy; // assume dx is zero
             if(dist < ConfigManager.getApertureSize()){
                 startRow = i;
@@ -213,7 +213,7 @@ public class LightFieldShader extends DefaultShader{
         // find last index that fall into aperture
         for(int i=rows - 1;i>= 0;i--){
             float cameraY = (initCameraY + i * spanY) * cameraStep;
-            float dy = cameraY - camera.position.y;
+            float dy = cameraY - eyePosition.y;
             float dist = dy * dy; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 endRow = i;
@@ -227,6 +227,9 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_colEnd",endIndex);
         program.setUniformi("u_rowStart",startRow);
         program.setUniformi("u_rowEnd",endRow);
+
+        StringPool.addField("Columns", "" + startIndex + "-" + endIndex);
+        StringPool.addField("Rows", "" + startRow + "-" + endRow);
 
     }
 

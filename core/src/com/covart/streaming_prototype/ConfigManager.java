@@ -62,9 +62,9 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 5.000f;
+    private static float apertureSize = 0.133f;
 
-    private static float focusChangeRatio = 3.0f;
+    private static float focusChangeRatio = 2.388f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -81,7 +81,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 0.01f;
 
-    private static float dataCameraFOV = 67.0f;
+    private static float dataCameraFOV = 150.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
