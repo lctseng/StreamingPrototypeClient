@@ -68,7 +68,6 @@ public class Display implements Disposable{
     private Texture texture;
 
     public Eye currentEye;
-    public Matrix4 rfrdProjection;
 
     public Display(){
 
@@ -80,7 +79,6 @@ public class Display implements Disposable{
 
         // temps
         tmpVector1 = new Vector3();
-        rfrdProjection = new Matrix4();
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -110,7 +108,7 @@ public class Display implements Disposable{
         ModelBuilder modelBuilder = new ModelBuilder();
 
         float radius = 10f;
-        float depth = -5f;
+        float depth = -3f;
 
         model = modelBuilder.createRect(
                 -radius,-radius,depth,
@@ -156,7 +154,7 @@ public class Display implements Disposable{
         camMain.setEyeViewAdjustMatrix(eyeMatrix);
 
 
-        float[] perspective = eye.getPerspective(0.1f, ConfigManager.getFocusChangeRatio());
+        float[] perspective = eye.getPerspective(0.01f, 100f);
         camMain.setEyeProjection(new Matrix4(perspective));
         camMain.update();
 

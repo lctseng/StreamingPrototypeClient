@@ -59,8 +59,6 @@ uniform int u_texture_valid6;
 uniform sampler2D u_custom_texture7;
 uniform int u_texture_valid7;
 
-uniform mat4 u_eyeView;
-
 #ifdef diffuseTextureFlag
 varying vec2 v_diffuseUV;
 uniform sampler2D u_diffuseTexture;
@@ -70,26 +68,17 @@ void main() {
 
 	// project 
 	// RK(s,t) -> RF(s,t) , range: [-1,1]
-	float screen_x = 0.0; //2.0 * ((gl_FragCoord.x - float(u_screenOffsetX))/float(u_screenWidth)) - 1.0;
-	float screen_y = 0.0; //(2.0 * ((gl_FragCoord.y - float(u_screenOffsetY))/float(u_screenHeight) ) - 1.0) * 1.0;
+	float screen_x = 2.0 * ((gl_FragCoord.x - float(u_screenOffsetX))/float(u_screenWidth)) - 1.0;
+	float screen_y = (2.0 * ((gl_FragCoord.y - float(u_screenOffsetY))/float(u_screenHeight) ) - 1.0) * 1.0;
 
 
 	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
 	float spanY = 2.0 / float(u_rows);
 
-#ifdef diffuseTextureFlag
-	screen_x = 1.0 * (v_diffuseUV.x * 2.0 - 1.0);
-	screen_y = -1.0 * (v_diffuseUV.y * 2.0 - 1.0);
-#endif
-
-	vec4 camPos = u_eyeView * vec4(u_cameraPositionX, u_cameraPositionY, 0, 1.0);
-	
-
-
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
 
 		if(u_colStart >= 0){
-			vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
+			vec4 rk = vec4(screen_x,screen_y, 1.0, 1.0);
 
 			vec4 rf = u_rk_to_rf * rk;
 
@@ -109,8 +98,8 @@ void main() {
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;
 					float cameraY = (initCameraY + float(j) * spanY) * u_cameraStep;
 
-					float dx = cameraX - camPos.x;
-					float dy = cameraY - camPos.y;
+					float dx = cameraX - u_cameraPositionX;
+					float dy = cameraY - u_cameraPositionY;
 
 					float dist = dx * dx +  dy * dy;
 

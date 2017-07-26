@@ -16,15 +16,18 @@
 
 package com.covart.streaming_prototype.Image;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.android.CardboardCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.StringPool;
-import com.google.vrtoolkit.cardboard.Eye;
 
 import java.util.Locale;
 
@@ -39,6 +42,10 @@ public class LightFieldShader extends DefaultShader{
     private int startIndex;
     private int endIndex;
 
+    private Matrix4 eyeMatrix;
+    private Quaternion eyeRotation;
+    private Vector3 eyeTranslate;
+    private Vector3 eyePosition;
 
     public Display getDisplay() {
         return display;
@@ -73,6 +80,10 @@ public class LightFieldShader extends DefaultShader{
         super.init();
         startIndex = -1;
         endIndex = -1;
+        eyeMatrix = new Matrix4();
+        eyeRotation = new Quaternion();
+        eyePosition = new Vector3();
+        eyeTranslate = new Vector3();
         initDataCameras();
 
     }
@@ -83,7 +94,7 @@ public class LightFieldShader extends DefaultShader{
 
         dataCamera = new PerspectiveCamera(ConfigManager.getDataCameraFOV(), ConfigManager.getImageWidth(), ConfigManager.getImageHeight());
         dataCamera.near = 0.1f;
-        dataCamera.far = 100f;
+        dataCamera.far = 10f;
         dataCamera.position.set(0, 0, 0);
         dataCamera.lookAt(0, 0, -1);
     }
@@ -102,15 +113,32 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindPosition(){
-        program.setUniformf("u_cameraPositionX", camera.position.x);
-        program.setUniformf("u_cameraPositionY", camera.position.y);
+        eyeMatrix.set(display.currentEye.getEyeView());
+        eyeMatrix.getRotation(eyeRotation);
+
+        eyeMatrix.getTranslation(eyeTranslate);
+        eyeTranslate.scl(ConfigManager.getEyeDisparityFactor());
+        eyeRotation.transform(eyeTranslate);
+
+        eyePosition.set(camera.position);
+        eyePosition.add(eyeTranslate);
+
+        Gdx.app.log("Eye Pos:", ConfigManager.getEyeString(display.currentEye) + ":" + eyePosition);
+
+        program.setUniformf("u_cameraPositionX", eyePosition.x);
+        program.setUniformf("u_cameraPositionY", eyePosition.y);
     }
 
     private void bindConfiguration(){
+        program.setUniformi("u_screenWidth", display.currentEye.getViewport().width);
+        program.setUniformi("u_screenHeight", display.currentEye.getViewport().height);
+        program.setUniformi("u_screenOffsetX", 0);
+        program.setUniformi("u_screenOffsetX", display.currentEye.getViewport().x);
+        program.setUniformi("u_screenOffsetY", display.currentEye.getViewport().y);
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
-        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
+        program.setUniformf("u_apertureSize",ConfigManager.getApertureSize() / 20.f);
         program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
     }
 
@@ -181,53 +209,19 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindRkRfProjection(){
+        float ratio = ConfigManager.getFocusChangeRatio();
+        float[] perspective = display.currentEye.getPerspective(0.01f, 3.0f + ratio * ratio);
+        ((CardboardCamera)camera).setEyeProjection(new Matrix4(perspective));
+        camera.update();
         Matrix4 inverseProj = camera.invProjectionView;
-        //Gdx.app.log("RkToRf", "Eye:" + (display.currentEye.getType() == Eye.Type.LEFT ? "Left" : "Right") + ", inv:" + inverseProj.toString());
         program.setUniformMatrix("u_rk_to_rf",inverseProj);
     }
 
     private void bindRfRdProjections(){
         if(startIndex >= 0) {
             dataCamera.fieldOfView = ConfigManager.getDataCameraFOV();
-
-
-            float aspect = display.currentEye.getViewport().width / display.currentEye.getViewport().height;
-
-            dataCamera.viewportWidth = display.currentEye.getViewport().width;
-            dataCamera.viewportHeight = display.currentEye.getViewport().height;
-
-            //dataCamera.viewportWidth = aspect * dataCamera.viewportHeight;
-            //dataCamera.viewportHeight = dataCamera.viewportWidth / aspect;
-
             dataCamera.update();
-
-            Matrix4 tmpMatrix = new Matrix4();
-            Matrix4 combined = new Matrix4();
-
-            Matrix4 eyeMatrix = new Matrix4(display.currentEye.getEyeView());
-
-
-            tmpMatrix.set(eyeMatrix);
-            Matrix4.mul(tmpMatrix.val, dataCamera.view.val);
-            combined.set(dataCamera.projection);
-            Matrix4.mul(combined.val, tmpMatrix.val);
-
-            //program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
-            if(display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR){
-                // update
-                display.rfrdProjection.set(combined);
-                program.setUniformMatrix("u_rf_to_rd_center", combined);
-            }
-            else{
-                // load
-                program.setUniformMatrix("u_rf_to_rd_center", display.rfrdProjection);
-            }
-
-            program.setUniformMatrix("u_eyeView", eyeMatrix);
-
-
-
-            //program.setUniformMatrix("u_rf_to_rd_center", camera.combined);
+            program.setUniformMatrix("u_rf_to_rd_center", dataCamera.combined);
         }
     }
 

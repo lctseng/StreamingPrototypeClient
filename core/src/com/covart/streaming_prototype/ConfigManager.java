@@ -3,6 +3,7 @@ package com.covart.streaming_prototype;
 
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
+import com.google.vrtoolkit.cardboard.Eye;
 
 import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 
@@ -61,9 +62,9 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 0.306f;
+    private static float apertureSize = 5.000f;
 
-    private static float focusChangeRatio = 20.0f;
+    private static float focusChangeRatio = 3.0f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -87,6 +88,8 @@ public class ConfigManager {
     private static PositionController.Direction currentMoveDirection = NONE;
 
     private static boolean enableManuallyMove = false;
+
+    private static float eyeDisparityFactor = 5.0f;
 
 
     // getters and setters
@@ -273,7 +276,28 @@ public class ConfigManager {
         ConfigManager.enableManuallyMove = enableManuallyMove;
     }
 
+    public static float getEyeDisparityFactor() {
+        return eyeDisparityFactor;
+    }
+
+    public static void setEyeDisparityFactor(float eyeDisparityFactor) {
+        ConfigManager.eyeDisparityFactor = eyeDisparityFactor;
+    }
+
     // end of getters and setters
+
+    public static String getEyeString(Eye eye){
+        switch(eye.getType()){
+            case Eye.Type.LEFT:
+                return "Left";
+            case Eye.Type.RIGHT:
+                return "Right";
+            case Eye.Type.MONOCULAR:
+                return "Monocular";
+            default:
+                return "Unknown";
+        }
+    }
 
     private ConfigManager() {
     }
