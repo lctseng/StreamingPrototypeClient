@@ -24,6 +24,9 @@ uniform int u_rows;
 uniform int u_colStart;
 uniform int u_colEnd;
 
+uniform int u_rowStart;
+uniform int u_rowEnd;
+
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
@@ -91,7 +94,7 @@ void main() {
 			mat4 u_rf_to_rd = u_rf_to_rd_center;
 			// for each D(s,t)
 			for(int i=u_colStart;i<=u_colEnd;++i){
-				for(int j=0;j<u_rows;++j){
+				for(int j=u_rowStart;j<=u_rowEnd;++j){
 
 					int columnTextureIndex = i - u_colTextureOffset;
 					
@@ -105,8 +108,8 @@ void main() {
 
 					if(dist < u_apertureSize){
 						// prepare matrix from rf to rd
-						u_rf_to_rd[3][0] = -cameraX; // -
-						u_rf_to_rd[3][1] = -cameraY; // -
+						u_rf_to_rd[3][0] = -cameraX;
+						u_rf_to_rd[3][1] = -cameraY;
 						// compute RD(s,t)
 						vec4 rd = u_rf_to_rd * rf;
 

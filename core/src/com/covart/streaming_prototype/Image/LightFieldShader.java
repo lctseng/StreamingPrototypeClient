@@ -16,7 +16,6 @@
 
 package com.covart.streaming_prototype.Image;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.CardboardCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Attributes;
@@ -41,6 +40,9 @@ public class LightFieldShader extends DefaultShader{
     private PerspectiveCamera dataCamera;
     private int startIndex;
     private int endIndex;
+
+    private int startRow;
+    private int endRow;
 
     private Matrix4 eyeMatrix;
     private Quaternion eyeRotation;
@@ -80,6 +82,10 @@ public class LightFieldShader extends DefaultShader{
         super.init();
         startIndex = -1;
         endIndex = -1;
+
+        startRow = -1;
+        endRow = -1;
+
         eyeMatrix = new Matrix4();
         eyeRotation = new Quaternion();
         eyePosition = new Vector3();
@@ -101,7 +107,7 @@ public class LightFieldShader extends DefaultShader{
 
     @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
-        updateColumnIndex();
+        updateLFIndex();
         bindConfiguration();
         bindPosition();
         bindProjections();
@@ -123,8 +129,6 @@ public class LightFieldShader extends DefaultShader{
         eyePosition.set(camera.position);
         eyePosition.add(eyeTranslate);
 
-        Gdx.app.log("Eye Pos:", ConfigManager.getEyeString(display.currentEye) + ":" + eyePosition);
-
         program.setUniformf("u_cameraPositionX", eyePosition.x);
         program.setUniformf("u_cameraPositionY", eyePosition.y);
     }
@@ -142,19 +146,24 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
     }
 
-    private void updateColumnIndex(){
+    private void updateLFIndex(){
         // compute valid column index range
         int cols = ConfigManager.getNumOfLFs();
+        int rows = ConfigManager.getNumOfSubLFImgs();
         float columnRatio = ConfigManager.getColumnPositionRatio();
 
         float spanX = 2f * columnRatio /cols;
+        float spanY = 2f / rows;
 
         float initCameraX = -1.0f * columnRatio + 0.5f * spanX;
+        float initCameraY = -1.0f + 0.5f * spanY;
 
         float cameraStep = ConfigManager.getCameraStep();
 
         startIndex = -1;
         endIndex = -1;
+
+        // for columns
         // find first index that fall into aperture
         for(int i=0;i<cols;i++){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
@@ -176,7 +185,6 @@ public class LightFieldShader extends DefaultShader{
             }
         }
 
-
         if(startIndex >= 0){
             // ensure the range falls into numOfMaxLFTextures
             // this assume numOfMaxLFTextures to be a even number
@@ -190,10 +198,35 @@ public class LightFieldShader extends DefaultShader{
             }
 
         }
+        // for rows
+        startRow = -1;
+        endRow = -1;
+        for(int i=0;i<rows;i++){
+            float cameraY = (initCameraY + i * spanY) * cameraStep;
+            float dy = cameraY - camera.position.y;
+            float dist = dy * dy; // assume dx is zero
+            if(dist < ConfigManager.getApertureSize()){
+                startRow = i;
+                break;
+            }
+        }
+        // find last index that fall into aperture
+        for(int i=rows - 1;i>= 0;i--){
+            float cameraY = (initCameraY + i * spanY) * cameraStep;
+            float dy = cameraY - camera.position.y;
+            float dist = dy * dy; // assume dy is zero
+            if(dist < ConfigManager.getApertureSize()){
+                endRow = i;
+                break;
+            }
+        }
 
         program.setUniformi("u_colTextureOffset", startIndex);
+
         program.setUniformi("u_colStart",startIndex);
         program.setUniformi("u_colEnd",endIndex);
+        program.setUniformi("u_rowStart",startRow);
+        program.setUniformi("u_rowEnd",endRow);
 
     }
 
