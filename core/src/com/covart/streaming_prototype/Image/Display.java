@@ -254,6 +254,12 @@ public class Display implements Disposable{
             case DOWN:
                 camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
                 break;
+            case FORWARD:
+                camMain.translate(0, 0, -ConfigManager.getManuallyMoveStep());
+                break;
+            case BACKWARD:
+                camMain.translate(0, 0, ConfigManager.getManuallyMoveStep());
+                break;
 
         }
     }
