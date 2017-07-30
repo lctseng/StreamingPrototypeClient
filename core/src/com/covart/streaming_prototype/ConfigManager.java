@@ -3,6 +3,7 @@ package com.covart.streaming_prototype;
 
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
+import com.google.vrtoolkit.cardboard.Eye;
 
 import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 
@@ -50,12 +51,6 @@ public class ConfigManager {
         0,1,2,3
     };
 
-
-
-    private static final Sensor.MoveType[] sensorMoveTypeList = new Sensor.MoveType[]{
-            Sensor.MoveType.REAL, Sensor.MoveType.MANUAL,Sensor.MoveType.AUTO,
-    };
-
     private static final Display.Mode[] displayModeList = new Display.Mode[] {
             Display.Mode.NORMAL, Display.Mode.VR
     };
@@ -67,9 +62,9 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 0.95f;
+    private static float apertureSize = 0.133f;
 
-    private static float focusChangeRatio = 20.0f;
+    private static float focusChangeRatio = 2.388f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -78,31 +73,15 @@ public class ConfigManager {
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
 
-    private static Sensor.MoveType sensorMoveType = Sensor.MoveType.REAL;
-
-    private static float sensorAutoMoveSpeed = 500.0f;
-
-    private static float sensorUpdateDisplayTime = 1f/60f;
-
-    private static float translationAverageFactor = 0.25f;
-
     private static int freeUnusedTextureThreshold = 0;
 
     private static Display.Mode displayMode = Display.Mode.NORMAL;
-
-    private static float displayVRDisparity = 0.25f;
-
-    private static float displayLensFactorX = 0.1f;
-
-    private static float displayLensFactorY = 0.1f;
 
     private static boolean editingModeEnabled = false;
 
     private static float editingReportInterval = 0.01f;
 
-    private static float virtualCameraFOV = 67.0f;
-
-    private static float dataCameraFOV = 67.0f;
+    private static float dataCameraFOV = 150.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
@@ -110,7 +89,7 @@ public class ConfigManager {
 
     private static boolean enableManuallyMove = false;
 
-    private static float sensorRotationToCameraRatio = 0.2f;
+    private static float eyeDisparityFactor = 5.0f;
 
 
     // getters and setters
@@ -180,10 +159,6 @@ public class ConfigManager {
         return serverList;
     }
 
-    public static Sensor.MoveType[] getSensorMoveTypeList() {
-        return sensorMoveTypeList;
-    }
-
     public static boolean isStopOnDisconnected() {
         return stopOnDisconnected;
     }
@@ -228,22 +203,6 @@ public class ConfigManager {
         return sceneList;
     }
 
-    public static float getSensorUpdateDisplayTime() {
-        return sensorUpdateDisplayTime;
-    }
-
-    public static void setSensorUpdateDisplayTime(float sensorUpdateDisplayTime) {
-        ConfigManager.sensorUpdateDisplayTime = sensorUpdateDisplayTime;
-    }
-
-    public static float getTranslationAverageFactor() {
-        return translationAverageFactor;
-    }
-
-    public static void setTranslationAverageFactor(float translationAverageFactor) {
-        ConfigManager.translationAverageFactor = translationAverageFactor;
-    }
-
     public static Display.Mode getDisplayMode() {
         return displayMode;
     }
@@ -252,30 +211,6 @@ public class ConfigManager {
         ConfigManager.displayMode = displayMode;
     }
 
-    public static float getDisplayVRDisparity() {
-        return displayVRDisparity;
-    }
-
-    public static void setDisplayVRDisparity(float displayVRDisparity) {
-        ConfigManager.displayVRDisparity = displayVRDisparity;
-    }
-
-
-    public static Sensor.MoveType getSensorMoveType() {
-        return sensorMoveType;
-    }
-
-    public static void setSensorMoveType(Sensor.MoveType sensorMoveType) {
-        ConfigManager.sensorMoveType = sensorMoveType;
-    }
-
-    public static float getSensorAutoMoveSpeed() {
-        return sensorAutoMoveSpeed;
-    }
-
-    public static void setSensorAutoMoveSpeed(float sensorAutoMoveSpeed) {
-        ConfigManager.sensorAutoMoveSpeed = sensorAutoMoveSpeed;
-    }
 
     public static int getFreeUnusedTextureThreshold() {
         return freeUnusedTextureThreshold;
@@ -287,22 +222,6 @@ public class ConfigManager {
 
     public static Display.Mode[] getDisplayModeList() {
         return displayModeList;
-    }
-
-    public static float getDisplayLensFactorX() {
-        return displayLensFactorX;
-    }
-
-    public static void setDisplayLensFactorX(float displayLensFactorX) {
-        ConfigManager.displayLensFactorX = displayLensFactorX;
-    }
-
-    public static float getDisplayLensFactorY() {
-        return displayLensFactorY;
-    }
-
-    public static void setDisplayLensFactorY(float displayLensFactorY) {
-        ConfigManager.displayLensFactorY = displayLensFactorY;
     }
 
     public static boolean isEditingModeEnabled() {
@@ -323,14 +242,6 @@ public class ConfigManager {
 
     public static void setEditingReportInterval(float editingReportInterval) {
         ConfigManager.editingReportInterval = editingReportInterval;
-    }
-
-    public static float getVirtualCameraFOV() {
-        return virtualCameraFOV;
-    }
-
-    public static void setVirtualCameraFOV(float virtualCameraFOV) {
-        ConfigManager.virtualCameraFOV = virtualCameraFOV;
     }
 
     public static float getDataCameraFOV() {
@@ -365,15 +276,28 @@ public class ConfigManager {
         ConfigManager.enableManuallyMove = enableManuallyMove;
     }
 
-    public static float getSensorRotationToCameraRatio() {
-        return sensorRotationToCameraRatio;
+    public static float getEyeDisparityFactor() {
+        return eyeDisparityFactor;
     }
 
-    public static void setSensorRotationToCameraRatio(float sensorRotationToCameraRatio) {
-        ConfigManager.sensorRotationToCameraRatio = sensorRotationToCameraRatio;
+    public static void setEyeDisparityFactor(float eyeDisparityFactor) {
+        ConfigManager.eyeDisparityFactor = eyeDisparityFactor;
     }
 
     // end of getters and setters
+
+    public static String getEyeString(Eye eye){
+        switch(eye.getType()){
+            case Eye.Type.LEFT:
+                return "Left";
+            case Eye.Type.RIGHT:
+                return "Right";
+            case Eye.Type.MONOCULAR:
+                return "Monocular";
+            default:
+                return "Unknown";
+        }
+    }
 
     private ConfigManager() {
     }

@@ -16,7 +16,9 @@ import com.covart.streaming_prototype.ConfigManager;
 
 import java.util.Locale;
 
+import static com.covart.streaming_prototype.UI.PositionController.Direction.BACKWARD;
 import static com.covart.streaming_prototype.UI.PositionController.Direction.DOWN;
+import static com.covart.streaming_prototype.UI.PositionController.Direction.FORWARD;
 import static com.covart.streaming_prototype.UI.PositionController.Direction.LEFT;
 import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 import static com.covart.streaming_prototype.UI.PositionController.Direction.RIGHT;
@@ -30,7 +32,7 @@ import static com.covart.streaming_prototype.UI.PositionController.Direction.UP;
 public class PositionController extends UIComponent {
 
     public enum Direction {
-        NONE, LEFT, RIGHT, UP, DOWN
+        NONE, LEFT, RIGHT, UP, DOWN, FORWARD, BACKWARD
     }
 
     private Table canvas;
@@ -76,6 +78,8 @@ public class PositionController extends UIComponent {
         addDirectionButton(RIGHT).width(buttonWidth);
         addDirectionButton(UP).width(buttonWidth);
         addDirectionButton(DOWN).width(buttonWidth);
+        addDirectionButton(FORWARD).width(buttonWidth);
+        addDirectionButton(BACKWARD).width(buttonWidth);
         addStepChangeUI();
     }
 
@@ -100,6 +104,12 @@ public class PositionController extends UIComponent {
         }
         else if(direction == DOWN){
             buttonText = "Down";
+        }
+        else if(direction == FORWARD){
+            buttonText = "Forward";
+        }
+        else if(direction == BACKWARD){
+            buttonText = "Backward";
         }
         EventListener listener = new ClickListener() {
             @Override

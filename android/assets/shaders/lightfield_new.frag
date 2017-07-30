@@ -24,6 +24,9 @@ uniform int u_rows;
 uniform int u_colStart;
 uniform int u_colEnd;
 
+uniform int u_rowStart;
+uniform int u_rowEnd;
+
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
@@ -32,10 +35,6 @@ uniform int u_screenHeight;
 
 uniform int u_screenOffsetX;
 uniform int u_screenOffsetY;
-
-uniform int u_enableDistortionCorrection;
-uniform float u_lensFactorX;
-uniform float u_lensFactorY;
 
 uniform mat4 u_rf_to_rd_center;
 
@@ -63,11 +62,12 @@ uniform int u_texture_valid6;
 uniform sampler2D u_custom_texture7;
 uniform int u_texture_valid7;
 
+#ifdef diffuseTextureFlag
+varying vec2 v_diffuseUV;
+uniform sampler2D u_diffuseTexture;
+#endif
 
 void main() {
-
-	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
-	float spanY = 2.0 / float(u_rows);
 
 	// project 
 	// RK(s,t) -> RF(s,t) , range: [-1,1]
@@ -75,30 +75,13 @@ void main() {
 	float screen_y = (2.0 * ((gl_FragCoord.y - float(u_screenOffsetY))/float(u_screenHeight) ) - 1.0) * 1.0;
 
 
-	
-	if(u_enableDistortionCorrection != 0){
-		// lens distortion correction
-		// ref: http://paulbourke.net/miscellaneous/lenscorrection/
-		
-		float r2 = screen_x * screen_x + screen_y * screen_y;
-		float rScaleX = 1.0 - u_lensFactorX*r2;
-		float rScaleY = 1.0 - u_lensFactorY*r2;
-		
-		vec2 P;
-		P.x = screen_x / rScaleX;
-		P.y = screen_y / rScaleY;
-		
-		
-		float rr2 = dot(P, P);
-		screen_x = screen_x / ( 1.0 - (u_lensFactorX * rr2 )  );
-		screen_y = screen_y / ( 1.0 - (u_lensFactorY * rr2 )  );
-	}
-	
+	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
+	float spanY = 2.0 / float(u_rows);
 
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
 
 		if(u_colStart >= 0){
-			vec4 rk = vec4(screen_x,screen_y, 1, 1.0);
+			vec4 rk = vec4(screen_x,screen_y, 1.0, 1.0);
 
 			vec4 rf = u_rk_to_rf * rk;
 
@@ -111,7 +94,7 @@ void main() {
 			mat4 u_rf_to_rd = u_rf_to_rd_center;
 			// for each D(s,t)
 			for(int i=u_colStart;i<=u_colEnd;++i){
-				for(int j=0;j<u_rows;++j){
+				for(int j=u_rowStart;j<=u_rowEnd;++j){
 
 					int columnTextureIndex = i - u_colTextureOffset;
 					
@@ -198,12 +181,13 @@ void main() {
 			}
 				
 			gl_FragColor.rgb = outputColor.rgb;
+			//gl_FragColor.rgb = vec3(rf.x, rf.y, 0);
 		}
 		else{
 			gl_FragColor.rgb = vec3(0.4,0,0);
 		}
 	}
 	else{
-		gl_FragColor.rgb = vec3(0,0,0);
+		gl_FragColor.rgb = vec3(0,0,1);
 	}
 }

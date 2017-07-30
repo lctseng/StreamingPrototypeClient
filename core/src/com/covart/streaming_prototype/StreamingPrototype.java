@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -12,6 +13,8 @@ import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
+import com.google.vrtoolkit.cardboard.Eye;
+import com.google.vrtoolkit.cardboard.HeadTransform;
 
 import java.util.Locale;
 
@@ -24,7 +27,7 @@ import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDo
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter {
+        implements MasterComponentAdapter, CardBoardApplicationListener {
 
 
     public enum State {
@@ -39,10 +42,8 @@ public class StreamingPrototype extends ApplicationAdapter
     public Display display;
     public Network network;
     public ImageDecoderBase decoder;
-    public Sensor sensor;
 
     private float sensorSendDataTime;
-    private float sensorDisplayDataTime;
 
     // change scene
     public boolean sceneChanged = false;
@@ -54,6 +55,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     // UI
     public PositionController positionController;
+
 
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
@@ -71,6 +73,77 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     @Override
+    public void resize(int width, int height) {
+        UIManager.getInstance().resetViewport();
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void onNewFrame(HeadTransform paramHeadTransform) {
+        display.onNewFrame(paramHeadTransform);
+        //Profiler.generateProfilingStrings();
+
+        if (startRequired) {
+            start();
+        }
+        if (stopRequired) {
+            stop();
+        }
+        // FIXME: send Gvr data...
+        sensorSendDataTime += Gdx.graphics.getDeltaTime();
+        if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
+            sensorSendDataTime = 0f;
+            sendSenserData();
+        }
+
+        // manually move
+        if(ConfigManager.isEnableManuallyMove() && ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
+            manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
+        }
+
+        // control frame update if started
+        if (state == Running) {
+            updateEditing();
+            updateControlFrame();
+        }
+    }
+
+    @Override
+    public boolean isVRModeEnabled() {
+        return ConfigManager.getDisplayMode() == Display.Mode.VR;
+    }
+
+    @Override
+    public void onDrawEye(Eye eye) {
+        display.onDrawEye(eye);
+    }
+
+    @Override
+    public void onFinishFrame(com.google.vrtoolkit.cardboard.Viewport paramViewport) {
+        display.onFinishFrame(paramViewport);
+    }
+
+    @Override
+    public void onRendererShutdown() {
+
+    }
+
+    @Override
+    public void onCardboardTrigger() {
+
+    }
+
+
+    @Override
     public void create() {
         ConfigManager.setApp(this);
 
@@ -78,8 +151,6 @@ public class StreamingPrototype extends ApplicationAdapter
         UIManager.initialize();
         network = new Network(this);
         display = new Display();
-        sensor = new Sensor();
-
 
         if (decoder == null) {
             Gdx.app.error("App", "No platform decoder specified! Use static decoder instead!");
@@ -121,7 +192,6 @@ public class StreamingPrototype extends ApplicationAdapter
     public void start() {
         editingReportTime = 0f;
         sensorSendDataTime = 0f;
-        sensorDisplayDataTime = 0f;
         stopRequired = false;
         startRequired = false;
         sceneChanged = true;
@@ -133,7 +203,6 @@ public class StreamingPrototype extends ApplicationAdapter
         display.start();
         network.start();
         decoder.start();
-        sensor.start();
         StringPool.addField("App", "Running. Touch the screen to stop");
     }
 
@@ -143,7 +212,6 @@ public class StreamingPrototype extends ApplicationAdapter
         startRequired = false;
         app.log("App", "stopping");
         setState(Stopped);
-        sensor.stop();
         decoder.stop();
         network.stop();
         StringPool.addField("App", "Stopped. Touch the screen to start the components");
@@ -161,39 +229,6 @@ public class StreamingPrototype extends ApplicationAdapter
 
     @Override
     public void render() {
-        if (startRequired) {
-            start();
-        }
-        if (stopRequired) {
-            stop();
-        }
-        if (sensor.isInitDataReady()) {
-            sensor.updateSensorData();
-            sensorSendDataTime += Gdx.graphics.getDeltaTime();
-            if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
-                sensorSendDataTime = 0f;
-                sendSenserData();
-            }
-            sensorDisplayDataTime += Gdx.graphics.getDeltaTime();
-            if (sensorDisplayDataTime > ConfigManager.getSensorUpdateDisplayTime()) {
-                sensorDisplayDataTime = 0f;
-                display.onSensorDataReady(sensor);
-            }
-        }
-        // manually move
-        if(ConfigManager.isEnableManuallyMove() && ConfigManager.getCurrentMoveDirection() != PositionController.Direction.NONE){
-            manuallyMoveCamera(ConfigManager.getCurrentMoveDirection());
-        }
-
-        display.updateStart();
-        //Profiler.generateProfilingStrings();
-        display.updateEnd();
-        // control frame update if started
-        if (state == Running) {
-            updateEditing();
-            updateControlFrame();
-        }
-        UIManager.getInstance().draw();
 
     }
 
@@ -238,11 +273,8 @@ public class StreamingPrototype extends ApplicationAdapter
         display.dispose();
         network.dispose();
     }
-
-
+    
     private Message.StreamingMessage makeSensorPacket(Vector3 position, Vector3 direction) {
-
-        Vector3 initDirection = sensor.getInitDirection();
         // setup builder
         Message.Camera.Builder cameraBuilder = Message.Camera.newBuilder()
                 .setDeltaX(position.x / 1.5f)
@@ -251,9 +283,9 @@ public class StreamingPrototype extends ApplicationAdapter
                 .setDeltaVx(direction.x)
                 .setDeltaVy(direction.y)
                 .setDeltaVz(direction.z)
-                .setSerialNumber(sensor.getSerialNumber());
+                .setSerialNumber(0);
 
-        // crafting packet
+       // crafting packet
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
                 .setType(Message.MessageType.MsgCameraInfo)
                 .setCameraMsg(cameraBuilder.build()
@@ -261,6 +293,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 ).build();
         return msg;
     }
+
 
     public void sendSenserData() {
         Message.StreamingMessage msg = makeSensorPacket(display.getMainCamera().position, display.getMainCamera().direction);
@@ -273,14 +306,13 @@ public class StreamingPrototype extends ApplicationAdapter
     public void dispatchMessage(Message.StreamingMessage msg) throws InterruptedException {
         switch (msg.getType()) {
             case MsgDefaultPos:
+                // FIXME: Gvr
                 Gdx.app.log("Dispatch", "DefaultPos set");
                 Message.DefaultPos posMsg = msg.getDefaultPosMsg();
-                sensor.setInitPosition(posMsg.getX(), posMsg.getY(), posMsg.getZ());
-                sensor.setInitDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
+                //sensor.setInitPosition(posMsg.getX(), posMsg.getY(), posMsg.getZ());
+                //sensor.setInitDirection(posMsg.getVx(), posMsg.getVy(), posMsg.getVz());
                 break;
             case MsgImage:
-                //Gdx.app.log("App","Receiving new column:" + msg.getImageMsg().getStatus());
-                //Gdx.app.log("App","Receiving bytesize:" + msg.getImageMsg().getByteSize());
                 int size = msg.getImageMsg().getByteSize();
                 Profiler.reportOnRecvStart();
                 while (size > 0) {
@@ -344,15 +376,10 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void recenter() {
         recenterDisplay();
-        recenterSensor();
     }
 
     public void recenterDisplay() {
         display.recenterCamera();
-    }
-
-    public void recenterSensor() {
-        sensor.RecenterRotation();
     }
 
     public void setSaveFrameRequested(boolean saveFrameRequested) {
@@ -441,9 +468,5 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void manuallyMoveCamera(PositionController.Direction direction){
         display.manuallyMoveCamera(direction);
-    }
-
-    public void onMoveTypeChanged(){
-        sensor.onMoveTypeChanged();
     }
 }

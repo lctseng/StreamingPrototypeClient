@@ -151,47 +151,6 @@ public class TextureManager implements Disposable {
         return textures;
     }
 
-    public void updateDelta(float dh, float dv){
-        deltaHorz = dh;
-        deltaVert = dv;
-        // compute center index
-        // TODO: should apply function H(delta) = INDEX
-        // Here center index computed by (x+ 0.5)*nSlots
-        centerIndex = (int)((dh + 0.5) * nSlots);
-        if(centerIndex < 0) centerIndex = 0;
-        else if (centerIndex >= nSlots) centerIndex = nSlots;
-        // compute the span
-        if(ConfigManager.getDisplayMode() == Display.Mode.VR){
-            float disparity = ConfigManager.getDisplayVRDisparity();
-            // dh correction
-            if(dh - disparity < -0.5f ){
-                dh = -0.5f + disparity;
-            }
-            if(dh + disparity > 0.5f ){
-                dh = 0.5f - disparity;
-            }
-
-            // compute index
-            int leftIndex = (int)((dh + 0.5 - disparity) * nSlots);
-            int rightIndex = (int)((dh + 0.5 + disparity) * nSlots);
-            //columnStart = leftIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            //columnEnd = rightIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
-        }
-        else{
-            // Normal
-            //columnStart = centerIndex - ConfigManager.getNumOfMaxInterpolatedLFRadius() - 1;
-            //columnEnd = centerIndex + ConfigManager.getNumOfMaxInterpolatedLFRadius() + 2;
-        }
-        if(columnStart < 0) columnStart = 0;
-        else if(columnStart >= nSlots) columnStart = nSlots - 1;
-
-        if(columnEnd >nSlots) columnEnd = nSlots ;
-        // prepare camera XY
-        // TODO: cameraX should map deltaMin ~ deltaMax to 0 ~ 1
-        cameraPositionX = dh + 0.5f;
-        cameraPositionY = dv + 0.5f;
-    }
-
     public void bindTextures(ShaderProgram shaderProgram, int startIndex, int endIndex){
         if(textures == null){
             return;
