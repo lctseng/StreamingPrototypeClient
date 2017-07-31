@@ -49,6 +49,10 @@ public class LightFieldShader extends DefaultShader{
     private Vector3 eyeTranslate;
     private Vector3 eyePosition;
 
+    private Matrix4 tmpMatrix;
+    private Vector3 tmpVector;
+    private Vector3 tmpVector2;
+
     public Display getDisplay() {
         return display;
     }
@@ -90,6 +94,10 @@ public class LightFieldShader extends DefaultShader{
         eyeRotation = new Quaternion();
         eyePosition = new Vector3();
         eyeTranslate = new Vector3();
+
+        tmpMatrix = new Matrix4();
+        tmpVector = new Vector3();
+        tmpVector2 = new Vector3();
         initDataCameras();
 
     }
@@ -119,11 +127,6 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindPosition(){
-
-        Vector3 rotateCenter = new Vector3();
-        Vector3 tmp = new Vector3();
-
-
         eyeMatrix.set(display.currentEye.getEyeView());
         eyeMatrix.getRotation(eyeRotation);
 
@@ -134,24 +137,36 @@ public class LightFieldShader extends DefaultShader{
         eyePosition.set(camera.position);
         eyePosition.add(eyeTranslate);
 
-        rotateCenter.set(eyePosition);
-        rotateCenter.z = -3f;
+        // now, rotate the eye position around its projection on plane
 
-        tmp.set(rotateCenter);
-        tmp.scl(-1f);
+        // find projection on the plane
+        tmpVector.set(eyePosition); // projection on the plane
+        tmpVector.z = -3f; // should related to plane's depth
 
+        // translation
+        tmpVector2.set(tmpVector);
+        tmpVector2.scl(-1f);
+
+        // scale the eye rotation
         eyeRotation.mul(ConfigManager.getEyeRotationToTranslationRatio());
-        Matrix4 translation = new Matrix4();
-        translation.setToTranslation(tmp);
-        eyePosition.mul(translation);
+
+        // rotate around the projection on the plane
+        // translation(-x, -y, -z) => Rotation => translation(x, y, z)
+        // translation(-x, -y, -z)
+        tmpMatrix.setToTranslation(tmpVector2);
+        eyePosition.mul(tmpMatrix);
+
+        // rotation
         eyeRotation.transform(eyePosition);
-        translation.setToTranslation(rotateCenter);
-        eyePosition.mul(translation);
+
+        // translation(x, y, z)
+        tmpMatrix.setToTranslation(tmpVector);
+        eyePosition.mul(tmpMatrix);
 
         program.setUniformf("u_cameraPositionX", eyePosition.x);
         program.setUniformf("u_cameraPositionY", eyePosition.y);
 
-        StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
+        //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
     }
 
     private void bindConfiguration(){

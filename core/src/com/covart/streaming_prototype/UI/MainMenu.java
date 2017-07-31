@@ -131,7 +131,7 @@ public class MainMenu extends UIComponent {
         addSensorReportIntervalUI();
         addEyeRotationToTranslationRatioUI();
         canvas.row().height(commonRowHeight);
-        
+
         addButtons();
 
     }
