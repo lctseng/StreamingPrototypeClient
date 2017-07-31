@@ -107,7 +107,7 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        float radius = 10f;
+        float radius = 15f;
         float depth = -3f;
 
         model = modelBuilder.createRect(
@@ -241,16 +241,16 @@ public class Display implements Disposable{
     public void manuallyMoveCamera(PositionController.Direction direction){
         switch(direction){
             case LEFT:
-                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
-                break;
-            case RIGHT:
                 camMain.translate(ConfigManager.getManuallyMoveStep(), 0, 0);
                 break;
+            case RIGHT:
+                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
+                break;
             case UP:
-                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
                 break;
             case DOWN:
-                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
                 break;
             case FORWARD:
                 camMain.translate(0, 0, -ConfigManager.getManuallyMoveStep());

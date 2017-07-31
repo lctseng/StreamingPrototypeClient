@@ -108,17 +108,13 @@ public class MainMenu extends UIComponent {
 
     private void addComponents(){
         addStartStopUI();
+        addStopOnDisconnectedUI();
+        addDisplayModeToggleUI();
         canvas.row().height(commonRowHeight);
 
         addIPSelectUI();
         addChangeSceneUI();
-        canvas.row().height(commonRowHeight);
-
-        //addDisplayModeSelectUI();
-        addDisplayModeToggleUI();
-        canvas.row().height(commonRowHeight);
-
-        addStopOnDisconnectedUI();
+        addManualMoveUI();
         canvas.row().height(commonRowHeight);
 
         addFocusChangeUI();
@@ -131,11 +127,9 @@ public class MainMenu extends UIComponent {
         addEyeDisparityFactorUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorReportIntervalUI();
-        canvas.row().height(commonRowHeight);
-
         addEditingReportIntervalUI();
-        addManualMoveUI();
+        addSensorReportIntervalUI();
+        addEyeRotationToTranslationRatioUI();
         canvas.row().height(commonRowHeight);
 
         addButtons();
@@ -371,6 +365,32 @@ public class MainMenu extends UIComponent {
 
     private String getEyeDisparityFactorText(){
         return String.format(Locale.TAIWAN,"Eye disparity: %.3f",ConfigManager.getEyeDisparityFactor());
+    }
+
+    private void addEyeRotationToTranslationRatioUI(){
+        // label
+        final Label name = new Label(getEyeRotationToTranslationRatioText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.00f, 2.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getEyeRotationToTranslationRatio());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEyeRotationToTranslationRatio(slider.getValue());
+                name.setText(getEyeRotationToTranslationRatioText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getEyeRotationToTranslationRatioText(){
+        return String.format(Locale.TAIWAN,"Rotation to translation: %.3f",ConfigManager.getEyeRotationToTranslationRatio());
     }
 
     private void addStepChangeUI(){

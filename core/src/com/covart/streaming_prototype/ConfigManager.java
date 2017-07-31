@@ -64,7 +64,7 @@ public class ConfigManager {
 
     private static float apertureSize = 0.133f;
 
-    private static float focusChangeRatio = 2.388f;
+    private static float focusChangeRatio = 2.267f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -81,7 +81,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 0.01f;
 
-    private static float dataCameraFOV = 150.0f;
+    private static float dataCameraFOV = 110.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
@@ -90,6 +90,8 @@ public class ConfigManager {
     private static boolean enableManuallyMove = false;
 
     private static float eyeDisparityFactor = 5.0f;
+
+    private static float eyeRotationToTranslationRatio = 1.0f;
 
 
     // getters and setters
@@ -282,6 +284,14 @@ public class ConfigManager {
 
     public static void setEyeDisparityFactor(float eyeDisparityFactor) {
         ConfigManager.eyeDisparityFactor = eyeDisparityFactor;
+    }
+
+    public static float getEyeRotationToTranslationRatio() {
+        return eyeRotationToTranslationRatio;
+    }
+
+    public static void setEyeRotationToTranslationRatio(float eyeRotationToTranslationRatio) {
+        ConfigManager.eyeRotationToTranslationRatio = eyeRotationToTranslationRatio;
     }
 
     // end of getters and setters
