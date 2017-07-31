@@ -108,8 +108,8 @@ void main() {
 
 					if(dist < u_apertureSize){
 						// prepare matrix from rf to rd
-						u_rf_to_rd[3][0] = -cameraX;
-						u_rf_to_rd[3][1] = -cameraY;
+						u_rf_to_rd[3][0] = cameraX;
+						u_rf_to_rd[3][1] = cameraY;
 						// compute RD(s,t)
 						vec4 rd = u_rf_to_rd * rf;
 

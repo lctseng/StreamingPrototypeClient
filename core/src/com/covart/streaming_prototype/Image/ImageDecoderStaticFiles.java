@@ -24,6 +24,8 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
 
     private boolean loop = false;
     public final boolean ROW_MAJOR = false;
+    private boolean reverseRow = true;
+    private boolean reverseCol = true;
 
     @Override
     public void run() {
@@ -46,6 +48,14 @@ public class ImageDecoderStaticFiles extends ImageDecoderBase {
                     int col1 = s1.nextInt();
                     int row2 = s2.nextInt();
                     int col2 = s2.nextInt();
+                    if(reverseCol){
+                        col1 = ConfigManager.getNumOfLFs() - col1 - 1;
+                        col2 = ConfigManager.getNumOfLFs() - col2 - 1;
+                    }
+                    if(reverseRow){
+                        row1 = ConfigManager.getNumOfSubLFImgs() - row1 - 1;
+                        row2 = ConfigManager.getNumOfSubLFImgs() - row2 - 1;
+                    }
                     Integer val1 = col1 * 100 + row1;
                     Integer val2 = col2 * 100 + row2;
                     return  val1.compareTo(val2);

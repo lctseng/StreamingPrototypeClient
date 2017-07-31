@@ -135,6 +135,7 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
 
         addEditingReportIntervalUI();
+        addEyeRotationToTranslationRatioUI();
         addManualMoveUI();
         canvas.row().height(commonRowHeight);
 
@@ -371,6 +372,32 @@ public class MainMenu extends UIComponent {
 
     private String getEyeDisparityFactorText(){
         return String.format(Locale.TAIWAN,"Eye disparity: %.3f",ConfigManager.getEyeDisparityFactor());
+    }
+
+    private void addEyeRotationToTranslationRatioUI(){
+        // label
+        final Label name = new Label(getEyeRotationToTranslationRatioText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.00f, 2.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getEyeRotationToTranslationRatio());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEyeRotationToTranslationRatio(slider.getValue());
+                name.setText(getEyeRotationToTranslationRatioText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getEyeRotationToTranslationRatioText(){
+        return String.format(Locale.TAIWAN,"Rotation to translation: %.3f",ConfigManager.getEyeRotationToTranslationRatio());
     }
 
     private void addStepChangeUI(){

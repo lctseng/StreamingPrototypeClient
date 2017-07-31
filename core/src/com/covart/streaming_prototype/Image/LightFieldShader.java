@@ -119,6 +119,11 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindPosition(){
+
+        Vector3 rotateCenter = new Vector3();
+        Vector3 tmp = new Vector3();
+
+
         eyeMatrix.set(display.currentEye.getEyeView());
         eyeMatrix.getRotation(eyeRotation);
 
@@ -129,8 +134,24 @@ public class LightFieldShader extends DefaultShader{
         eyePosition.set(camera.position);
         eyePosition.add(eyeTranslate);
 
+        rotateCenter.set(eyePosition);
+        rotateCenter.z = -3f;
+
+        tmp.set(rotateCenter);
+        tmp.scl(-1f);
+
+        eyeRotation.mul(ConfigManager.getEyeRotationToTranslationRatio());
+        Matrix4 translation = new Matrix4();
+        translation.setToTranslation(tmp);
+        eyePosition.mul(translation);
+        eyeRotation.transform(eyePosition);
+        translation.setToTranslation(rotateCenter);
+        eyePosition.mul(translation);
+
         program.setUniformf("u_cameraPositionX", eyePosition.x);
         program.setUniformf("u_cameraPositionY", eyePosition.y);
+
+        StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
     }
 
     private void bindConfiguration(){
