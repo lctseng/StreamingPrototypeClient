@@ -276,9 +276,11 @@ public class StreamingPrototype extends ApplicationAdapter
     
     private Message.StreamingMessage makeSensorPacket(Vector3 position, Vector3 direction) {
         // setup builder
+        StringPool.addField("Position to Server", position.toString());
+
         Message.Camera.Builder cameraBuilder = Message.Camera.newBuilder()
-                .setDeltaX(position.x / 1.5f)
-                .setDeltaY(position.y / 1.5f)
+                .setDeltaX(clamp(position.x / 1.5f, -1.0f, 1.0f))
+                .setDeltaY(clamp(position.y / 1.5f, -1.0f, 1.0f))
                 .setDeltaZ(position.z)
                 .setDeltaVx(direction.x)
                 .setDeltaVy(direction.y)
@@ -296,7 +298,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     public void sendSenserData() {
-        Message.StreamingMessage msg = makeSensorPacket(display.getMainCamera().position, display.getMainCamera().direction);
+        Message.StreamingMessage msg = makeSensorPacket(display.lastEyePosition, display.getMainCamera().direction);
         if (msg != null) {
             network.sendMessageProtobufAsync(msg);
         }
