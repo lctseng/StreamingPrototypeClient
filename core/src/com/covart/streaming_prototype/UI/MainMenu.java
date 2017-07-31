@@ -108,17 +108,13 @@ public class MainMenu extends UIComponent {
 
     private void addComponents(){
         addStartStopUI();
+        addStopOnDisconnectedUI();
+        addDisplayModeToggleUI();
         canvas.row().height(commonRowHeight);
 
         addIPSelectUI();
         addChangeSceneUI();
-        canvas.row().height(commonRowHeight);
-
-        //addDisplayModeSelectUI();
-        addDisplayModeToggleUI();
-        canvas.row().height(commonRowHeight);
-
-        addStopOnDisconnectedUI();
+        addManualMoveUI();
         canvas.row().height(commonRowHeight);
 
         addFocusChangeUI();
@@ -131,14 +127,11 @@ public class MainMenu extends UIComponent {
         addEyeDisparityFactorUI();
         canvas.row().height(commonRowHeight);
 
-        addSensorReportIntervalUI();
-        canvas.row().height(commonRowHeight);
-
         addEditingReportIntervalUI();
+        addSensorReportIntervalUI();
         addEyeRotationToTranslationRatioUI();
-        addManualMoveUI();
         canvas.row().height(commonRowHeight);
-
+        
         addButtons();
 
     }
