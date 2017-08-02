@@ -38,6 +38,7 @@ public class ConfigManager {
     private static final int decoderBufferSize = imageBufferSize;
 
     private static final String[] serverList = new String[]{
+            "140.112.90.82:8051",
             "140.112.90.95:8051",
             "140.112.90.95:8052",
             "140.112.90.95:8053",
