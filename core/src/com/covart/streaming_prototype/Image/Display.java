@@ -68,6 +68,7 @@ public class Display implements Disposable{
     private Texture texture;
 
     public Eye currentEye;
+    public Vector3 lastEyePosition;
 
     public Display(){
 
@@ -77,6 +78,7 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
+        lastEyePosition = new Vector3();
         // temps
         tmpVector1 = new Vector3();
 

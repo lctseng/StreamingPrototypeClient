@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.StringPool;
+import com.google.vrtoolkit.cardboard.Eye;
 
 import java.util.Locale;
 
@@ -167,6 +168,9 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_cameraPositionY", eyePosition.y);
 
         //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
+        if(display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR){
+            display.lastEyePosition.set(eyePosition);
+        }
     }
 
     private void bindConfiguration(){
