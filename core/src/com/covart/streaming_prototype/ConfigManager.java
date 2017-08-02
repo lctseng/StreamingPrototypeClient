@@ -68,7 +68,7 @@ public class ConfigManager {
 
     private static boolean stopOnDisconnected = false;
 
-    private static float sensorReportInterval = 0.8f;
+    private static float sensorReportInterval = 2.0f;
 
     private static Integer sceneIndex = 0;
     private static String selectedIP = serverList[0];
@@ -79,7 +79,7 @@ public class ConfigManager {
 
     private static boolean editingModeEnabled = false;
 
-    private static float editingReportInterval = 0.01f;
+    private static float editingReportInterval = 1.000f;
 
     private static float dataCameraFOV = 110.0f;
 
