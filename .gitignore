@@ -21,11 +21,22 @@ www-test/
 .gwt-tmp/
 
 ## Android Studio and Intellij and Android in general
-android/libs/armeabi/
-android/libs/armeabi-v7a/
-android/libs/arm64-v8a/
-android/libs/x86/
-android/libs/x86_64/
+android/libs/armeabi/libgdx.so
+android/libs/armeabi/libgdx-box2d.so
+
+
+android/libs/armeabi-v7a/libgdx.so
+android/libs/armeabi-v7a/libgdx-box2d.so
+
+android/libs/arm64-v8a/libgdx.so
+android/libs/arm64-v8a/libgdx-box2d.so
+
+android/libs/x86/libgdx.so
+android/libs/x86/libgdx-box2d.so
+
+android/libs/x86_64/libgdx.so
+android/libs/x86_64/libgdx-box2d.so
+
 android/gen/
 android/.externalNativeBuild/
 android/*.apk
