@@ -448,7 +448,7 @@ public class StreamingPrototype extends ApplicationAdapter
             float halfDiffWH = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
             float imageX = (clamp(screenX - halfDiffWH, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageWidth();
             float imageY = (clamp(screenY, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageHeight();
-            Gdx.app.log("Editing", "ImageX:" + imageX + ", ImageY:" + imageY);
+            //Gdx.app.log("Editing", "ImageX:" + imageX + ", ImageY:" + imageY);
             updateEditingModeText(imageX, imageY);
             sendEditingModeMessage(Message.EditOperation.UPDATE, imageX, imageY);
         }
