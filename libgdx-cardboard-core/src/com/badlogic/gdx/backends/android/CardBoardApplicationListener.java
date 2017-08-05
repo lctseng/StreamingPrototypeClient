@@ -23,6 +23,8 @@ import com.google.vrtoolkit.cardboard.Viewport;
 
 public interface CardBoardApplicationListener extends ApplicationListener {
 
+    public void initCardboardApplication(CardBoardAndroidApplication app);
+
     public void onNewFrame(HeadTransform paramHeadTransform);
 
     public void onDrawEye(Eye paramEye);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.backends.android.CardBoardAndroidApplication;
 import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.Image.Display;
@@ -33,6 +34,8 @@ public class StreamingPrototype extends ApplicationAdapter
     public enum State {
         Stopped, Running, ShuttingDown
     }
+
+    CardBoardAndroidApplication cardBoardApp;
 
     private State state = Stopped;
     private volatile boolean startRequired = false;
@@ -185,6 +188,10 @@ public class StreamingPrototype extends ApplicationAdapter
         inputMultiplexer.addProcessor(localInput);
         display.attachInputProcessors(inputMultiplexer);
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    public void initCardboardApplication(CardBoardAndroidApplication app){
+        this.cardBoardApp = app;
     }
 
 
@@ -378,6 +385,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void recenter() {
         recenterDisplay();
+        cardBoardApp.getCardboardView().resetHeadTracker();
     }
 
     public void recenterDisplay() {
