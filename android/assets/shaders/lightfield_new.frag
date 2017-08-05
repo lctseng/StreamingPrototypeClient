@@ -36,6 +36,9 @@ uniform int u_screenHeight;
 uniform int u_screenOffsetX;
 uniform int u_screenOffsetY;
 
+uniform float u_editingScreenX;
+uniform float u_editingScreenY;
+
 uniform mat4 u_rf_to_rd_center;
 
 uniform sampler2D u_custom_texture0;
@@ -189,5 +192,11 @@ void main() {
 	}
 	else{
 		gl_FragColor.rgb = vec3(0,0,1);
+	}
+	// cursor
+	if(u_editingScreenX >= 0.0 && u_editingScreenY >= 0.0){
+		if(abs(gl_FragCoord.x - u_editingScreenX) < 100.0 && abs(gl_FragCoord.y - u_editingScreenY) < 100.0){
+			gl_FragColor.rgb = (gl_FragColor.rgb + vec3(0,1,0))/2.0;
+		}
 	}
 }

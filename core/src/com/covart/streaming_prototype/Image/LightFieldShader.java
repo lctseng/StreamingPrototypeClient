@@ -184,6 +184,9 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
         program.setUniformf("u_apertureSize",ConfigManager.getApertureSize());
         program.setUniformf("u_cameraStep",ConfigManager.getCameraStep());
+
+        program.setUniformf("u_editingScreenX", display.editingScreenPosition.x);
+        program.setUniformf("u_editingScreenY", display.editingScreenPosition.y);
     }
 
     private void updateLFIndex(){

@@ -428,6 +428,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void startEditingMode() {
+        display.editingScreenPosition.set(0, 0);
         updateEditingModeText();
         sendEditingModeMessage(Message.EditOperation.START, 0, 0);
     }
@@ -435,9 +436,11 @@ public class StreamingPrototype extends ApplicationAdapter
     public void finishEditingMode() {
         updateEditingModeText();
         sendEditingModeMessage(Message.EditOperation.FINISH, 0, 0);
+        display.editingScreenPosition.set(-1, -1);
     }
 
     private boolean editingTouchDragged(int screenX, int screenY, int pointer) {
+        display.updateEditingScreenPosition(screenX, screenY);
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
             // compute imageX, imageY
