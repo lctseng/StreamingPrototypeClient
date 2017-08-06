@@ -102,7 +102,6 @@ public class StreamingPrototype extends ApplicationAdapter
         if (stopRequired) {
             stop();
         }
-        // FIXME: send Gvr data...
         sensorSendDataTime += Gdx.graphics.getDeltaTime();
         if (sensorSendDataTime > ConfigManager.getSensorReportInterval()) {
             sensorSendDataTime = 0f;
@@ -306,6 +305,8 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     public void sendSenserData() {
+        // FIXME: direction should change to Eye direction
+        // Can be postponed, because server do not take the direction
         Message.StreamingMessage msg = makeSensorPacket(display.lastEyePosition, display.getMainCamera().direction);
         if (msg != null) {
             network.sendMessageProtobufAsync(msg);
@@ -316,7 +317,7 @@ public class StreamingPrototype extends ApplicationAdapter
     public void dispatchMessage(Message.StreamingMessage msg) throws InterruptedException {
         switch (msg.getType()) {
             case MsgDefaultPos:
-                // FIXME: Gvr
+                // FIXME: These init position and data need to be applied on GVR?
                 Gdx.app.log("Dispatch", "DefaultPos set");
                 Message.DefaultPos posMsg = msg.getDefaultPosMsg();
                 //sensor.setInitPosition(posMsg.getX(), posMsg.getY(), posMsg.getZ());

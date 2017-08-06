@@ -85,7 +85,7 @@ public class Network implements ConnectionListener, Runnable, Component, Disposa
         // start receiving
         while(true){
             // check interrupt
-            if(worker.isInterrupted()){
+            if(worker == null || worker.isInterrupted()){
                 Gdx.app.log("Network","Worker interrupted");
                 break;
             }
