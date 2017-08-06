@@ -14,6 +14,7 @@ import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
+import com.covart.streaming_prototype.Utils.Profiler;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 
@@ -428,6 +429,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void startEditingMode() {
+        display.editingScreenPosition.set(0, 0);
         updateEditingModeText();
         sendEditingModeMessage(Message.EditOperation.START, 0, 0);
     }
@@ -435,19 +437,15 @@ public class StreamingPrototype extends ApplicationAdapter
     public void finishEditingMode() {
         updateEditingModeText();
         sendEditingModeMessage(Message.EditOperation.FINISH, 0, 0);
+        display.editingScreenPosition.set(-1, -1);
     }
 
     private boolean editingTouchDragged(int screenX, int screenY, int pointer) {
+        display.updateEditingScreenPosition(screenX, screenY);
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
-            // compute imageX, imageY
-            // assume landscape, width > height
-            float halfDiffWH = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
-            float imageX = (clamp(screenX - halfDiffWH, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageWidth();
-            float imageY = (clamp(screenY, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageHeight();
-            Gdx.app.log("Editing", "ImageX:" + imageX + ", ImageY:" + imageY);
-            updateEditingModeText(imageX, imageY);
-            sendEditingModeMessage(Message.EditOperation.UPDATE, imageX, imageY);
+            updateEditingModeText(display.editingImagePosition.x, display.editingImagePosition.y);
+            sendEditingModeMessage(Message.EditOperation.UPDATE, display.editingImagePosition.x, display.editingImagePosition.y);
         }
         return true;
     }

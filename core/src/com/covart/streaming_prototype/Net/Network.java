@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Component;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.MasterComponentAdapter;
-import com.covart.streaming_prototype.PackInteger;
+import com.covart.streaming_prototype.Utils.PackInteger;
 import com.covart.streaming_prototype.StringPool;
 import com.google.protobuf.InvalidProtocolBufferException;
 

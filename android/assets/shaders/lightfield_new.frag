@@ -27,6 +27,9 @@ uniform int u_colEnd;
 uniform int u_rowStart;
 uniform int u_rowEnd;
 
+uniform int u_midColumn;
+uniform int u_midRow;
+
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
@@ -35,6 +38,9 @@ uniform int u_screenHeight;
 
 uniform int u_screenOffsetX;
 uniform int u_screenOffsetY;
+
+uniform float u_editingScreenX;
+uniform float u_editingScreenY;
 
 uniform mat4 u_rf_to_rd_center;
 
@@ -68,6 +74,44 @@ uniform sampler2D u_diffuseTexture;
 #endif
 
 void main() {
+
+
+	int cursor_valid = 0;
+	vec2 cursor_UV;
+	if(u_editingScreenX >= 0.0 && u_editingScreenY >= 0.0){
+		// cursor projection
+		float cursor_screen_x = float(u_editingScreenX) / float(u_screenWidth);
+		float cursor_screen_y = float(u_editingScreenY) / float(u_screenHeight);
+		// map to [-1, 1]
+		cursor_screen_x = cursor_screen_x * 2.0 - 1.0;
+		cursor_screen_y = cursor_screen_y * 2.0 - 1.0;
+
+		vec4 cursor_rk = vec4(cursor_screen_x,cursor_screen_y, 1.0, 1.0);
+		vec4 cursor_rf = u_rk_to_rf * cursor_rk;	
+			
+		
+		// compute RD(s,t)
+		// prepare matrix from rf to rd
+		vec4 cursor_rd = u_rf_to_rd_center * cursor_rf;
+
+		// RF(s,t) -> RD(s,t): Given
+		// sample texture with RD(s,t)
+		// RD is in clip space
+		// Map RD into NDC(-1,1)
+		vec3 cursor_ndc_pos = cursor_rd.xyz / cursor_rd.w;
+
+		// need to map [-1,1] to [0,1] for sampling
+		
+		cursor_UV.s = cursor_ndc_pos.s / 2.0 + 0.5;
+		cursor_UV.t = cursor_ndc_pos.t / 2.0 + 0.5;
+
+		if(cursor_UV.s >= 0.0 && cursor_UV.s <= 1.0 && cursor_UV.t >= 0.0 && cursor_UV.t <= 1.0){
+			cursor_valid = 1;
+		}
+	}
+	
+	
+
 
 	// project 
 	// RK(s,t) -> RF(s,t) , range: [-1,1]
@@ -129,6 +173,14 @@ void main() {
 							float weight = (u_apertureSize - dist)/u_apertureSize;
 							
 							
+							if(cursor_valid == 1 && u_midColumn == i && u_midRow == j){
+								float dx = cursor_UV.s - UV.s;
+								float dy = cursor_UV.t - UV.t;
+								if(dx * dx + dy * dy < 0.01){
+									outputColor += vec4(0,0,1,1);
+								}
+							}
+
 							// UV valid, sample D-ij(s,t)
 							// v scaling
 							vec2 realUV;
@@ -189,5 +241,11 @@ void main() {
 	}
 	else{
 		gl_FragColor.rgb = vec3(0,0,1);
+	}
+	// cursor
+	if(u_editingScreenX >= 0.0 && u_editingScreenY >= 0.0){
+		if(abs(gl_FragCoord.x - u_editingScreenX) < 50.0 && abs(gl_FragCoord.y - u_editingScreenY) < 50.0){
+			gl_FragColor.rgb = (gl_FragColor.rgb + vec3(0,1,0))/2.0;
+		}
 	}
 }

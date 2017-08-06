@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -18,12 +18,13 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Buffer;
 import com.covart.streaming_prototype.BufferPool;
 import com.covart.streaming_prototype.ConfigManager;
-import com.covart.streaming_prototype.Profiler;
+import com.covart.streaming_prototype.Utils.Profiler;
 import com.covart.streaming_prototype.StringPool;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
@@ -70,6 +71,9 @@ public class Display implements Disposable{
     public Eye currentEye;
     public Vector3 lastEyePosition;
 
+    public Vector2 editingScreenPosition;
+    public Vector2 editingImagePosition;
+
     public Display(){
 
         texture = new Texture("grid.jpg");
@@ -78,7 +82,11 @@ public class Display implements Disposable{
         font = new BitmapFont();
         font.getData().setScale(1.5f);
 
+        // misc
         lastEyePosition = new Vector3();
+        editingScreenPosition = new Vector2(-1,-1);
+        editingImagePosition = new Vector2(-1,-1);
+
         // temps
         tmpVector1 = new Vector3();
 
@@ -216,11 +224,6 @@ public class Display implements Disposable{
         textureManager.disposeExistingTextures();
     }
 
-    private static <T extends Comparable<T>> T clamp(T val, T min, T max){
-        if (val.compareTo(min) < 0) return min;
-        else if (val.compareTo(max) > 0) return max;
-        else return val;
-    }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
         textureManager.attachControlFrameInfo(controlBuilder);
@@ -262,5 +265,12 @@ public class Display implements Disposable{
                 break;
 
         }
+    }
+
+    public void updateEditingScreenPosition(float screenX, float screenY){
+        // compute ratio
+        float ratioX = screenX / Gdx.graphics.getWidth();
+        float ratioY = 1f - screenY / Gdx.graphics.getHeight(); // Y is reversed
+        editingScreenPosition.set(currentEye.getViewport().width * ratioX, currentEye.getViewport().height * ratioY);
     }
 }
