@@ -444,14 +444,8 @@ public class StreamingPrototype extends ApplicationAdapter
         display.updateEditingScreenPosition(screenX, screenY);
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
-            // compute imageX, imageY
-            // assume landscape, width > height
-            float halfDiffWH = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
-            float imageX = (clamp(screenX - halfDiffWH, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageWidth();
-            float imageY = (clamp(screenY, 0, Gdx.graphics.getHeight()) / (float) Gdx.graphics.getHeight()) * ConfigManager.getImageHeight();
-            //Gdx.app.log("Editing", "ImageX:" + imageX + ", ImageY:" + imageY);
-            updateEditingModeText(imageX, imageY);
-            sendEditingModeMessage(Message.EditOperation.UPDATE, imageX, imageY);
+            updateEditingModeText(display.editingImagePosition.x, display.editingImagePosition.y);
+            sendEditingModeMessage(Message.EditOperation.UPDATE, display.editingImagePosition.x, display.editingImagePosition.y);
         }
         return true;
     }
