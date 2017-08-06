@@ -128,7 +128,7 @@ public class LightFieldShader extends DefaultShader{
         bindConfiguration();
         bindProjections();
         bindTexture();
-        if(isMainEye()) {
+        if(display.isMainEye()) {
             StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f", camera.position.x, camera.position.y, camera.position.z));
             visualizeLightFieldStatus();
             computeCursorUV();
@@ -137,7 +137,7 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void bindPosition(){
-        eyeMatrix.set(display.currentEye.getEyeView());
+        eyeMatrix.set(display.eyeWrapper.getEyeView());
         eyeMatrix.getRotation(eyeRotation);
 
         eyeMatrix.getTranslation(eyeTranslate);
@@ -177,21 +177,17 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_cameraPositionY", eyePosition.y);
 
         //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
-        if(isMainEye()){
+        if(display.isMainEye()){
             display.lastEyePosition.set(eyePosition);
         }
     }
 
-    private boolean isMainEye(){
-        return display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR;
-    }
-
     private void bindConfiguration(){
-        program.setUniformi("u_screenWidth", display.currentEye.getViewport().width);
-        program.setUniformi("u_screenHeight", display.currentEye.getViewport().height);
+        program.setUniformi("u_screenWidth", display.eyeWrapper.getViewport().width);
+        program.setUniformi("u_screenHeight", display.eyeWrapper.getViewport().height);
         program.setUniformi("u_screenOffsetX", 0);
-        program.setUniformi("u_screenOffsetX", display.currentEye.getViewport().x);
-        program.setUniformi("u_screenOffsetY", display.currentEye.getViewport().y);
+        program.setUniformi("u_screenOffsetX", display.eyeWrapper.getViewport().x);
+        program.setUniformi("u_screenOffsetY", display.eyeWrapper.getViewport().y);
         program.setUniformi("u_cols",ConfigManager.getNumOfLFs());
         program.setUniformi("u_rows",ConfigManager.getNumOfSubLFImgs());
         program.setUniformf("u_columnPositionRatio",ConfigManager.getColumnPositionRatio());
@@ -305,7 +301,7 @@ public class LightFieldShader extends DefaultShader{
 
     private void bindRkRfProjection(){
         float ratio = ConfigManager.getFocusChangeRatio();
-        float[] perspective = display.currentEye.getPerspective(0.01f, 3.0f + ratio * ratio);
+        float[] perspective = display.eyeWrapper.getPerspective(0.01f, 3.0f + ratio * ratio);
         tmpMatrix.set(perspective);
         ((CardboardCamera)camera).setEyeProjection(tmpMatrix);
         camera.update();
@@ -347,8 +343,8 @@ public class LightFieldShader extends DefaultShader{
         // TODO: Optimized these code
         // compute cursor UV
         // cursor projection
-        float cursor_screen_x = display.editingScreenPosition.x / display.currentEye.getViewport().width;
-        float cursor_screen_y = display.editingScreenPosition.y / display.currentEye.getViewport().height;
+        float cursor_screen_x = display.editingScreenPosition.x / display.eyeWrapper.getViewport().width;
+        float cursor_screen_y = display.editingScreenPosition.y / display.eyeWrapper.getViewport().height;
         // map to [-1, 1]
         cursor_screen_x = cursor_screen_x * 2.0f - 1.0f;
         cursor_screen_y = cursor_screen_y * 2.0f - 1.0f;

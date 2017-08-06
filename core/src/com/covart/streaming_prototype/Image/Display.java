@@ -65,10 +65,11 @@ public class Display implements Disposable{
     private Vector3 initLookAt;
 
     private Vector3 tmpVector1;
+    private Matrix4 tmpMatrix1;
 
     private Texture texture;
 
-    public Eye currentEye;
+    public EyeWrapper eyeWrapper;
     public Vector3 lastEyePosition;
 
     public Vector2 editingScreenPosition;
@@ -86,9 +87,11 @@ public class Display implements Disposable{
         lastEyePosition = new Vector3();
         editingScreenPosition = new Vector2(-1,-1);
         editingImagePosition = new Vector2(-1,-1);
+        eyeWrapper = new EyeWrapper();
 
         // temps
         tmpVector1 = new Vector3();
+        tmpMatrix1 = new Matrix4();
 
         // multi-texture
         textureManager = new TextureManager(this);
@@ -116,6 +119,8 @@ public class Display implements Disposable{
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
         ModelBuilder modelBuilder = new ModelBuilder();
+
+        // TODO: make these info share configuration
 
         float radius = 15f;
         float depth = -3f;
@@ -159,15 +164,15 @@ public class Display implements Disposable{
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
 
-        // TODO: Optimized following code
-        currentEye = eye;
+        eyeWrapper.setEye(eye);
         // update camera for this eye
-        Matrix4 eyeMatrix = new Matrix4(eye.getEyeView());
-        camMain.setEyeViewAdjustMatrix(eyeMatrix);
+        // eye view matrix
+        tmpMatrix1.set(eyeWrapper.getEyeView());
+        camMain.setEyeViewAdjustMatrix(tmpMatrix1);
 
-
-        float[] perspective = eye.getPerspective(0.01f, 100f);
-        camMain.setEyeProjection(new Matrix4(perspective));
+        // projection matrix
+        tmpMatrix1.set(eyeWrapper.getPerspective(0.01f, 100f));
+        camMain.setEyeProjection(tmpMatrix1);
         camMain.update();
 
         // draw!
@@ -175,9 +180,8 @@ public class Display implements Disposable{
         modelBatch.render(instance, environment);
         modelBatch.end();
 
-        // TODO: this judgement code should be move to a common position
         // only draw for LEFT eye or MONOCULAR
-        if(eye.getType() == Eye.Type.LEFT || eye.getType() == Eye.Type.MONOCULAR) {
+        if(isMainEye()) {
             drawOverlay();
         }
     }
@@ -274,6 +278,14 @@ public class Display implements Disposable{
         // compute ratio
         float ratioX = screenX / Gdx.graphics.getWidth();
         float ratioY = 1f - screenY / Gdx.graphics.getHeight(); // Y is reversed
-        editingScreenPosition.set(currentEye.getViewport().width * ratioX, currentEye.getViewport().height * ratioY);
+        editingScreenPosition.set(eyeWrapper.getViewport().width * ratioX, eyeWrapper.getViewport().height * ratioY);
+    }
+
+    public boolean isMainEye(){
+        return eyeWrapper.getType() == Eye.Type.LEFT || eyeWrapper.getType() == Eye.Type.MONOCULAR;
+    }
+
+    public Eye currentEye(){
+        return this.eyeWrapper.getEye();
     }
 }
