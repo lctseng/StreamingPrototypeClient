@@ -343,6 +343,8 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void computeCursorUV(){
+
+        // TODO: Optimized these code
         // compute cursor UV
         // cursor projection
         float cursor_screen_x = display.editingScreenPosition.x / display.currentEye.getViewport().width;
@@ -382,7 +384,7 @@ public class LightFieldShader extends DefaultShader{
         //StringPool.addField("Image Pos", "X:" + cursor_UV_x * ConfigManager.getImageWidth() + ", Y: " + cursor_UV_y * ConfigManager.getImageHeight());
 
 
-        // TODO: convert to server coordinate
+        // TODO: convert to server coordinate (to fit the origin of server)
 
         display.editingImagePosition.set(cursor_UV_x * ConfigManager.getImageWidth(), cursor_UV_y * ConfigManager.getImageHeight());
     }

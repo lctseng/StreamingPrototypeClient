@@ -158,6 +158,8 @@ public class Display implements Disposable{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
+
+        // TODO: Optimized following code
         currentEye = eye;
         // update camera for this eye
         Matrix4 eyeMatrix = new Matrix4(eye.getEyeView());
@@ -173,6 +175,7 @@ public class Display implements Disposable{
         modelBatch.render(instance, environment);
         modelBatch.end();
 
+        // TODO: this judgement code should be move to a common position
         // only draw for LEFT eye or MONOCULAR
         if(eye.getType() == Eye.Type.LEFT || eye.getType() == Eye.Type.MONOCULAR) {
             drawOverlay();
