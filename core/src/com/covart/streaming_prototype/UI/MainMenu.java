@@ -127,10 +127,17 @@ public class MainMenu extends UIComponent {
         addEyeDisparityFactorUI();
         canvas.row().height(commonRowHeight);
 
+        addEyeWrapperPitchLimitUI();
+        addEyeWrapperYawLimitUI();
+        addEyeWrapperEnableAngleLimitUI();
+        canvas.row().height(commonRowHeight);
+
         addEditingReportIntervalUI();
         addSensorReportIntervalUI();
         addEyeRotationToTranslationRatioUI();
         canvas.row().height(commonRowHeight);
+
+
 
         addButtons();
 
@@ -576,6 +583,79 @@ public class MainMenu extends UIComponent {
     }
 
 
+    private void addEyeWrapperPitchLimitUI(){
+        // label
+        final Label name = new Label(getEyeWrapperPitchLimitText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
+        slider.setValue(ConfigManager.getEyeWrapperPitchLimit());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEyeWrapperPitchLimit(slider.getValue());
+                name.setText(getEyeWrapperPitchLimitText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getEyeWrapperPitchLimitText(){
+        return String.format(Locale.TAIWAN,"Pitch limit: %.0f",ConfigManager.getEyeWrapperPitchLimit());
+    }
+
+    private void addEyeWrapperYawLimitUI(){
+        // label
+        final Label name = new Label(getEyeWrapperYawLimitText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
+        slider.setValue(ConfigManager.getEyeWrapperYawLimit());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEyeWrapperYawLimit(slider.getValue());
+                name.setText(getEyeWrapperYawLimitText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getEyeWrapperYawLimitText(){
+        return String.format(Locale.TAIWAN,"Yaw limit: %.0f",ConfigManager.getEyeWrapperYawLimit());
+    }
+
+    private void addEyeWrapperEnableAngleLimitUI(){
+        // label
+        Label name = new Label("Enable angle limit:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isEyeWrapperEnableAngleLimit());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setEyeWrapperEnableAngleLimit(box.isChecked());
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
+    }
 
     private void addButtons(){
         addRecenterButton().width(buttonWidth);

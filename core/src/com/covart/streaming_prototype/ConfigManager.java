@@ -94,6 +94,12 @@ public class ConfigManager {
 
     private static float eyeRotationToTranslationRatio = 1.0f;
 
+    private static float eyeWrapperPitchLimit = 10f;
+
+    private static float eyeWrapperYawLimit = 10f;
+
+    private static boolean eyeWrapperEnableAngleLimit = true;
+
 
     // getters and setters
 
@@ -293,6 +299,30 @@ public class ConfigManager {
 
     public static void setEyeRotationToTranslationRatio(float eyeRotationToTranslationRatio) {
         ConfigManager.eyeRotationToTranslationRatio = eyeRotationToTranslationRatio;
+    }
+
+    public static float getEyeWrapperPitchLimit() {
+        return eyeWrapperPitchLimit;
+    }
+
+    public static void setEyeWrapperPitchLimit(float eyeWrapperPitchLimit) {
+        ConfigManager.eyeWrapperPitchLimit = eyeWrapperPitchLimit;
+    }
+
+    public static float getEyeWrapperYawLimit() {
+        return eyeWrapperYawLimit;
+    }
+
+    public static void setEyeWrapperYawLimit(float eyeWrapperYawLimit) {
+        ConfigManager.eyeWrapperYawLimit = eyeWrapperYawLimit;
+    }
+
+    public static boolean isEyeWrapperEnableAngleLimit() {
+        return eyeWrapperEnableAngleLimit;
+    }
+
+    public static void setEyeWrapperEnableAngleLimit(boolean eyeWrapperEnableAngleLimit) {
+        ConfigManager.eyeWrapperEnableAngleLimit = eyeWrapperEnableAngleLimit;
     }
 
     // end of getters and setters

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.StringPool;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.Viewport;
@@ -22,12 +23,14 @@ public class EyeWrapper {
     private Matrix4 eyeView;
     // tmps
     private Matrix4 tmpMatrix1;
+    private Quaternion tmpQuaternion1;
 
     private float inspectCount = 0f;
     private boolean needUpdate = false;
 
     public EyeWrapper(){
         tmpMatrix1  = new Matrix4();
+        tmpQuaternion1 = new Quaternion();
         eyeView = new Matrix4();
     }
 
@@ -84,20 +87,19 @@ public class EyeWrapper {
     }
 
     private void updateEyeView(){
+        // apply limitation
+
+        // FIXME: current limitation does not work well when "roll" is too large
         tmpMatrix1.set(this.eye.getEyeView());
-        Quaternion rotation = new Quaternion();
-        tmpMatrix1.getRotation(rotation);
-        float yaw = clamp(rotation.getYaw(),-11f,11f);
-        float pitch = clamp(rotation.getPitch(),-11f, 11f);
-        float roll = rotation.getRoll();
-
-        StringPool.addField("Yaw", "" +yaw);
-        StringPool.addField("Pitch", "" +pitch);
-
-
+        tmpMatrix1.getRotation(tmpQuaternion1);
+        float yaw = tmpQuaternion1.getYaw();
+        float pitch = tmpQuaternion1.getPitch();
+        float roll = tmpQuaternion1.getRoll();
+        if(ConfigManager.isEyeWrapperEnableAngleLimit()){
+            yaw = clamp(yaw,-ConfigManager.getEyeWrapperYawLimit(), ConfigManager.getEyeWrapperYawLimit());
+            pitch = clamp(pitch,-ConfigManager.getEyeWrapperPitchLimit(), ConfigManager.getEyeWrapperPitchLimit());
+        }
         eyeView.setFromEulerAngles(yaw, pitch, roll);
-        //Gdx.app.log("Real", tmpMatrix1.toString());
-        //Gdx.app.log("Computed", eyeView.toString());
 
     }
 
