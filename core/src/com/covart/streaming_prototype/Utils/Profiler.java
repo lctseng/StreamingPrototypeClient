@@ -1,6 +1,7 @@
-package com.covart.streaming_prototype;
+package com.covart.streaming_prototype.Utils;
 
 import com.badlogic.gdx.Gdx;
+import com.covart.streaming_prototype.StringPool;
 
 import java.util.Locale;
 

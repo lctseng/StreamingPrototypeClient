@@ -2,7 +2,7 @@ package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
 import com.covart.streaming_prototype.Buffer;
-import com.covart.streaming_prototype.Profiler;
+import com.covart.streaming_prototype.Utils.Profiler;
 
 /**
  * Created by lctseng on 2017/2/11.

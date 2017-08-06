@@ -14,6 +14,7 @@ import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
+import com.covart.streaming_prototype.Utils.Profiler;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 

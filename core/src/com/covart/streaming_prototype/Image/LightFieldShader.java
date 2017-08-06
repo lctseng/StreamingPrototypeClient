@@ -26,10 +26,13 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.Utils.Vector4;
 import com.covart.streaming_prototype.StringPool;
 import com.google.vrtoolkit.cardboard.Eye;
 
 import java.util.Locale;
+
+import static com.badlogic.gdx.math.MathUtils.clamp;
 
 /**
  * See: http://blog.xoppa.com/creating-a-shader-with-libgdx
@@ -49,6 +52,8 @@ public class LightFieldShader extends DefaultShader{
     private Quaternion eyeRotation;
     private Vector3 eyeTranslate;
     private Vector3 eyePosition;
+
+    private Matrix4 matrixRkToRf;
 
     private Matrix4 tmpMatrix;
     private Vector3 tmpVector;
@@ -96,6 +101,8 @@ public class LightFieldShader extends DefaultShader{
         eyePosition = new Vector3();
         eyeTranslate = new Vector3();
 
+        matrixRkToRf = new Matrix4();
+
         tmpMatrix = new Matrix4();
         tmpVector = new Vector3();
         tmpVector2 = new Vector3();
@@ -121,9 +128,11 @@ public class LightFieldShader extends DefaultShader{
         bindConfiguration();
         bindProjections();
         bindTexture();
-
-        StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",camera.position.x,camera.position.y,camera.position.z));
-        visualizeLightFieldStatus();
+        if(isMainEye()) {
+            StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f", camera.position.x, camera.position.y, camera.position.z));
+            visualizeLightFieldStatus();
+            computeCursorUV();
+        }
         super.render(renderable, combinedAttributes);
     }
 
@@ -168,9 +177,13 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_cameraPositionY", eyePosition.y);
 
         //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
-        if(display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR){
+        if(isMainEye()){
             display.lastEyePosition.set(eyePosition);
         }
+    }
+
+    private boolean isMainEye(){
+        return display.currentEye.getType() == Eye.Type.LEFT || display.currentEye.getType() == Eye.Type.MONOCULAR;
     }
 
     private void bindConfiguration(){
@@ -293,10 +306,11 @@ public class LightFieldShader extends DefaultShader{
     private void bindRkRfProjection(){
         float ratio = ConfigManager.getFocusChangeRatio();
         float[] perspective = display.currentEye.getPerspective(0.01f, 3.0f + ratio * ratio);
-        ((CardboardCamera)camera).setEyeProjection(new Matrix4(perspective));
+        tmpMatrix.set(perspective);
+        ((CardboardCamera)camera).setEyeProjection(tmpMatrix);
         camera.update();
-        Matrix4 inverseProj = camera.invProjectionView;
-        program.setUniformMatrix("u_rk_to_rf",inverseProj);
+        matrixRkToRf.set(camera.invProjectionView);
+        program.setUniformMatrix("u_rk_to_rf",matrixRkToRf);
     }
 
     private void bindRfRdProjections(){
@@ -326,5 +340,50 @@ public class LightFieldShader extends DefaultShader{
             status += "=";
         }
         StringPool.addField("Visible Status V", status);
+    }
+
+    private void computeCursorUV(){
+        // compute cursor UV
+        // cursor projection
+        float cursor_screen_x = display.editingScreenPosition.x / display.currentEye.getViewport().width;
+        float cursor_screen_y = display.editingScreenPosition.y / display.currentEye.getViewport().height;
+        // map to [-1, 1]
+        cursor_screen_x = cursor_screen_x * 2.0f - 1.0f;
+        cursor_screen_y = cursor_screen_y * 2.0f - 1.0f;
+
+        Vector4 cursor_rk = new Vector4(cursor_screen_x, cursor_screen_y, 1.0f, 1.0f);
+
+        Vector4 cursor_rf = new Vector4();
+        cursor_rf.set(cursor_rk);
+        cursor_rf.mul(matrixRkToRf);
+
+
+        // compute RD(s,t)
+        // prepare matrix from rf to rd
+        Vector4 cursor_rd = new Vector4();
+        cursor_rd.set(cursor_rf);
+        cursor_rd.mul(dataCamera.combined);
+
+        // RF(s,t) -> RD(s,t): Given
+        // sample texture with RD(s,t)
+        // RD is in clip space
+        // Map RD into NDC(-1,1)
+        // Divided by w
+        cursor_rd.scl(1.0f / cursor_rd.w);
+
+
+
+        // map [-1,1] to [0,1] for image position calculation
+
+        float cursor_UV_x = clamp(cursor_rd.x / 2.0f + 0.5f, 0f, 1f);
+        float cursor_UV_y = clamp(cursor_rd.y / 2.0f + 0.5f, 0f, 1f);
+
+        //StringPool.addField("Cursor UV", "X:" + cursor_UV_x + ", Y: " + cursor_UV_y);
+        //StringPool.addField("Image Pos", "X:" + cursor_UV_x * ConfigManager.getImageWidth() + ", Y: " + cursor_UV_y * ConfigManager.getImageHeight());
+
+
+        // TODO: convert to server coordinate
+
+        display.editingImagePosition.set(cursor_UV_x * ConfigManager.getImageWidth(), cursor_UV_y * ConfigManager.getImageHeight());
     }
 }

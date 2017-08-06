@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.covart.streaming_prototype.Buffer;
 import com.covart.streaming_prototype.BufferPool;
 import com.covart.streaming_prototype.ConfigManager;
-import com.covart.streaming_prototype.Profiler;
+import com.covart.streaming_prototype.Utils.Profiler;
 import com.covart.streaming_prototype.StringPool;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
@@ -72,6 +72,7 @@ public class Display implements Disposable{
     public Vector3 lastEyePosition;
 
     public Vector2 editingScreenPosition;
+    public Vector2 editingImagePosition;
 
     public Display(){
 
@@ -84,6 +85,7 @@ public class Display implements Disposable{
         // misc
         lastEyePosition = new Vector3();
         editingScreenPosition = new Vector2(-1,-1);
+        editingImagePosition = new Vector2(-1,-1);
 
         // temps
         tmpVector1 = new Vector3();
@@ -222,11 +224,6 @@ public class Display implements Disposable{
         textureManager.disposeExistingTextures();
     }
 
-    private static <T extends Comparable<T>> T clamp(T val, T min, T max){
-        if (val.compareTo(min) < 0) return min;
-        else if (val.compareTo(max) > 0) return max;
-        else return val;
-    }
 
     public void attachControlFrameInfo(Message.Control.Builder controlBuilder){
         textureManager.attachControlFrameInfo(controlBuilder);
