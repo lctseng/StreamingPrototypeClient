@@ -132,6 +132,10 @@ public class MainMenu extends UIComponent {
         addEyeWrapperEnableAngleLimitUI();
         canvas.row().height(commonRowHeight);
 
+        addAutoRotateEnabledUI();
+        addAutoRotateSpeedFactorUI();
+        canvas.row().height(commonRowHeight);
+
         addEditingReportIntervalUI();
         addSensorReportIntervalUI();
         addEyeRotationToTranslationRatioUI();
@@ -649,6 +653,57 @@ public class MainMenu extends UIComponent {
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEyeWrapperEnableAngleLimit(box.isChecked());
                 updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
+    }
+
+    private void addAutoRotateSpeedFactorUI(){
+        // label
+        final Label name = new Label(getAutoRotateSpeedFactorText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0f, 5f, 0.001f, false, skin);
+        slider.setValue(ConfigManager.getAutoRotateSpeedFactor());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setAutoRotateSpeedFactor(slider.getValue());
+                name.setText(getAutoRotateSpeedFactorText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getAutoRotateSpeedFactorText(){
+        return String.format(Locale.TAIWAN,"Auto rotate speed: %.3f",ConfigManager.getAutoRotateSpeedFactor());
+    }
+
+    private void addAutoRotateEnabledUI(){
+        // label
+        Label name = new Label("Enable auto rotate:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isAutoRotateEnabled());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setAutoRotateEnabled(box.isChecked());
+                updateCheckBoxText(box);
+                if(ConfigManager.isAutoRotateEnabled()){
+                    ConfigManager.getApp().display.eyeWrapper.resetAutoRotate();
+                }
             }
         });
 

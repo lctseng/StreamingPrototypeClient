@@ -9,9 +9,12 @@ import com.covart.streaming_prototype.ConfigManager;
  */
 
 public class AutoEyeViewGenerator {
+
+    public static final float PAUSE_BETWEEN_ROUND = 1f;
+
     private EyeWrapper eyeWrapper;
 
-
+    private float pauseTime = 0f;
 
     private double yaw = 0f;
     private double pitch = 0f;
@@ -24,13 +27,23 @@ public class AutoEyeViewGenerator {
         this.eyeWrapper = eyeWrapper;
     }
 
+    public void reset(){
+        angle = 0;
+    }
+
     public void update(){
-        angle += angleSpeed * Gdx.graphics.getDeltaTime();
-        if(angle >= Math.PI*2.0){
-            angle = 0.0;
+        if(pauseTime > 0f){
+            pauseTime -= Gdx.graphics.getDeltaTime();
         }
-        yaw = ConfigManager.getEyeWrapperYawLimit() * Math.cos(angle);
-        pitch = ConfigManager.getEyeWrapperPitchLimit() * Math.sin(angle);
+        else {
+            angle += angleSpeed * Gdx.graphics.getDeltaTime() * ConfigManager.getAutoRotateSpeedFactor();
+            if (angle >= Math.PI * 2.0) {
+                angle = 0.0;
+                pauseTime = PAUSE_BETWEEN_ROUND;
+            }
+            yaw = ConfigManager.getEyeWrapperYawLimit() * Math.cos(angle);
+            pitch = ConfigManager.getEyeWrapperPitchLimit() * Math.sin(angle);
+        }
     }
 
     public double getYaw() {

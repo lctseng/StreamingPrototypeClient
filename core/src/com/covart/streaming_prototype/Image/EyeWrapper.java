@@ -105,8 +105,7 @@ public class EyeWrapper {
     private void updateEyeView(){
         // get the real eye view
         tmpMatrix1.set(this.eye.getEyeView());
-        boolean useAuto = true;
-        if(useAuto){
+        if(ConfigManager.isAutoRotateEnabled()){
             // fetch yaw, pitch and roll from generator
             yaw = (float)autoEyeViewGenerator.getYaw();
             pitch = (float)autoEyeViewGenerator.getPitch();
@@ -140,5 +139,9 @@ public class EyeWrapper {
 
     public int getType() {
         return this.eye.getType();
+    }
+
+    public void resetAutoRotate(){
+        autoEyeViewGenerator.reset();
     }
 }

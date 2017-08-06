@@ -100,6 +100,10 @@ public class ConfigManager {
 
     private static boolean eyeWrapperEnableAngleLimit = true;
 
+    private static float autoRotateSpeedFactor = 1f;
+
+    private static boolean autoRotateEnabled = false;
+
 
     // getters and setters
 
@@ -323,6 +327,22 @@ public class ConfigManager {
 
     public static void setEyeWrapperEnableAngleLimit(boolean eyeWrapperEnableAngleLimit) {
         ConfigManager.eyeWrapperEnableAngleLimit = eyeWrapperEnableAngleLimit;
+    }
+
+    public static float getAutoRotateSpeedFactor() {
+        return autoRotateSpeedFactor;
+    }
+
+    public static void setAutoRotateSpeedFactor(float autoRotateSpeedFactor) {
+        ConfigManager.autoRotateSpeedFactor = autoRotateSpeedFactor;
+    }
+
+    public static boolean isAutoRotateEnabled() {
+        return autoRotateEnabled;
+    }
+
+    public static void setAutoRotateEnabled(boolean autoRotateEnabled) {
+        ConfigManager.autoRotateEnabled = autoRotateEnabled;
     }
 
     // end of getters and setters
