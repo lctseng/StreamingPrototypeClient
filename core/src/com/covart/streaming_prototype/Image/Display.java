@@ -203,7 +203,7 @@ public class Display implements Disposable{
     }
 
     public void onNewFrame(HeadTransform paramHeadTransform) {
-        eyeWrapper.requestUpdate();
+        eyeWrapper.onNewFrame();
         collectImages();
         Profiler.reportOnDisplay();
         StringPool.clearFlashMessages();
