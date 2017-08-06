@@ -9,6 +9,8 @@ import com.covart.streaming_prototype.StringPool;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.Viewport;
 
+import java.util.Locale;
+
 import static com.badlogic.gdx.math.MathUtils.clamp;
 
 /**
@@ -21,6 +23,8 @@ public class EyeWrapper {
 
 
     private Matrix4 eyeView;
+    private Matrix4 eyeViewLimited;
+
     // tmps
     private Matrix4 tmpMatrix1;
     private Quaternion tmpQuaternion1;
@@ -28,10 +32,17 @@ public class EyeWrapper {
     private float inspectCount = 0f;
     private boolean needUpdate = false;
 
+
+
+    private float yaw = 0f;
+    private float pitch = 0f;
+    private float roll  = 0f;
+
     public EyeWrapper(){
         tmpMatrix1  = new Matrix4();
         tmpQuaternion1 = new Quaternion();
         eyeView = new Matrix4();
+        eyeViewLimited = new Matrix4();
     }
 
     public Eye getEye() {
@@ -58,48 +69,44 @@ public class EyeWrapper {
         inspectCount += Gdx.graphics.getDeltaTime();
         if(inspectCount > 0.5f) {
             inspectCount = 0f;
-            tmpMatrix1.set(this.getEyeView());
-            //Gdx.app.log("Eye View", tmpMatrix1.toString());
-            Vector3 translation = new Vector3();
-            tmpMatrix1.getTranslation(translation);
-            //Gdx.app.log("Eye Translation", translation.toString());
-
-            Quaternion rotation = new Quaternion();
-            tmpMatrix1.getRotation(rotation);
-            //Gdx.app.log("Eye Rotation", rotation.toString());
-            //Gdx.app.log("Eye Rotation", "Yaw:" + rotation.getYaw() + ", Pitch:" + rotation.getPitch() + ", Roll:" + rotation.getRoll());
-
-            //tmpMatrix1.getRotation(rotation, true);
-            //Gdx.app.log("Eye Rotation Normalized", rotation.toString());
-            //tmpMatrix1.set(this.getPerspective(0.01f, 100f));
-            //Gdx.app.log("Eye Project", tmpMatrix1.toString());
+            StringPool.addField("Eye angles", String.format(Locale.TAIWAN, "Yaw: %2f, Pitch: %2f, Roll: %2f", yaw, pitch, roll));
         }
     }
 
     // Forwarding methods
-    public Matrix4 getEyeView()
+    public Matrix4 getEyeView(boolean limit)
     {
         if(needUpdate){
             needUpdate = false;
             updateEyeView();
         }
-        return this.eyeView;
+        if(limit){
+            return this.eyeViewLimited;
+        }
+        else{
+            return this.eyeView;
+        }
+    }
+
+    public Matrix4 getEyeView()
+    {
+        return getEyeView(true);
     }
 
     private void updateEyeView(){
         // apply limitation
 
         // FIXME: current limitation does not work well when "roll" is too large
-        tmpMatrix1.set(this.eye.getEyeView());
-        tmpMatrix1.getRotation(tmpQuaternion1);
-        float yaw = tmpQuaternion1.getYaw();
-        float pitch = tmpQuaternion1.getPitch();
-        float roll = tmpQuaternion1.getRoll();
+        eyeView.set(this.eye.getEyeView());
+        eyeView.getRotation(tmpQuaternion1);
+        yaw = tmpQuaternion1.getYaw();
+        pitch = tmpQuaternion1.getPitch();
+        roll = tmpQuaternion1.getRoll();
         if(ConfigManager.isEyeWrapperEnableAngleLimit()){
             yaw = clamp(yaw,-ConfigManager.getEyeWrapperYawLimit(), ConfigManager.getEyeWrapperYawLimit());
             pitch = clamp(pitch,-ConfigManager.getEyeWrapperPitchLimit(), ConfigManager.getEyeWrapperPitchLimit());
         }
-        eyeView.setFromEulerAngles(yaw, pitch, roll);
+        eyeViewLimited.setFromEulerAngles(yaw, pitch, roll);
 
     }
 

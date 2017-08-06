@@ -165,9 +165,10 @@ public class Display implements Disposable{
 
 
         eyeWrapper.setEye(eye);
+        eyeWrapper.inspect();
         // update camera for this eye
         // eye view matrix
-        tmpMatrix1.set(eyeWrapper.getEyeView());
+        tmpMatrix1.set(eyeWrapper.getEyeView(false));
         camMain.setEyeViewAdjustMatrix(tmpMatrix1);
 
         // projection matrix
