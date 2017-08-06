@@ -33,12 +33,15 @@ public class EyeWrapper {
     private boolean needUpdate = false;
 
 
+    private AutoEyeViewGenerator autoEyeViewGenerator;
 
     private float yaw = 0f;
     private float pitch = 0f;
     private float roll  = 0f;
 
     public EyeWrapper(){
+        autoEyeViewGenerator = new AutoEyeViewGenerator(this);
+
         tmpMatrix1  = new Matrix4();
         tmpQuaternion1 = new Quaternion();
         eyeView = new Matrix4();
@@ -55,6 +58,11 @@ public class EyeWrapper {
         }
         this.eye = eye;
         return this;
+    }
+
+    public void onNewFrame(){
+        needUpdate = true;
+        autoEyeViewGenerator.update();
     }
 
     private void onChangeEye(){
@@ -93,21 +101,32 @@ public class EyeWrapper {
         return getEyeView(true);
     }
 
+    // Setup eyeView and eyeViewLimited
     private void updateEyeView(){
-        // apply limitation
-
-        // FIXME: current limitation does not work well when "roll" is too large
-        eyeView.set(this.eye.getEyeView());
-        eyeView.getRotation(tmpQuaternion1);
-        yaw = tmpQuaternion1.getYaw();
-        pitch = tmpQuaternion1.getPitch();
-        roll = tmpQuaternion1.getRoll();
-        if(ConfigManager.isEyeWrapperEnableAngleLimit()){
-            yaw = clamp(yaw,-ConfigManager.getEyeWrapperYawLimit(), ConfigManager.getEyeWrapperYawLimit());
-            pitch = clamp(pitch,-ConfigManager.getEyeWrapperPitchLimit(), ConfigManager.getEyeWrapperPitchLimit());
+        // get the real eye view
+        tmpMatrix1.set(this.eye.getEyeView());
+        if(ConfigManager.isAutoRotateEnabled()){
+            // fetch yaw, pitch and roll from generator
+            yaw = (float)autoEyeViewGenerator.getYaw();
+            pitch = (float)autoEyeViewGenerator.getPitch();
+            roll = (float)autoEyeViewGenerator.getRoll();
+            eyeView.setFromEulerAngles(yaw, pitch, roll);
+            eyeViewLimited.set(eyeView);
         }
-        eyeViewLimited.setFromEulerAngles(yaw, pitch, roll);
-
+        else{
+            tmpMatrix1.getRotation(tmpQuaternion1);
+            yaw = tmpQuaternion1.getYaw();
+            pitch = tmpQuaternion1.getPitch();
+            roll = tmpQuaternion1.getRoll();
+            // apply limitation
+            // FIXME: current limitation does not work well when "roll" is too large
+            if(ConfigManager.isEyeWrapperEnableAngleLimit()){
+                yaw = clamp(yaw,-ConfigManager.getEyeWrapperYawLimit(), ConfigManager.getEyeWrapperYawLimit());
+                pitch = clamp(pitch,-ConfigManager.getEyeWrapperPitchLimit(), ConfigManager.getEyeWrapperPitchLimit());
+            }
+            eyeView.set(tmpMatrix1);
+            eyeViewLimited.setFromEulerAngles(yaw, pitch, roll);
+        }
     }
 
     public float[] getPerspective(float zNear, float zFar) {
@@ -120,5 +139,9 @@ public class EyeWrapper {
 
     public int getType() {
         return this.eye.getType();
+    }
+
+    public void resetAutoRotate(){
+        autoEyeViewGenerator.reset();
     }
 }
