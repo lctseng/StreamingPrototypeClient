@@ -63,9 +63,9 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 0.100f;
+    private static float apertureSize = 0.107f;
 
-    private static float focusChangeRatio = 2.267f;
+    private static float focusChangeRatio = 2.508f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -82,7 +82,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 1.000f;
 
-    private static float dataCameraFOV = 110.0f;
+    private static float dataCameraFOV = 77.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
@@ -92,13 +92,15 @@ public class ConfigManager {
 
     private static float eyeDisparityFactor = 5.0f;
 
+    // FIXME: eyeRotationToTranslationRatio becomes useless since eye position is meaningless
     private static float eyeRotationToTranslationRatio = 1.0f;
 
+    // FIXME: angle limit seems to meaning less in new aperture model
     private static float eyeWrapperPitchLimit = 10f;
 
     private static float eyeWrapperYawLimit = 10f;
 
-    private static boolean eyeWrapperEnableAngleLimit = true;
+    private static boolean eyeWrapperEnableAngleLimit = false;
 
     private static float autoRotateSpeedFactor = 1f;
 

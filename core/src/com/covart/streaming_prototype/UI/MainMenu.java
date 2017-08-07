@@ -486,7 +486,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 0.5f, 0.0001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 1f, 0.0001f, false, skin);
         slider.setValue(ConfigManager.getApertureSize());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {

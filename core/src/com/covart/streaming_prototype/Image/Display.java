@@ -54,7 +54,6 @@ public class Display implements Disposable{
 
     // cameras
     private CardboardCamera camMain;
-    private int vrRectWidth;
 
     // models
     private Model model;
@@ -104,7 +103,6 @@ public class Display implements Disposable{
         camMain.far = ConfigManager.getFocusChangeRatio();
 
         // VR mode settings
-        vrRectWidth = Gdx.graphics.getWidth() / 2;
 
         String vertexShader = Gdx.files.internal("shaders/lightfield_new.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield_new.frag").readString();
@@ -120,10 +118,10 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        // TODO: make these info share configuration
+        // TODO: make these into shared configuration
 
-        float radius = 15f;
-        float depth = -3f;
+        float radius = 1f;
+        float depth = 0;
 
         model = modelBuilder.createRect(
                 -radius,-radius,depth,

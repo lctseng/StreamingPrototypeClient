@@ -173,6 +173,10 @@ public class LightFieldShader extends DefaultShader{
         tmpMatrix.setToTranslation(tmpVector);
         eyePosition.mul(tmpMatrix);
 
+        // FIXME: Camera position seems meanings less in shader
+        // Should came out with new way about camera position
+        // VR Eye position also meaning less...
+
         program.setUniformf("u_cameraPositionX", eyePosition.x);
         program.setUniformf("u_cameraPositionY", eyePosition.y);
 
@@ -273,12 +277,19 @@ public class LightFieldShader extends DefaultShader{
             }
         }
 
+        // FIXME: these values should have new meanings
+        startIndex = 0;
+        endIndex = cols-1;
+        startRow = 0;
+        endRow = rows - 1;
+
         program.setUniformi("u_colTextureOffset", startIndex);
 
         program.setUniformi("u_colStart",startIndex);
         program.setUniformi("u_colEnd",endIndex);
         program.setUniformi("u_rowStart",startRow);
         program.setUniformi("u_rowEnd",endRow);
+
 
         program.setUniformi("u_midColumn",(startIndex + endIndex)/2);
         program.setUniformi("u_midRow",(startRow + endRow)/2);

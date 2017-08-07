@@ -122,6 +122,20 @@ void main() {
 	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
 	float spanY = 2.0 / float(u_rows);
 
+
+	float cameraPositionX = u_cameraPositionX;
+	float cameraPositionY = u_cameraPositionY;
+	
+
+#ifdef diffuseTextureFlag
+	// compute cameraPosition from UV
+	cameraPositionX = v_diffuseUV.s * 2.0 - 1.0;
+	cameraPositionY = v_diffuseUV.t * -2.0 + 1.0;
+
+#endif
+
+
+
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
 
 		if(u_colStart >= 0){
@@ -145,15 +159,15 @@ void main() {
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;
 					float cameraY = (initCameraY + float(j) * spanY) * u_cameraStep;
 
-					float dx = cameraX - u_cameraPositionX;
-					float dy = cameraY - u_cameraPositionY;
+					float dx = cameraX - cameraPositionX;
+					float dy = cameraY - cameraPositionY;
 
 					float dist = dx * dx +  dy * dy;
 
 					if(dist < u_apertureSize){
 						// prepare matrix from rf to rd
-						u_rf_to_rd[3][0] = cameraX;
-						u_rf_to_rd[3][1] = cameraY;
+						u_rf_to_rd[3][0] = -cameraX;
+						u_rf_to_rd[3][1] = -cameraY;
 						// compute RD(s,t)
 						vec4 rd = u_rf_to_rd * rf;
 
@@ -229,7 +243,7 @@ void main() {
 				outputColor = outputColor / accumulateWeight;
 			}
 			else{
-				outputColor = vec4(0.4,0,0,1);
+				outputColor = vec4(0,0.4,0,1);
 			}
 				
 			gl_FragColor.rgb = outputColor.rgb;
