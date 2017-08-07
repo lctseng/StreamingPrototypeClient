@@ -177,8 +177,8 @@ public class LightFieldShader extends DefaultShader{
         // Should came out with new way about camera position
         // VR Eye position also meaning less...
 
-        program.setUniformf("u_cameraPositionX", eyePosition.x);
-        program.setUniformf("u_cameraPositionY", eyePosition.y);
+        //program.setUniformf("u_cameraPositionX", eyePosition.x);
+        //program.setUniformf("u_cameraPositionY", eyePosition.y);
 
         //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
         if(display.isMainEye()){

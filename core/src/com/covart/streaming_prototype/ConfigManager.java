@@ -95,7 +95,6 @@ public class ConfigManager {
     // FIXME: eyeRotationToTranslationRatio becomes useless since eye position is meaningless
     private static float eyeRotationToTranslationRatio = 1.0f;
 
-    // FIXME: angle limit seems to meaning less in new aperture model
     private static float autoRotatePitchLimit = 10f;
 
     private static float autoRotateYawLimit = 10f;

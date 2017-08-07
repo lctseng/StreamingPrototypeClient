@@ -11,9 +11,6 @@ precision highp float;
 
 uniform mat4 u_rk_to_rf;
 
-uniform float u_cameraPositionX;
-uniform float u_cameraPositionY;
-
 uniform float u_cameraStep;
 
 uniform float u_apertureSize;
@@ -119,16 +116,14 @@ void main() {
 	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
 	float spanY = 2.0 / float(u_rows);
 
-
-	float cameraPositionX = u_cameraPositionX;
-	float cameraPositionY = u_cameraPositionY;
-	
-
 #ifdef diffuseTextureFlag
 	// compute cameraPosition from UV
-	cameraPositionX = v_diffuseUV.s * 2.0 - 1.0;
-	cameraPositionY = v_diffuseUV.t * -2.0 + 1.0;
-
+	// the radius should read from host
+	float cameraPositionX = v_diffuseUV.s * 2.0 - 1.0;
+	float cameraPositionY = v_diffuseUV.t * -2.0 + 1.0;
+#else
+	float cameraPositionX = 0.0;
+	float cameraPositionY = 0.0;
 #endif
 
 
