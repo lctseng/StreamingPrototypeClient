@@ -291,9 +291,6 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_rowEnd",endRow);
 
 
-        program.setUniformi("u_midColumn",(startIndex + endIndex)/2);
-        program.setUniformi("u_midRow",(startRow + endRow)/2);
-
         StringPool.addField("Columns", "" + startIndex + "-" + endIndex);
         StringPool.addField("Rows", "" + startRow + "-" + endRow);
 

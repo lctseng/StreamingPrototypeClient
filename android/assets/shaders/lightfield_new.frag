@@ -27,9 +27,6 @@ uniform int u_colEnd;
 uniform int u_rowStart;
 uniform int u_rowEnd;
 
-uniform int u_midColumn;
-uniform int u_midRow;
-
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
@@ -187,7 +184,7 @@ void main() {
 							float weight = (u_apertureSize - dist)/u_apertureSize;
 							
 							
-							if(cursor_valid == 1 && u_midColumn == i && u_midRow == j){
+							if(cursor_valid == 1){
 								float dx = cursor_UV.s - UV.s;
 								float dy = cursor_UV.t - UV.t;
 								if(dx * dx + dy * dy < 0.01){
