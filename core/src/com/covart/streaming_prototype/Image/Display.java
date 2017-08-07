@@ -86,7 +86,6 @@ public class Display implements Disposable{
         lastEyePosition = new Vector3();
         editingScreenPosition = new Vector2(-1,-1);
         editingImagePosition = new Vector2(-1,-1);
-        eyeWrapper = new EyeWrapper();
 
         // temps
         tmpVector1 = new Vector3();
@@ -101,6 +100,8 @@ public class Display implements Disposable{
         recenterCamera();
         camMain.near = 0.1f;
         camMain.far = ConfigManager.getFocusChangeRatio();
+
+        eyeWrapper = new EyeWrapper(camMain);
 
         // VR mode settings
 

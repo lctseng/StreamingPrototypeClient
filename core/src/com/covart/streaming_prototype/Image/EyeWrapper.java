@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype.Image;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -19,6 +20,7 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
  */
 
 public class EyeWrapper {
+    private Camera camera;
     private Eye eye;
 
 
@@ -26,7 +28,10 @@ public class EyeWrapper {
 
     // tmps
     private Matrix4 tmpMatrix1;
+    private Matrix4 tmpMatrix2;
     private Quaternion tmpQuaternion1;
+
+    private Vector3 tmpVector1;
 
     private float inspectCount = 0f;
     private boolean needUpdate = false;
@@ -38,10 +43,13 @@ public class EyeWrapper {
     private float pitch = 0f;
     private float roll  = 0f;
 
-    public EyeWrapper(){
+    public EyeWrapper(Camera camera){
+        this.camera = camera;
         autoEyeViewGenerator = new AutoEyeViewGenerator(this);
 
         tmpMatrix1  = new Matrix4();
+        tmpMatrix2  = new Matrix4();
+        tmpVector1 = new Vector3();
         tmpQuaternion1 = new Quaternion();
         eyeView = new Matrix4();
     }
@@ -75,7 +83,10 @@ public class EyeWrapper {
         inspectCount += Gdx.graphics.getDeltaTime();
         if(inspectCount > 0.5f) {
             inspectCount = 0f;
+            eyeView.getTranslation(tmpVector1);
+            tmpVector1.add(camera.position);
             StringPool.addField("Eye angles", String.format(Locale.TAIWAN, "Yaw: %2f, Pitch: %2f, Roll: %2f", yaw, pitch, roll));
+            StringPool.addField("Eye translation", String.format(Locale.TAIWAN, "X: %2f, Y: %2f, Z: %2f", tmpVector1.x, tmpVector1.y, tmpVector1.z));
         }
     }
 
@@ -92,17 +103,48 @@ public class EyeWrapper {
 
     // Setup eyeView and eyeViewLimited
     private void updateEyeView(){
-        // get the real eye view
+        // get the eye view without translation
         if(ConfigManager.isAutoRotateEnabled()){
             // fetch yaw, pitch and roll from generator
             yaw = (float)autoEyeViewGenerator.getYaw();
             pitch = (float)autoEyeViewGenerator.getPitch();
             roll = (float)autoEyeViewGenerator.getRoll();
-            eyeView.setFromEulerAngles(yaw, pitch, roll);
+            tmpMatrix1.setFromEulerAngles(yaw, pitch, roll);
         }
         else{
-            eyeView.set(this.eye.getEyeView());
+            tmpMatrix1.set(this.eye.getEyeView());
         }
+        // apply compute translation for eye view
+        // TODO: need optimize variables
+        tmpMatrix1.getRotation(tmpQuaternion1);
+        Vector3 finalEyePosition = new Vector3(camera.position);
+        Vector3 finalEyeTranslation = new Vector3();
+        Vector3 rotationCenter = new Vector3(camera.position);
+        rotationCenter.z = 0; // assume on st plane
+        // rotate around the projection on the plane
+        // translation(-x, -y, -z) => Rotation => translation(x, y, z)
+        // translation(-x, -y, -z)
+        Vector3 rotationCenterNeg = new Vector3(rotationCenter);
+        rotationCenterNeg.scl(-1);
+        tmpMatrix2.setToTranslation(rotationCenterNeg);
+        finalEyePosition.mul(tmpMatrix2);
+
+        // rotation
+        tmpQuaternion1.transform(finalEyePosition);
+
+        // translation(x, y, z)
+        tmpMatrix2.setToTranslation(rotationCenter);
+        finalEyePosition.mul(tmpMatrix2);
+
+        finalEyeTranslation.set(finalEyePosition);
+        finalEyeTranslation.sub(camera.position);
+        tmpMatrix2.setToTranslation(finalEyeTranslation);
+        eyeView.set(tmpMatrix1);
+        eyeView.mulLeft(tmpMatrix2);
+
+
+
+
     }
 
     public float[] getPerspective(float zNear, float zFar) {
