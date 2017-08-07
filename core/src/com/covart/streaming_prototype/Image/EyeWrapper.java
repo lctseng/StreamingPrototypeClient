@@ -23,7 +23,6 @@ public class EyeWrapper {
 
 
     private Matrix4 eyeView;
-    private Matrix4 eyeViewLimited;
 
     // tmps
     private Matrix4 tmpMatrix1;
@@ -45,7 +44,6 @@ public class EyeWrapper {
         tmpMatrix1  = new Matrix4();
         tmpQuaternion1 = new Quaternion();
         eyeView = new Matrix4();
-        eyeViewLimited = new Matrix4();
     }
 
     public Eye getEye() {
@@ -82,50 +80,28 @@ public class EyeWrapper {
     }
 
     // Forwarding methods
-    public Matrix4 getEyeView(boolean limit)
+
+    public Matrix4 getEyeView()
     {
         if(needUpdate){
             needUpdate = false;
             updateEyeView();
         }
-        if(limit){
-            return this.eyeViewLimited;
-        }
-        else{
-            return this.eyeView;
-        }
-    }
-
-    public Matrix4 getEyeView()
-    {
-        return getEyeView(true);
+        return this.eyeView;
     }
 
     // Setup eyeView and eyeViewLimited
     private void updateEyeView(){
         // get the real eye view
-        tmpMatrix1.set(this.eye.getEyeView());
         if(ConfigManager.isAutoRotateEnabled()){
             // fetch yaw, pitch and roll from generator
             yaw = (float)autoEyeViewGenerator.getYaw();
             pitch = (float)autoEyeViewGenerator.getPitch();
             roll = (float)autoEyeViewGenerator.getRoll();
             eyeView.setFromEulerAngles(yaw, pitch, roll);
-            eyeViewLimited.set(eyeView);
         }
         else{
-            tmpMatrix1.getRotation(tmpQuaternion1);
-            yaw = tmpQuaternion1.getYaw();
-            pitch = tmpQuaternion1.getPitch();
-            roll = tmpQuaternion1.getRoll();
-            // apply limitation
-            // FIXME: current limitation does not work well when "roll" is too large
-            if(ConfigManager.isEyeWrapperEnableAngleLimit()){
-                yaw = clamp(yaw,-ConfigManager.getEyeWrapperYawLimit(), ConfigManager.getEyeWrapperYawLimit());
-                pitch = clamp(pitch,-ConfigManager.getEyeWrapperPitchLimit(), ConfigManager.getEyeWrapperPitchLimit());
-            }
-            eyeView.set(tmpMatrix1);
-            eyeViewLimited.setFromEulerAngles(yaw, pitch, roll);
+            eyeView.set(this.eye.getEyeView());
         }
     }
 

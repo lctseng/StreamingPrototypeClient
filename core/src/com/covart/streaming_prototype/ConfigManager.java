@@ -96,11 +96,9 @@ public class ConfigManager {
     private static float eyeRotationToTranslationRatio = 1.0f;
 
     // FIXME: angle limit seems to meaning less in new aperture model
-    private static float eyeWrapperPitchLimit = 10f;
+    private static float autoRotatePitchLimit = 10f;
 
-    private static float eyeWrapperYawLimit = 10f;
-
-    private static boolean eyeWrapperEnableAngleLimit = false;
+    private static float autoRotateYawLimit = 10f;
 
     private static float autoRotateSpeedFactor = 1f;
 
@@ -307,28 +305,20 @@ public class ConfigManager {
         ConfigManager.eyeRotationToTranslationRatio = eyeRotationToTranslationRatio;
     }
 
-    public static float getEyeWrapperPitchLimit() {
-        return eyeWrapperPitchLimit;
+    public static float getAutoRotatePitchLimit() {
+        return autoRotatePitchLimit;
     }
 
-    public static void setEyeWrapperPitchLimit(float eyeWrapperPitchLimit) {
-        ConfigManager.eyeWrapperPitchLimit = eyeWrapperPitchLimit;
+    public static void setAutoRotatePitchLimit(float autoRotatePitchLimit) {
+        ConfigManager.autoRotatePitchLimit = autoRotatePitchLimit;
     }
 
-    public static float getEyeWrapperYawLimit() {
-        return eyeWrapperYawLimit;
+    public static float getAutoRotateYawLimit() {
+        return autoRotateYawLimit;
     }
 
-    public static void setEyeWrapperYawLimit(float eyeWrapperYawLimit) {
-        ConfigManager.eyeWrapperYawLimit = eyeWrapperYawLimit;
-    }
-
-    public static boolean isEyeWrapperEnableAngleLimit() {
-        return eyeWrapperEnableAngleLimit;
-    }
-
-    public static void setEyeWrapperEnableAngleLimit(boolean eyeWrapperEnableAngleLimit) {
-        ConfigManager.eyeWrapperEnableAngleLimit = eyeWrapperEnableAngleLimit;
+    public static void setAutoRotateYawLimit(float autoRotateYawLimit) {
+        ConfigManager.autoRotateYawLimit = autoRotateYawLimit;
     }
 
     public static float getAutoRotateSpeedFactor() {

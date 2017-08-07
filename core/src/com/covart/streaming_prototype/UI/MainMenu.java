@@ -129,7 +129,6 @@ public class MainMenu extends UIComponent {
 
         addEyeWrapperPitchLimitUI();
         addEyeWrapperYawLimitUI();
-        addEyeWrapperEnableAngleLimitUI();
         canvas.row().height(commonRowHeight);
 
         addAutoRotateEnabledUI();
@@ -593,12 +592,12 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
-        slider.setValue(ConfigManager.getEyeWrapperPitchLimit());
+        slider.setValue(ConfigManager.getAutoRotatePitchLimit());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperPitchLimit(slider.getValue());
+                ConfigManager.setAutoRotatePitchLimit(slider.getValue());
                 name.setText(getEyeWrapperPitchLimitText());
             }
         });
@@ -610,7 +609,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getEyeWrapperPitchLimitText(){
-        return String.format(Locale.TAIWAN,"Pitch limit: %.0f",ConfigManager.getEyeWrapperPitchLimit());
+        return String.format(Locale.TAIWAN,"Auto rotate pitch limit: %.0f",ConfigManager.getAutoRotatePitchLimit());
     }
 
     private void addEyeWrapperYawLimitUI(){
@@ -619,12 +618,12 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
-        slider.setValue(ConfigManager.getEyeWrapperYawLimit());
+        slider.setValue(ConfigManager.getAutoRotateYawLimit());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperYawLimit(slider.getValue());
+                ConfigManager.setAutoRotateYawLimit(slider.getValue());
                 name.setText(getEyeWrapperYawLimitText());
             }
         });
@@ -636,29 +635,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getEyeWrapperYawLimitText(){
-        return String.format(Locale.TAIWAN,"Yaw limit: %.0f",ConfigManager.getEyeWrapperYawLimit());
-    }
-
-    private void addEyeWrapperEnableAngleLimitUI(){
-        // label
-        Label name = new Label("Enable angle limit:", largeLabelStyle);
-
-        // checkbox
-        final CheckBox box = new CheckBox("",skin);
-        box.setChecked(ConfigManager.isEyeWrapperEnableAngleLimit());
-        updateCheckBoxText(box);
-        enlargeCheckBoxFont(box);
-        box.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperEnableAngleLimit(box.isChecked());
-                updateCheckBoxText(box);
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(box).colspan(tableColumnSpan - 1);
+        return String.format(Locale.TAIWAN,"Auto rotate yaw limit: %.0f",ConfigManager.getAutoRotateYawLimit());
     }
 
     private void addAutoRotateSpeedFactorUI(){

@@ -41,8 +41,8 @@ public class AutoEyeViewGenerator {
                 angle = 0.0;
                 pauseTime = PAUSE_BETWEEN_ROUND;
             }
-            yaw = ConfigManager.getEyeWrapperYawLimit() * Math.cos(angle);
-            pitch = ConfigManager.getEyeWrapperPitchLimit() * Math.sin(angle);
+            yaw = ConfigManager.getAutoRotateYawLimit() * Math.cos(angle);
+            pitch = ConfigManager.getAutoRotatePitchLimit() * Math.sin(angle);
         }
     }
 
