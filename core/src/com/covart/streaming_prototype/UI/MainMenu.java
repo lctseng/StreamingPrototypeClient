@@ -129,6 +129,7 @@ public class MainMenu extends UIComponent {
 
         addEyeWrapperPitchLimitUI();
         addEyeWrapperYawLimitUI();
+        addStPlaneRadiusUI();
         canvas.row().height(commonRowHeight);
 
         addAutoRotateEnabledUI();
@@ -636,6 +637,33 @@ public class MainMenu extends UIComponent {
 
     private String getEyeWrapperYawLimitText(){
         return String.format(Locale.TAIWAN,"Auto rotate yaw limit: %.0f",ConfigManager.getAutoRotateYawLimit());
+    }
+
+    private void addStPlaneRadiusUI(){
+        // label
+        final Label name = new Label(getStPlaneRadiusText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(0.1f, 10f, 0.1f, false, skin);
+        slider.setValue(ConfigManager.getStPlaneRadius());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setStPlaneRadius(slider.getValue());
+                name.setText(getStPlaneRadiusText());
+                ConfigManager.getApp().display.refreshStPlane();
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getStPlaneRadiusText(){
+        return String.format(Locale.TAIWAN,"ST plane radius %.1f",ConfigManager.getStPlaneRadius());
     }
 
     private void addAutoRotateSpeedFactorUI(){
