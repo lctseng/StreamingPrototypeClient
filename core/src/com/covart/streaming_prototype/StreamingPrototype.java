@@ -307,7 +307,7 @@ public class StreamingPrototype extends ApplicationAdapter
     public void sendSenserData() {
         // FIXME: direction should change to Eye direction
         // Can be postponed, because server do not take the direction
-        Message.StreamingMessage msg = makeSensorPacket(display.lastEyePosition, display.getMainCamera().direction);
+        Message.StreamingMessage msg = makeSensorPacket(display.getLastEyePosition(), display.getMainCamera().direction);
         if (msg != null) {
             network.sendMessageProtobufAsync(msg);
         }

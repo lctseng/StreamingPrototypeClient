@@ -69,7 +69,6 @@ public class Display implements Disposable{
     private Texture texture;
 
     public EyeWrapper eyeWrapper;
-    public Vector3 lastEyePosition;
 
     public Vector2 editingScreenPosition;
     public Vector2 editingImagePosition;
@@ -83,7 +82,6 @@ public class Display implements Disposable{
         font.getData().setScale(1.5f);
 
         // misc
-        lastEyePosition = new Vector3();
         editingScreenPosition = new Vector2(-1,-1);
         editingImagePosition = new Vector2(-1,-1);
 
@@ -181,7 +179,7 @@ public class Display implements Disposable{
         modelBatch.end();
 
         // only draw for LEFT eye or MONOCULAR
-        if(isMainEye()) {
+        if(ConfigManager.isMainEye(eye)) {
             drawOverlay();
         }
     }
@@ -282,11 +280,13 @@ public class Display implements Disposable{
         editingScreenPosition.set(eyeWrapper.getViewport().width * ratioX, eyeWrapper.getViewport().height * ratioY);
     }
 
-    public boolean isMainEye(){
-        return eyeWrapper.getType() == Eye.Type.LEFT || eyeWrapper.getType() == Eye.Type.MONOCULAR;
-    }
 
     public Eye currentEye(){
         return this.eyeWrapper.getEye();
     }
+
+    public Vector3 getLastEyePosition(){
+        return this.eyeWrapper.getLastEyePosition();
+    }
+
 }

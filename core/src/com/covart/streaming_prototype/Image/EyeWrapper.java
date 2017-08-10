@@ -25,6 +25,7 @@ public class EyeWrapper {
 
 
     private Matrix4 eyeView;
+    private Vector3 lastEyePosition;
 
     // tmps
     private Matrix4 tmpMatrix1;
@@ -51,6 +52,8 @@ public class EyeWrapper {
         tmpMatrix2  = new Matrix4();
         tmpVector1 = new Vector3();
         tmpQuaternion1 = new Quaternion();
+
+        lastEyePosition = new Vector3();
         eyeView = new Matrix4();
     }
 
@@ -86,7 +89,7 @@ public class EyeWrapper {
             eyeView.getTranslation(tmpVector1);
             tmpVector1.add(camera.position);
             StringPool.addField("Eye angles", String.format(Locale.TAIWAN, "Yaw: %2f, Pitch: %2f, Roll: %2f", yaw, pitch, roll));
-            StringPool.addField("Eye translation", String.format(Locale.TAIWAN, "X: %2f, Y: %2f, Z: %2f", tmpVector1.x, tmpVector1.y, tmpVector1.z));
+            StringPool.addField("Eye position", String.format(Locale.TAIWAN, "X: %2f, Y: %2f, Z: %2f", lastEyePosition.x, lastEyePosition.y, lastEyePosition.z));
         }
     }
 
@@ -120,7 +123,7 @@ public class EyeWrapper {
         Vector3 finalEyePosition = new Vector3(camera.position);
         Vector3 finalEyeTranslation = new Vector3();
         Vector3 rotationCenter = new Vector3(camera.position);
-        rotationCenter.z = 0; // assume on st plane
+        rotationCenter.z -= ConfigManager.getEyeRotationCenterDistance(); // assume on st plane
         // rotate around the projection on the plane
         // translation(-x, -y, -z) => Rotation => translation(x, y, z)
         // translation(-x, -y, -z)
@@ -143,6 +146,12 @@ public class EyeWrapper {
         eyeView.mulLeft(tmpMatrix2);
 
 
+        if(ConfigManager.isMainEye(this.eye)){
+            this.lastEyePosition.set(camera.position);
+            this.lastEyePosition.add(finalEyeTranslation);
+        }
+
+
 
 
     }
@@ -153,6 +162,10 @@ public class EyeWrapper {
 
     public Viewport getViewport() {
         return this.eye.getViewport();
+    }
+
+    public Vector3 getLastEyePosition() {
+        return lastEyePosition;
     }
 
     public int getType() {

@@ -137,7 +137,7 @@ public class MainMenu extends UIComponent {
 
         addEditingReportIntervalUI();
         addSensorReportIntervalUI();
-        addEyeRotationToTranslationRatioUI();
+        addeyeRotationCenterDistanceUI();
         canvas.row().height(commonRowHeight);
 
 
@@ -377,19 +377,19 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Eye disparity: %.3f",ConfigManager.getEyeDisparityFactor());
     }
 
-    private void addEyeRotationToTranslationRatioUI(){
+    private void addeyeRotationCenterDistanceUI(){
         // label
-        final Label name = new Label(getEyeRotationToTranslationRatioText(), largeLabelStyle);
+        final Label name = new Label(geteyeRotationCenterDistanceText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.00f, 2.0f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getEyeRotationToTranslationRatio());
+        final HorzSlider slider = new HorzSlider(0.00f, 5.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getEyeRotationCenterDistance());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeRotationToTranslationRatio(slider.getValue());
-                name.setText(getEyeRotationToTranslationRatioText());
+                ConfigManager.setEyeRotationCenterDistance(slider.getValue());
+                name.setText(geteyeRotationCenterDistanceText());
             }
         });
 
@@ -399,8 +399,8 @@ public class MainMenu extends UIComponent {
 
     }
 
-    private String getEyeRotationToTranslationRatioText(){
-        return String.format(Locale.TAIWAN,"Rotation to translation: %.3f",ConfigManager.getEyeRotationToTranslationRatio());
+    private String geteyeRotationCenterDistanceText(){
+        return String.format(Locale.TAIWAN,"Rotation center: %.3f",ConfigManager.getEyeRotationCenterDistance());
     }
 
     private void addStepChangeUI(){
