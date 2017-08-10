@@ -102,6 +102,8 @@ public class ConfigManager {
 
     private static boolean autoRotateEnabled = false;
 
+    private static float stPlaneRadius = 1f;
+
 
 
     // getters and setters
@@ -334,6 +336,14 @@ public class ConfigManager {
 
     public static void setAutoRotateEnabled(boolean autoRotateEnabled) {
         ConfigManager.autoRotateEnabled = autoRotateEnabled;
+    }
+
+    public static float getStPlaneRadius() {
+        return stPlaneRadius;
+    }
+
+    public static void setStPlaneRadius(float stPlaneRadius) {
+        ConfigManager.stPlaneRadius = stPlaneRadius;
     }
 
     // end of getters and setters

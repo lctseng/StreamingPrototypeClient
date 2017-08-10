@@ -73,6 +73,9 @@ public class Display implements Disposable{
     public Vector2 editingScreenPosition;
     public Vector2 editingImagePosition;
 
+    private long lastStPlaneUpdateTime = 0;
+    private boolean requestChangeStPlane = false;
+
     public Display(){
 
         texture = new Texture("grid.jpg");
@@ -115,13 +118,36 @@ public class Display implements Disposable{
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        ModelBuilder modelBuilder = new ModelBuilder();
+        createStPlane();
+    }
 
-        // TODO: make these into shared configuration
+    public void refreshStPlane(){
+        requestChangeStPlane = true;
+    }
 
-        float radius = 1f;
+    private void updateCheckUpdateStPlane(){
+        long now = System.nanoTime();
+        if(now - lastStPlaneUpdateTime > 100000000){
+            destroyStPlane();
+            createStPlane();
+            lastStPlaneUpdateTime = now;
+            requestChangeStPlane = false;
+        }
+    }
+
+    public void destroyStPlane(){
+        if(model != null) {
+            model.dispose();
+            model = null;
+        }
+        instance = null;
+    }
+
+    public void createStPlane(){
+        float radius = ConfigManager.getStPlaneRadius();
         float depth = 0;
 
+        ModelBuilder modelBuilder = new ModelBuilder();
         model = modelBuilder.createRect(
                 -radius,-radius,depth,
                 radius,-radius,depth,
@@ -200,6 +226,9 @@ public class Display implements Disposable{
     }
 
     public void onNewFrame(HeadTransform paramHeadTransform) {
+        if(requestChangeStPlane){
+            updateCheckUpdateStPlane();
+        }
         eyeWrapper.onNewFrame();
         collectImages();
         Profiler.reportOnDisplay();
@@ -222,7 +251,9 @@ public class Display implements Disposable{
         batch.dispose();
         font.dispose();
         textureManager.dispose();
-        model.dispose();
+        if(model != null) {
+            model.dispose();
+        }
         modelBatch.dispose();
     }
 
