@@ -129,7 +129,6 @@ public class MainMenu extends UIComponent {
 
         addEyeWrapperPitchLimitUI();
         addEyeWrapperYawLimitUI();
-        addEyeWrapperEnableAngleLimitUI();
         canvas.row().height(commonRowHeight);
 
         addAutoRotateEnabledUI();
@@ -138,7 +137,7 @@ public class MainMenu extends UIComponent {
 
         addEditingReportIntervalUI();
         addSensorReportIntervalUI();
-        addEyeRotationToTranslationRatioUI();
+        addeyeRotationCenterDistanceUI();
         canvas.row().height(commonRowHeight);
 
 
@@ -378,19 +377,19 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Eye disparity: %.3f",ConfigManager.getEyeDisparityFactor());
     }
 
-    private void addEyeRotationToTranslationRatioUI(){
+    private void addeyeRotationCenterDistanceUI(){
         // label
-        final Label name = new Label(getEyeRotationToTranslationRatioText(), largeLabelStyle);
+        final Label name = new Label(geteyeRotationCenterDistanceText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.00f, 2.0f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getEyeRotationToTranslationRatio());
+        final HorzSlider slider = new HorzSlider(0.00f, 5.0f, 0.01f, false, skin);
+        slider.setValue(ConfigManager.getEyeRotationCenterDistance());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeRotationToTranslationRatio(slider.getValue());
-                name.setText(getEyeRotationToTranslationRatioText());
+                ConfigManager.setEyeRotationCenterDistance(slider.getValue());
+                name.setText(geteyeRotationCenterDistanceText());
             }
         });
 
@@ -400,8 +399,8 @@ public class MainMenu extends UIComponent {
 
     }
 
-    private String getEyeRotationToTranslationRatioText(){
-        return String.format(Locale.TAIWAN,"Rotation to translation: %.3f",ConfigManager.getEyeRotationToTranslationRatio());
+    private String geteyeRotationCenterDistanceText(){
+        return String.format(Locale.TAIWAN,"Rotation center: %.3f",ConfigManager.getEyeRotationCenterDistance());
     }
 
     private void addStepChangeUI(){
@@ -486,7 +485,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 0.5f, 0.0001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 1f, 0.0001f, false, skin);
         slider.setValue(ConfigManager.getApertureSize());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -593,12 +592,12 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
-        slider.setValue(ConfigManager.getEyeWrapperPitchLimit());
+        slider.setValue(ConfigManager.getAutoRotatePitchLimit());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperPitchLimit(slider.getValue());
+                ConfigManager.setAutoRotatePitchLimit(slider.getValue());
                 name.setText(getEyeWrapperPitchLimitText());
             }
         });
@@ -610,7 +609,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getEyeWrapperPitchLimitText(){
-        return String.format(Locale.TAIWAN,"Pitch limit: %.0f",ConfigManager.getEyeWrapperPitchLimit());
+        return String.format(Locale.TAIWAN,"Auto rotate pitch limit: %.0f",ConfigManager.getAutoRotatePitchLimit());
     }
 
     private void addEyeWrapperYawLimitUI(){
@@ -619,12 +618,12 @@ public class MainMenu extends UIComponent {
 
         // slider
         final HorzSlider slider = new HorzSlider(0f, 45f, 1f, false, skin);
-        slider.setValue(ConfigManager.getEyeWrapperYawLimit());
+        slider.setValue(ConfigManager.getAutoRotateYawLimit());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperYawLimit(slider.getValue());
+                ConfigManager.setAutoRotateYawLimit(slider.getValue());
                 name.setText(getEyeWrapperYawLimitText());
             }
         });
@@ -636,29 +635,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getEyeWrapperYawLimitText(){
-        return String.format(Locale.TAIWAN,"Yaw limit: %.0f",ConfigManager.getEyeWrapperYawLimit());
-    }
-
-    private void addEyeWrapperEnableAngleLimitUI(){
-        // label
-        Label name = new Label("Enable angle limit:", largeLabelStyle);
-
-        // checkbox
-        final CheckBox box = new CheckBox("",skin);
-        box.setChecked(ConfigManager.isEyeWrapperEnableAngleLimit());
-        updateCheckBoxText(box);
-        enlargeCheckBoxFont(box);
-        box.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeWrapperEnableAngleLimit(box.isChecked());
-                updateCheckBoxText(box);
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(box).colspan(tableColumnSpan - 1);
+        return String.format(Locale.TAIWAN,"Auto rotate yaw limit: %.0f",ConfigManager.getAutoRotateYawLimit());
     }
 
     private void addAutoRotateSpeedFactorUI(){

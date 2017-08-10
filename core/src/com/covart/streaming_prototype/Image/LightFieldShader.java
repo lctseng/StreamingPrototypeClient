@@ -24,11 +24,11 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Utils.Vector4;
 import com.covart.streaming_prototype.StringPool;
-import com.google.vrtoolkit.cardboard.Eye;
 
 import java.util.Locale;
 
@@ -48,16 +48,17 @@ public class LightFieldShader extends DefaultShader{
     private int startRow;
     private int endRow;
 
-    private Matrix4 eyeMatrix;
-    private Quaternion eyeRotation;
-    private Vector3 eyeTranslate;
-    private Vector3 eyePosition;
-
     private Matrix4 matrixRkToRf;
 
     private Matrix4 tmpMatrix;
     private Vector3 tmpVector;
     private Vector3 tmpVector2;
+
+    // for UV compute
+    Vector4 cursor_rk;
+    Vector4 cursor_rf;
+    Vector4 cursor_rd;
+
 
     public Display getDisplay() {
         return display;
@@ -96,12 +97,11 @@ public class LightFieldShader extends DefaultShader{
         startRow = -1;
         endRow = -1;
 
-        eyeMatrix = new Matrix4();
-        eyeRotation = new Quaternion();
-        eyePosition = new Vector3();
-        eyeTranslate = new Vector3();
-
         matrixRkToRf = new Matrix4();
+
+        cursor_rk = new Vector4();
+        cursor_rf = new Vector4();
+        cursor_rd = new Vector4();
 
         tmpMatrix = new Matrix4();
         tmpVector = new Vector3();
@@ -123,63 +123,16 @@ public class LightFieldShader extends DefaultShader{
 
     @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
-        bindPosition();
         updateLFIndex();
         bindConfiguration();
         bindProjections();
         bindTexture();
-        if(display.isMainEye()) {
+        if(ConfigManager.isMainEye(display.currentEye())) {
             StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f", camera.position.x, camera.position.y, camera.position.z));
             visualizeLightFieldStatus();
             computeCursorUV();
         }
         super.render(renderable, combinedAttributes);
-    }
-
-    private void bindPosition(){
-        eyeMatrix.set(display.eyeWrapper.getEyeView());
-        eyeMatrix.getRotation(eyeRotation);
-
-        eyeMatrix.getTranslation(eyeTranslate);
-        eyeTranslate.scl(ConfigManager.getEyeDisparityFactor());
-        eyeRotation.transform(eyeTranslate);
-
-        eyePosition.set(camera.position);
-        eyePosition.add(eyeTranslate);
-
-        // now, rotate the eye position around its projection on plane
-
-        // find projection on the plane
-        tmpVector.set(eyePosition); // projection on the plane
-        tmpVector.z = -3f; // should related to plane's depth
-
-        // translation
-        tmpVector2.set(tmpVector);
-        tmpVector2.scl(-1f);
-
-        // scale the eye rotation
-        eyeRotation.mul(ConfigManager.getEyeRotationToTranslationRatio());
-
-        // rotate around the projection on the plane
-        // translation(-x, -y, -z) => Rotation => translation(x, y, z)
-        // translation(-x, -y, -z)
-        tmpMatrix.setToTranslation(tmpVector2);
-        eyePosition.mul(tmpMatrix);
-
-        // rotation
-        eyeRotation.transform(eyePosition);
-
-        // translation(x, y, z)
-        tmpMatrix.setToTranslation(tmpVector);
-        eyePosition.mul(tmpMatrix);
-
-        program.setUniformf("u_cameraPositionX", eyePosition.x);
-        program.setUniformf("u_cameraPositionY", eyePosition.y);
-
-        //StringPool.addField("Eye Position " + ConfigManager.getEyeString(display.currentEye), String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f",eyePosition.x,eyePosition.y,eyePosition.z));
-        if(display.isMainEye()){
-            display.lastEyePosition.set(eyePosition);
-        }
     }
 
     private void bindConfiguration(){
@@ -215,11 +168,12 @@ public class LightFieldShader extends DefaultShader{
         startIndex = -1;
         endIndex = -1;
 
+        // TODO: these value needs new meaning
         // for columns
         // find first index that fall into aperture
         for(int i=0;i<cols;i++){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
-            float dx = cameraX - eyePosition.x;
+            float dx = cameraX - getEyePosition().x;
             float dist = dx * dx; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 startIndex = i;
@@ -229,7 +183,7 @@ public class LightFieldShader extends DefaultShader{
         // find last index that fall into aperture
         for(int i=cols - 1;i>= 0;i--){
             float cameraX = (initCameraX + i * spanX) * cameraStep;
-            float dx = cameraX - eyePosition.x;
+            float dx = cameraX - getEyePosition().x;
             float dist = dx * dx; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 endIndex = i;
@@ -255,7 +209,7 @@ public class LightFieldShader extends DefaultShader{
         endRow = -1;
         for(int i=0;i<rows;i++){
             float cameraY = (initCameraY + i * spanY) * cameraStep;
-            float dy = cameraY - eyePosition.y;
+            float dy = cameraY - getEyePosition().y;
             float dist = dy * dy; // assume dx is zero
             if(dist < ConfigManager.getApertureSize()){
                 startRow = i;
@@ -265,13 +219,19 @@ public class LightFieldShader extends DefaultShader{
         // find last index that fall into aperture
         for(int i=rows - 1;i>= 0;i--){
             float cameraY = (initCameraY + i * spanY) * cameraStep;
-            float dy = cameraY - eyePosition.y;
+            float dy = cameraY - getEyePosition().y;
             float dist = dy * dy; // assume dy is zero
             if(dist < ConfigManager.getApertureSize()){
                 endRow = i;
                 break;
             }
         }
+
+        // FIXME: these values should have new meanings
+        startIndex = 0;
+        endIndex = cols-1;
+        startRow = 0;
+        endRow = rows - 1;
 
         program.setUniformi("u_colTextureOffset", startIndex);
 
@@ -280,12 +240,14 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_rowStart",startRow);
         program.setUniformi("u_rowEnd",endRow);
 
-        program.setUniformi("u_midColumn",(startIndex + endIndex)/2);
-        program.setUniformi("u_midRow",(startRow + endRow)/2);
 
         StringPool.addField("Columns", "" + startIndex + "-" + endIndex);
         StringPool.addField("Rows", "" + startRow + "-" + endRow);
 
+    }
+
+    private Vector3 getEyePosition(){
+        return display.eyeWrapper.getLastEyePosition();
     }
 
     private void bindTexture(){
@@ -339,8 +301,6 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void computeCursorUV(){
-
-        // TODO: Optimized these code
         // compute cursor UV
         // cursor projection
         float cursor_screen_x = display.editingScreenPosition.x / display.eyeWrapper.getViewport().width;
@@ -349,16 +309,14 @@ public class LightFieldShader extends DefaultShader{
         cursor_screen_x = cursor_screen_x * 2.0f - 1.0f;
         cursor_screen_y = cursor_screen_y * 2.0f - 1.0f;
 
-        Vector4 cursor_rk = new Vector4(cursor_screen_x, cursor_screen_y, 1.0f, 1.0f);
+        cursor_rk.set(cursor_screen_x, cursor_screen_y, 1.0f, 1.0f);
 
-        Vector4 cursor_rf = new Vector4();
+        // compute RF(s,t)
         cursor_rf.set(cursor_rk);
         cursor_rf.mul(matrixRkToRf);
 
-
         // compute RD(s,t)
         // prepare matrix from rf to rd
-        Vector4 cursor_rd = new Vector4();
         cursor_rd.set(cursor_rf);
         cursor_rd.mul(dataCamera.combined);
 

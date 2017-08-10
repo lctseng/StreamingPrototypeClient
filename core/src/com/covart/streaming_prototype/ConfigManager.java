@@ -63,9 +63,9 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 0.100f;
+    private static float apertureSize = 0.107f;
 
-    private static float focusChangeRatio = 2.267f;
+    private static float focusChangeRatio = 2.508f;
 
     private static boolean stopOnDisconnected = false;
 
@@ -82,7 +82,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 1.000f;
 
-    private static float dataCameraFOV = 110.0f;
+    private static float dataCameraFOV = 77.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
@@ -92,17 +92,16 @@ public class ConfigManager {
 
     private static float eyeDisparityFactor = 5.0f;
 
-    private static float eyeRotationToTranslationRatio = 1.0f;
+    private static float eyeRotationCenterDistance = 3.0f;
 
-    private static float eyeWrapperPitchLimit = 10f;
+    private static float autoRotatePitchLimit = 10f;
 
-    private static float eyeWrapperYawLimit = 10f;
-
-    private static boolean eyeWrapperEnableAngleLimit = true;
+    private static float autoRotateYawLimit = 10f;
 
     private static float autoRotateSpeedFactor = 1f;
 
     private static boolean autoRotateEnabled = false;
+
 
 
     // getters and setters
@@ -297,36 +296,28 @@ public class ConfigManager {
         ConfigManager.eyeDisparityFactor = eyeDisparityFactor;
     }
 
-    public static float getEyeRotationToTranslationRatio() {
-        return eyeRotationToTranslationRatio;
+    public static float getEyeRotationCenterDistance() {
+        return eyeRotationCenterDistance;
     }
 
-    public static void setEyeRotationToTranslationRatio(float eyeRotationToTranslationRatio) {
-        ConfigManager.eyeRotationToTranslationRatio = eyeRotationToTranslationRatio;
+    public static void setEyeRotationCenterDistance(float eyeRotationCenterDistance) {
+        ConfigManager.eyeRotationCenterDistance = eyeRotationCenterDistance;
     }
 
-    public static float getEyeWrapperPitchLimit() {
-        return eyeWrapperPitchLimit;
+    public static float getAutoRotatePitchLimit() {
+        return autoRotatePitchLimit;
     }
 
-    public static void setEyeWrapperPitchLimit(float eyeWrapperPitchLimit) {
-        ConfigManager.eyeWrapperPitchLimit = eyeWrapperPitchLimit;
+    public static void setAutoRotatePitchLimit(float autoRotatePitchLimit) {
+        ConfigManager.autoRotatePitchLimit = autoRotatePitchLimit;
     }
 
-    public static float getEyeWrapperYawLimit() {
-        return eyeWrapperYawLimit;
+    public static float getAutoRotateYawLimit() {
+        return autoRotateYawLimit;
     }
 
-    public static void setEyeWrapperYawLimit(float eyeWrapperYawLimit) {
-        ConfigManager.eyeWrapperYawLimit = eyeWrapperYawLimit;
-    }
-
-    public static boolean isEyeWrapperEnableAngleLimit() {
-        return eyeWrapperEnableAngleLimit;
-    }
-
-    public static void setEyeWrapperEnableAngleLimit(boolean eyeWrapperEnableAngleLimit) {
-        ConfigManager.eyeWrapperEnableAngleLimit = eyeWrapperEnableAngleLimit;
+    public static void setAutoRotateYawLimit(float autoRotateYawLimit) {
+        ConfigManager.autoRotateYawLimit = autoRotateYawLimit;
     }
 
     public static float getAutoRotateSpeedFactor() {
@@ -346,6 +337,10 @@ public class ConfigManager {
     }
 
     // end of getters and setters
+
+    public static boolean isMainEye(Eye eye){
+        return eye.getType() == Eye.Type.LEFT || eye.getType() == Eye.Type.MONOCULAR;
+    }
 
     public static String getEyeString(Eye eye){
         switch(eye.getType()){

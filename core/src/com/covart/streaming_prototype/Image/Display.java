@@ -54,7 +54,6 @@ public class Display implements Disposable{
 
     // cameras
     private CardboardCamera camMain;
-    private int vrRectWidth;
 
     // models
     private Model model;
@@ -70,7 +69,6 @@ public class Display implements Disposable{
     private Texture texture;
 
     public EyeWrapper eyeWrapper;
-    public Vector3 lastEyePosition;
 
     public Vector2 editingScreenPosition;
     public Vector2 editingImagePosition;
@@ -84,10 +82,8 @@ public class Display implements Disposable{
         font.getData().setScale(1.5f);
 
         // misc
-        lastEyePosition = new Vector3();
         editingScreenPosition = new Vector2(-1,-1);
         editingImagePosition = new Vector2(-1,-1);
-        eyeWrapper = new EyeWrapper();
 
         // temps
         tmpVector1 = new Vector3();
@@ -103,8 +99,9 @@ public class Display implements Disposable{
         camMain.near = 0.1f;
         camMain.far = ConfigManager.getFocusChangeRatio();
 
+        eyeWrapper = new EyeWrapper(camMain);
+
         // VR mode settings
-        vrRectWidth = Gdx.graphics.getWidth() / 2;
 
         String vertexShader = Gdx.files.internal("shaders/lightfield_new.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/lightfield_new.frag").readString();
@@ -120,10 +117,10 @@ public class Display implements Disposable{
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        // TODO: make these info share configuration
+        // TODO: make these into shared configuration
 
-        float radius = 15f;
-        float depth = -3f;
+        float radius = 1f;
+        float depth = 0;
 
         model = modelBuilder.createRect(
                 -radius,-radius,depth,
@@ -168,7 +165,7 @@ public class Display implements Disposable{
         eyeWrapper.inspect();
         // update camera for this eye
         // eye view matrix
-        tmpMatrix1.set(eyeWrapper.getEyeView(false));
+        tmpMatrix1.set(eyeWrapper.getEyeView());
         camMain.setEyeViewAdjustMatrix(tmpMatrix1);
 
         // projection matrix
@@ -182,7 +179,7 @@ public class Display implements Disposable{
         modelBatch.end();
 
         // only draw for LEFT eye or MONOCULAR
-        if(isMainEye()) {
+        if(ConfigManager.isMainEye(eye)) {
             drawOverlay();
         }
     }
@@ -283,11 +280,13 @@ public class Display implements Disposable{
         editingScreenPosition.set(eyeWrapper.getViewport().width * ratioX, eyeWrapper.getViewport().height * ratioY);
     }
 
-    public boolean isMainEye(){
-        return eyeWrapper.getType() == Eye.Type.LEFT || eyeWrapper.getType() == Eye.Type.MONOCULAR;
-    }
 
     public Eye currentEye(){
         return this.eyeWrapper.getEye();
     }
+
+    public Vector3 getLastEyePosition(){
+        return this.eyeWrapper.getLastEyePosition();
+    }
+
 }

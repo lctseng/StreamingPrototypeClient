@@ -11,9 +11,6 @@ precision highp float;
 
 uniform mat4 u_rk_to_rf;
 
-uniform float u_cameraPositionX;
-uniform float u_cameraPositionY;
-
 uniform float u_cameraStep;
 
 uniform float u_apertureSize;
@@ -26,9 +23,6 @@ uniform int u_colEnd;
 
 uniform int u_rowStart;
 uniform int u_rowEnd;
-
-uniform int u_midColumn;
-uniform int u_midRow;
 
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
@@ -122,6 +116,18 @@ void main() {
 	float spanX = 2.0 * u_columnPositionRatio / float(u_cols);
 	float spanY = 2.0 / float(u_rows);
 
+#ifdef diffuseTextureFlag
+	// compute cameraPosition from UV
+	// the radius should read from host
+	float cameraPositionX = v_diffuseUV.s * 2.0 - 1.0;
+	float cameraPositionY = v_diffuseUV.t * -2.0 + 1.0;
+#else
+	float cameraPositionX = 0.0;
+	float cameraPositionY = 0.0;
+#endif
+
+
+
 	if(screen_x >=-1.0 && screen_x <= 1.0 && screen_y >=-1.0 && screen_y <= 1.0){
 
 		if(u_colStart >= 0){
@@ -145,15 +151,15 @@ void main() {
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;
 					float cameraY = (initCameraY + float(j) * spanY) * u_cameraStep;
 
-					float dx = cameraX - u_cameraPositionX;
-					float dy = cameraY - u_cameraPositionY;
+					float dx = cameraX - cameraPositionX;
+					float dy = cameraY - cameraPositionY;
 
 					float dist = dx * dx +  dy * dy;
 
 					if(dist < u_apertureSize){
 						// prepare matrix from rf to rd
-						u_rf_to_rd[3][0] = cameraX;
-						u_rf_to_rd[3][1] = cameraY;
+						u_rf_to_rd[3][0] = -cameraX;
+						u_rf_to_rd[3][1] = -cameraY;
 						// compute RD(s,t)
 						vec4 rd = u_rf_to_rd * rf;
 
@@ -173,7 +179,7 @@ void main() {
 							float weight = (u_apertureSize - dist)/u_apertureSize;
 							
 							
-							if(cursor_valid == 1 && u_midColumn == i && u_midRow == j){
+							if(cursor_valid == 1){
 								float dx = cursor_UV.s - UV.s;
 								float dy = cursor_UV.t - UV.t;
 								if(dx * dx + dy * dy < 0.01){
@@ -229,7 +235,7 @@ void main() {
 				outputColor = outputColor / accumulateWeight;
 			}
 			else{
-				outputColor = vec4(0.4,0,0,1);
+				outputColor = vec4(0,0.4,0,1);
 			}
 				
 			gl_FragColor.rgb = outputColor.rgb;
