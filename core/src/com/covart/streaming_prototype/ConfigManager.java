@@ -92,7 +92,6 @@ public class ConfigManager {
 
     private static float eyeDisparityFactor = 5.0f;
 
-    // FIXME: eyeRotationCenterDistance becomes useless since eye position is meaningless
     private static float eyeRotationCenterDistance = 3.0f;
 
     private static float autoRotatePitchLimit = 10f;

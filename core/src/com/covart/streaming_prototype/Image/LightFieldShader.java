@@ -54,6 +54,12 @@ public class LightFieldShader extends DefaultShader{
     private Vector3 tmpVector;
     private Vector3 tmpVector2;
 
+    // for UV compute
+    Vector4 cursor_rk;
+    Vector4 cursor_rf;
+    Vector4 cursor_rd;
+
+
     public Display getDisplay() {
         return display;
     }
@@ -92,6 +98,10 @@ public class LightFieldShader extends DefaultShader{
         endRow = -1;
 
         matrixRkToRf = new Matrix4();
+
+        cursor_rk = new Vector4();
+        cursor_rf = new Vector4();
+        cursor_rd = new Vector4();
 
         tmpMatrix = new Matrix4();
         tmpVector = new Vector3();
@@ -291,8 +301,6 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void computeCursorUV(){
-
-        // TODO: Optimized these code
         // compute cursor UV
         // cursor projection
         float cursor_screen_x = display.editingScreenPosition.x / display.eyeWrapper.getViewport().width;
@@ -301,16 +309,14 @@ public class LightFieldShader extends DefaultShader{
         cursor_screen_x = cursor_screen_x * 2.0f - 1.0f;
         cursor_screen_y = cursor_screen_y * 2.0f - 1.0f;
 
-        Vector4 cursor_rk = new Vector4(cursor_screen_x, cursor_screen_y, 1.0f, 1.0f);
+        cursor_rk.set(cursor_screen_x, cursor_screen_y, 1.0f, 1.0f);
 
-        Vector4 cursor_rf = new Vector4();
+        // compute RF(s,t)
         cursor_rf.set(cursor_rk);
         cursor_rf.mul(matrixRkToRf);
 
-
         // compute RD(s,t)
         // prepare matrix from rf to rd
-        Vector4 cursor_rd = new Vector4();
         cursor_rd.set(cursor_rf);
         cursor_rd.mul(dataCamera.combined);
 

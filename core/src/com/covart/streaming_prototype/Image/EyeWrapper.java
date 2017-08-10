@@ -34,6 +34,13 @@ public class EyeWrapper {
 
     private Vector3 tmpVector1;
 
+    // tmps for eye view
+    Vector3 finalEyePosition;
+    Vector3 finalEyeTranslation;
+    Vector3 rotationCenter;
+    Vector3 rotationCenterNeg;
+
+
     private float inspectCount = 0f;
     private boolean needUpdate = false;
 
@@ -55,6 +62,11 @@ public class EyeWrapper {
 
         lastEyePosition = new Vector3();
         eyeView = new Matrix4();
+
+        finalEyePosition = new Vector3();
+        finalEyeTranslation = new Vector3();
+        rotationCenter = new Vector3();
+        rotationCenterNeg = new Vector3();
     }
 
     public Eye getEye() {
@@ -118,16 +130,14 @@ public class EyeWrapper {
             tmpMatrix1.set(this.eye.getEyeView());
         }
         // apply compute translation for eye view
-        // TODO: need optimize variables
         tmpMatrix1.getRotation(tmpQuaternion1);
-        Vector3 finalEyePosition = new Vector3(camera.position);
-        Vector3 finalEyeTranslation = new Vector3();
-        Vector3 rotationCenter = new Vector3(camera.position);
-        rotationCenter.z -= ConfigManager.getEyeRotationCenterDistance(); // assume on st plane
+        finalEyePosition.set(camera.position);
+        rotationCenter.set(camera.position);
+        rotationCenter.z -= ConfigManager.getEyeRotationCenterDistance();
         // rotate around the projection on the plane
         // translation(-x, -y, -z) => Rotation => translation(x, y, z)
         // translation(-x, -y, -z)
-        Vector3 rotationCenterNeg = new Vector3(rotationCenter);
+        rotationCenterNeg.set(rotationCenter);
         rotationCenterNeg.scl(-1);
         tmpMatrix2.setToTranslation(rotationCenterNeg);
         finalEyePosition.mul(tmpMatrix2);
@@ -145,15 +155,9 @@ public class EyeWrapper {
         eyeView.set(tmpMatrix1);
         eyeView.mulLeft(tmpMatrix2);
 
-
         if(ConfigManager.isMainEye(this.eye)){
-            this.lastEyePosition.set(camera.position);
-            this.lastEyePosition.add(finalEyeTranslation);
+            this.lastEyePosition.set(finalEyePosition);
         }
-
-
-
-
     }
 
     public float[] getPerspective(float zNear, float zFar) {
