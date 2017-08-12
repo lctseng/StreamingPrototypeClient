@@ -241,7 +241,7 @@ public class Display implements Disposable{
     }
     public void recenterCamera(){
         camMain.position.set(0f, 0f, 3f);
-        camMain.up.set(0,1,0);
+        camMain.up.set(0,-1,0);
         camMain.lookAt(initLookAt);
         camMain.update();
     }
@@ -283,16 +283,16 @@ public class Display implements Disposable{
     public void manuallyMoveCamera(PositionController.Direction direction){
         switch(direction){
             case LEFT:
-                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
-                break;
-            case RIGHT:
                 camMain.translate(ConfigManager.getManuallyMoveStep(), 0, 0);
                 break;
+            case RIGHT:
+                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
+                break;
             case UP:
-                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
                 break;
             case DOWN:
-                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
                 break;
             case FORWARD:
                 camMain.translate(0, 0, -ConfigManager.getManuallyMoveStep());
