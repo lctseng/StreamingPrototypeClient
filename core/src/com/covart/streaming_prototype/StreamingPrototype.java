@@ -286,8 +286,8 @@ public class StreamingPrototype extends ApplicationAdapter
         StringPool.addField("Position to Server", position.toString());
 
         Message.Camera.Builder cameraBuilder = Message.Camera.newBuilder()
-                .setDeltaX(clamp(position.x / 1.5f, -1.0f, 1.0f))
-                .setDeltaY(clamp(position.y / 1.5f, -1.0f, 1.0f))
+                .setDeltaX(clamp(position.x / 2f, -1.0f, 1.0f))
+                .setDeltaY(clamp(position.y / 2f, -1.0f, 1.0f))
                 .setDeltaZ(position.z)
                 .setDeltaVx(direction.x)
                 .setDeltaVy(direction.y)

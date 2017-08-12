@@ -33,6 +33,7 @@ import com.covart.streaming_prototype.StringPool;
 import java.util.Locale;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
+import static com.badlogic.gdx.math.MathUtils.round;
 
 /**
  * See: http://blog.xoppa.com/creating-a-shader-with-libgdx
@@ -282,12 +283,29 @@ public class LightFieldShader extends DefaultShader{
     }
 
     private void visualizeLightFieldStatus(){
-        visualizeVisibleColumn();
+        //visualizeVisibleColumn();
+        visualizeCameraPosition();
         if(display != null){
             display.getTextureManager().visualizeColumnStatus();
         }
     }
 
+    // TODO: #34 this is debug only, should be remove in the future
+
+    private void visualizeCameraPosition(){
+        int index = clamp(round((getEyePosition().x / 4f + 0.5f) * ConfigManager.getNumOfLFs()), 0, ConfigManager.getNumOfLFs() - 1);
+        String status = "";
+        for(int i=0;i<index;i++){
+            status += "=";
+        }
+        status += "+";
+        for(int i=index+1;i<ConfigManager.getNumOfLFs();i++){
+            status += "=";
+        }
+        StringPool.addField("Visible Status V", status);
+    }
+
+    // FIXME: #31 wait for new model
     private void visualizeVisibleColumn(){
         String status = "";
         for(int i=0;i<startIndex;i++){
