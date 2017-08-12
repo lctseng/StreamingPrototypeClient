@@ -31,6 +31,7 @@ public class ConfigManager {
     private static final int numOfLFs = 8;
     private static final int numOfSubLFImgs = 8;
 
+    // FIXME: this should have new meanings along with revised adaptive column model
     private static final float columnPositionRatio = (float)numOfLFs / numOfMaxLFTextures;
 
     private static final int bufferQueueSize = 3;

@@ -98,8 +98,6 @@ public class EyeWrapper {
         inspectCount += Gdx.graphics.getDeltaTime();
         if(inspectCount > 0.5f) {
             inspectCount = 0f;
-            eyeView.getTranslation(tmpVector1);
-            tmpVector1.add(camera.position);
             StringPool.addField("Eye angles", String.format(Locale.TAIWAN, "Yaw: %2f, Pitch: %2f, Roll: %2f", yaw, pitch, roll));
             StringPool.addField("Eye position", String.format(Locale.TAIWAN, "X: %2f, Y: %2f, Z: %2f", lastEyePosition.x, lastEyePosition.y, lastEyePosition.z));
         }

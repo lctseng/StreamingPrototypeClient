@@ -27,6 +27,8 @@ uniform int u_rowEnd;
 uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
+uniform float u_stPlaneRadius;
+
 uniform int u_screenWidth;
 uniform int u_screenHeight;
 
@@ -117,13 +119,13 @@ void main() {
 	float spanY = 2.0 / float(u_rows);
 
 #ifdef diffuseTextureFlag
-	// compute cameraPosition from UV
+	// compute rayPositionSt from UV
 	// the radius should read from host
-	float cameraPositionX = v_diffuseUV.s * 2.0 - 1.0;
-	float cameraPositionY = v_diffuseUV.t * -2.0 + 1.0;
+	float rayPositionStX = (v_diffuseUV.s * 2.0 - 1.0) * u_stPlaneRadius;
+	float rayPositionStY = (v_diffuseUV.t * -2.0 + 1.0) * u_stPlaneRadius;
 #else
-	float cameraPositionX = 0.0;
-	float cameraPositionY = 0.0;
+	float rayPositionStX = 0.0;
+	float rayPositionStY = 0.0;
 #endif
 
 
@@ -151,8 +153,8 @@ void main() {
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;
 					float cameraY = (initCameraY + float(j) * spanY) * u_cameraStep;
 
-					float dx = cameraX - cameraPositionX;
-					float dy = cameraY - cameraPositionY;
+					float dx = cameraX - rayPositionStX;
+					float dy = cameraY - rayPositionStY;
 
 					float dist = dx * dx +  dy * dy;
 

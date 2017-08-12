@@ -149,6 +149,8 @@ public class LightFieldShader extends DefaultShader{
 
         program.setUniformf("u_editingScreenX", display.editingScreenPosition.x);
         program.setUniformf("u_editingScreenY", display.editingScreenPosition.y);
+
+        program.setUniformf("u_stPlaneRadius", ConfigManager.getStPlaneRadius());
     }
 
     private void updateLFIndex(){
