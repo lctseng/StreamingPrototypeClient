@@ -13,19 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.covart.streaming_prototype.ConfigManager;
 
 import java.util.ArrayList;
-import java.util.Locale;
-
-import static com.covart.streaming_prototype.UI.PositionController.Direction.BACKWARD;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.DOWN;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.FORWARD;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.LEFT;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.RIGHT;
-import static com.covart.streaming_prototype.UI.PositionController.Direction.UP;
+import java.util.List;
 
 /**
  * Created by lctseng on 2017/8/13.
@@ -38,11 +29,14 @@ public class EditingPanel extends UIComponent {
     private Table canvas;
     private float fadeTime = 0.2f;
 
+    private boolean visible;
+
     private float commonRowHeight = 70f;
     private int buttonWidth = 200;
-    private float slideBarSize = 50f;
 
     private ArrayList<ModelButton> modelButtons;
+
+    private boolean needRefreshList = false;
 
     public EditingPanel(){
         modelButtons = new ArrayList<ModelButton>();
@@ -58,18 +52,17 @@ public class EditingPanel extends UIComponent {
         pane = new ScrollPane(canvas);
         pane.setX(0);
         pane.setY(0);
-        pane.setWidth(Gdx.graphics.getWidth());
-        pane.setDebug(true);
-        pane.setVisible(true);
+        pane.setWidth(Gdx.graphics.getWidth()/2);
+        pane.setDebug(false);
+        pane.setVisible(visible);
     }
 
     private void createCanvas() {
         canvas = new Table();
-        canvas.setX(Gdx.graphics.getWidth() / 2);
+        canvas.setX(0);
         canvas.setY(0);
-        canvas.setWidth(Gdx.graphics.getWidth() / 2);
         canvas.setHeight(commonRowHeight);
-        canvas.setDebug(true);
+        canvas.setDebug(false);
         canvas.top();
         canvas.row().height(commonRowHeight);
         addComponents();
@@ -81,14 +74,24 @@ public class EditingPanel extends UIComponent {
     }
 
     public void show(){
+        visible = true;
         if(pane != null) {
             pane.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
         }
     }
 
     public void hide(){
+        visible = false;
         if(pane != null) {
             pane.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
+        }
+    }
+
+
+    public void checkRefreshList(){
+        if(needRefreshList){
+            needRefreshList = false;
+            refreshModelList();
         }
     }
 
@@ -96,15 +99,23 @@ public class EditingPanel extends UIComponent {
         if(pane != null){
             pane.remove();
         }
+        modelButtons.clear();
         createCanvas();
         createPane();
         this.stage.addActor(pane);
     }
 
     private void addComponents(){
-        for(int modelId : ConfigManager.getEditingModelList()){
-            Cell<ModelButton> cell = addModelItemButton(modelId).width(buttonWidth);
-            modelButtons.add(cell.getActor());
+        List<Integer> idList = ConfigManager.getEditingModelIdList();
+        if(idList != null && !idList.isEmpty()) {
+            for (Integer modelId : idList) {
+                Cell<ModelButton> cell = addModelItemButton(modelId).width(buttonWidth);
+                modelButtons.add(cell.getActor());
+            }
+        }
+        else{
+            Label alert = new Label("Loading model lists from server...", largeLabelStyle);
+            canvas.add(alert);
         }
     }
 
@@ -112,11 +123,14 @@ public class EditingPanel extends UIComponent {
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                int currentId = ConfigManager.getEditingCurrentModelId();
-                ConfigManager.setEditingCurrentModelId(modelId);
-                if( currentId != modelId){
-                    onModelChanged();
+                if( ConfigManager.getEditingCurrentModelId() == modelId){
+                    // click on same model id, toggle it
+                    ConfigManager.setEditingCurrentModelId(-1);
                 }
+                else{
+                    ConfigManager.setEditingCurrentModelId(modelId);
+                }
+                onModelChanged();
             }
         };
         ModelButton button = new ModelButton(modelId, skin);
@@ -138,5 +152,14 @@ public class EditingPanel extends UIComponent {
         for(ModelButton button : modelButtons){
             button.onModelChanged();
         }
+        ConfigManager.getApp().onEditingModelChanged();
+    }
+
+    public boolean isNeedRefreshList() {
+        return needRefreshList;
+    }
+
+    public void setNeedRefreshList(boolean needRefreshList) {
+        this.needRefreshList = needRefreshList;
     }
 }

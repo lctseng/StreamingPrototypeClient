@@ -5,6 +5,8 @@ import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.google.vrtoolkit.cardboard.Eye;
 
+import java.util.List;
+
 import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 
 /**
@@ -105,8 +107,7 @@ public class ConfigManager {
 
     private static float stPlaneRadius = 1f;
 
-    // TODO: retrieve from server
-    private static int[] editingModelList = new int[]{1,2,3,4,5};
+    private static List<Integer> editingModelIdList;
 
     private static int editingCurrentModelId = -1;
 
@@ -351,20 +352,20 @@ public class ConfigManager {
         ConfigManager.stPlaneRadius = stPlaneRadius;
     }
 
-    public static int[] getEditingModelList() {
-        return editingModelList;
-    }
-
-    public static void setEditingModelList(int[] editingModelList) {
-        ConfigManager.editingModelList = editingModelList;
-    }
-
     public static int getEditingCurrentModelId() {
         return editingCurrentModelId;
     }
 
     public static void setEditingCurrentModelId(int editingCurrentModelId) {
         ConfigManager.editingCurrentModelId = editingCurrentModelId;
+    }
+
+    public static List<Integer> getEditingModelIdList() {
+        return editingModelIdList;
+    }
+
+    public static void setEditingModelIdList(List<Integer> editingModelIdList) {
+        ConfigManager.editingModelIdList = editingModelIdList;
     }
 
     // end of getters and setters

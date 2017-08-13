@@ -96,6 +96,7 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onNewFrame(HeadTransform paramHeadTransform) {
         display.onNewFrame(paramHeadTransform);
+        editingPanel.checkRefreshList();
         //Profiler.generateProfilingStrings();
 
         if (startRequired) {
@@ -360,6 +361,15 @@ public class StreamingPrototype extends ApplicationAdapter
                 // send data to decoder
 
                 break;
+            case MsgControl:
+                Message.Editing editMsg = msg.getControlMsg().getEditingMsg();
+                if(editMsg != null){
+                    if(editMsg.getOp() == Message.EditOperation.MODEL_LIST){
+                        ConfigManager.setEditingModelIdList(editMsg.getModelIdsList());
+                        editingPanel.setNeedRefreshList(true);
+                    }
+                }
+                break;
             case MsgEnding:
                 Gdx.app.log("Dispatch", "Ending message received");
                 requireStop();
@@ -434,13 +444,17 @@ public class StreamingPrototype extends ApplicationAdapter
     public void startEditingMode() {
         display.editingScreenPosition.set(0, 0);
         updateEditingModeText();
-        sendEditingModeMessage(Message.EditOperation.START, 0, 0);
+        sendEditingOpMessage(Message.EditOperation.START);
+        editingPanel.show();
     }
 
     public void finishEditingMode() {
         updateEditingModeText();
-        sendEditingModeMessage(Message.EditOperation.FINISH, 0, 0);
+        sendEditingOpMessage(Message.EditOperation.FINISH);
         display.editingScreenPosition.set(-1, -1);
+        editingPanel.hide();
+        ConfigManager.setEditingModelIdList(null);
+        editingPanel.setNeedRefreshList(true);
     }
 
     private boolean editingTouchDragged(int screenX, int screenY, int pointer) {
@@ -448,7 +462,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
             updateEditingModeText(display.editingImagePosition.x, display.editingImagePosition.y);
-            sendEditingModeMessage(Message.EditOperation.UPDATE, display.editingImagePosition.x, display.editingImagePosition.y);
+            sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
         }
         return true;
     }
@@ -459,14 +473,37 @@ public class StreamingPrototype extends ApplicationAdapter
         }
     }
 
+    private void sendEditingOpMessage(Message.EditOperation op){
+        Message.Editing.Builder builder = Message.Editing.newBuilder()
+                .setOp(op);
+        sendEditingModeMessage(builder);
+    }
 
-    private void sendEditingModeMessage(Message.EditOperation op, float imageX, float imageY) {
-        Message.Control.Builder controlBuilder = Message.Control.newBuilder();
-        controlBuilder.setEditingMsg(Message.Editing.newBuilder()
-                .setOp(op)
+    private void sendEditingUpdateMessage(float imageX, float imageY){
+        Message.Editing.Builder builder = Message.Editing.newBuilder()
+                .setOp(Message.EditOperation.UPDATE)
                 .setScreenX(imageX)
-                .setScreenY(imageY)
+                .setScreenY(imageY);
+        sendEditingModeMessage(builder);
+    }
 
+    public  void onEditingModelChanged(){
+        sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
+        StringPool.addField("Model ID", "" + ConfigManager.getEditingCurrentModelId());
+    }
+
+    private void sendEditingSetModelIdMessage(int modelId){
+        Message.Editing.Builder builder = Message.Editing.newBuilder()
+                .setOp(Message.EditOperation.SET_MODEL_ID)
+                .setModelId(modelId);
+        sendEditingModeMessage(builder);
+    }
+
+
+    private void sendEditingModeMessage(Message.Editing.Builder builder) {
+        Message.Control.Builder controlBuilder = Message.Control.newBuilder();
+        controlBuilder.setEditingMsg(
+                builder
         );
         // create message
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
