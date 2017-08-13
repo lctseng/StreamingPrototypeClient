@@ -165,6 +165,14 @@ public final class Message {
      * <code>UPDATE = 2;</code>
      */
     UPDATE(2),
+    /**
+     * <code>MODEL_LIST = 3;</code>
+     */
+    MODEL_LIST(3),
+    /**
+     * <code>SET_MODEL_ID = 4;</code>
+     */
+    SET_MODEL_ID(4),
     UNRECOGNIZED(-1),
     ;
 
@@ -180,6 +188,14 @@ public final class Message {
      * <code>UPDATE = 2;</code>
      */
     public static final int UPDATE_VALUE = 2;
+    /**
+     * <code>MODEL_LIST = 3;</code>
+     */
+    public static final int MODEL_LIST_VALUE = 3;
+    /**
+     * <code>SET_MODEL_ID = 4;</code>
+     */
+    public static final int SET_MODEL_ID_VALUE = 4;
 
 
     public final int getNumber() {
@@ -203,6 +219,8 @@ public final class Message {
         case 0: return START;
         case 1: return FINISH;
         case 2: return UPDATE;
+        case 3: return MODEL_LIST;
+        case 4: return SET_MODEL_ID;
         default: return null;
       }
     }
@@ -2423,6 +2441,40 @@ public final class Message {
      * <code>float screen_y = 3;</code>
      */
     float getScreenY();
+
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    java.util.List<java.lang.Integer> getModelIdsList();
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    int getModelIdsCount();
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    int getModelIds(int index);
+
+    /**
+     * <pre>
+     * model_id is only valid in SET_MODEL_ID op
+     * </pre>
+     *
+     * <code>int32 model_id = 5;</code>
+     */
+    int getModelId();
   }
   /**
    * Protobuf type {@code StreamingFormat.Editing}
@@ -2439,6 +2491,8 @@ public final class Message {
       op_ = 0;
       screenX_ = 0F;
       screenY_ = 0F;
+      modelIds_ = java.util.Collections.emptyList();
+      modelId_ = 0;
     }
 
     @java.lang.Override
@@ -2482,6 +2536,32 @@ public final class Message {
               screenY_ = input.readFloat();
               break;
             }
+            case 32: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                modelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              modelIds_.add(input.readUInt32());
+              break;
+            }
+            case 34: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
+                modelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                modelIds_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 40: {
+
+              modelId_ = input.readInt32();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -2490,6 +2570,9 @@ public final class Message {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          modelIds_ = java.util.Collections.unmodifiableList(modelIds_);
+        }
         makeExtensionsImmutable();
       }
     }
@@ -2505,6 +2588,7 @@ public final class Message {
               StreamingFormat.Message.Editing.class, StreamingFormat.Message.Editing.Builder.class);
     }
 
+    private int bitField0_;
     public static final int OP_FIELD_NUMBER = 1;
     private int op_;
     /**
@@ -2543,6 +2627,54 @@ public final class Message {
       return screenY_;
     }
 
+    public static final int MODEL_IDS_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Integer> modelIds_;
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getModelIdsList() {
+      return modelIds_;
+    }
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    public int getModelIdsCount() {
+      return modelIds_.size();
+    }
+    /**
+     * <pre>
+     * model_ids is only valid in MODEL_LIST op
+     * </pre>
+     *
+     * <code>repeated uint32 model_ids = 4;</code>
+     */
+    public int getModelIds(int index) {
+      return modelIds_.get(index);
+    }
+    private int modelIdsMemoizedSerializedSize = -1;
+
+    public static final int MODEL_ID_FIELD_NUMBER = 5;
+    private int modelId_;
+    /**
+     * <pre>
+     * model_id is only valid in SET_MODEL_ID op
+     * </pre>
+     *
+     * <code>int32 model_id = 5;</code>
+     */
+    public int getModelId() {
+      return modelId_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2555,6 +2687,7 @@ public final class Message {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       if (op_ != StreamingFormat.Message.EditOperation.START.getNumber()) {
         output.writeEnum(1, op_);
       }
@@ -2563,6 +2696,16 @@ public final class Message {
       }
       if (screenY_ != 0F) {
         output.writeFloat(3, screenY_);
+      }
+      if (getModelIdsList().size() > 0) {
+        output.writeUInt32NoTag(34);
+        output.writeUInt32NoTag(modelIdsMemoizedSerializedSize);
+      }
+      for (int i = 0; i < modelIds_.size(); i++) {
+        output.writeUInt32NoTag(modelIds_.get(i));
+      }
+      if (modelId_ != 0) {
+        output.writeInt32(5, modelId_);
       }
     }
 
@@ -2582,6 +2725,24 @@ public final class Message {
       if (screenY_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(3, screenY_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < modelIds_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(modelIds_.get(i));
+        }
+        size += dataSize;
+        if (!getModelIdsList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        modelIdsMemoizedSerializedSize = dataSize;
+      }
+      if (modelId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, modelId_);
       }
       memoizedSize = size;
       return size;
@@ -2608,6 +2769,10 @@ public final class Message {
           java.lang.Float.floatToIntBits(getScreenY())
           == java.lang.Float.floatToIntBits(
               other.getScreenY()));
+      result = result && getModelIdsList()
+          .equals(other.getModelIdsList());
+      result = result && (getModelId()
+          == other.getModelId());
       return result;
     }
 
@@ -2626,6 +2791,12 @@ public final class Message {
       hash = (37 * hash) + SCREEN_Y_FIELD_NUMBER;
       hash = (53 * hash) + java.lang.Float.floatToIntBits(
           getScreenY());
+      if (getModelIdsCount() > 0) {
+        hash = (37 * hash) + MODEL_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getModelIdsList().hashCode();
+      }
+      hash = (37 * hash) + MODEL_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getModelId();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2750,6 +2921,10 @@ public final class Message {
 
         screenY_ = 0F;
 
+        modelIds_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        modelId_ = 0;
+
         return this;
       }
 
@@ -2772,9 +2947,18 @@ public final class Message {
 
       public StreamingFormat.Message.Editing buildPartial() {
         StreamingFormat.Message.Editing result = new StreamingFormat.Message.Editing(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.op_ = op_;
         result.screenX_ = screenX_;
         result.screenY_ = screenY_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          modelIds_ = java.util.Collections.unmodifiableList(modelIds_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
+        result.modelIds_ = modelIds_;
+        result.modelId_ = modelId_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -2825,6 +3009,19 @@ public final class Message {
         if (other.getScreenY() != 0F) {
           setScreenY(other.getScreenY());
         }
+        if (!other.modelIds_.isEmpty()) {
+          if (modelIds_.isEmpty()) {
+            modelIds_ = other.modelIds_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureModelIdsIsMutable();
+            modelIds_.addAll(other.modelIds_);
+          }
+          onChanged();
+        }
+        if (other.getModelId() != 0) {
+          setModelId(other.getModelId());
+        }
         onChanged();
         return this;
       }
@@ -2850,6 +3047,7 @@ public final class Message {
         }
         return this;
       }
+      private int bitField0_;
 
       private int op_ = 0;
       /**
@@ -2955,6 +3153,138 @@ public final class Message {
       public Builder clearScreenY() {
         
         screenY_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> modelIds_ = java.util.Collections.emptyList();
+      private void ensureModelIdsIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          modelIds_ = new java.util.ArrayList<java.lang.Integer>(modelIds_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getModelIdsList() {
+        return java.util.Collections.unmodifiableList(modelIds_);
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public int getModelIdsCount() {
+        return modelIds_.size();
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public int getModelIds(int index) {
+        return modelIds_.get(index);
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public Builder setModelIds(
+          int index, int value) {
+        ensureModelIdsIsMutable();
+        modelIds_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public Builder addModelIds(int value) {
+        ensureModelIdsIsMutable();
+        modelIds_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public Builder addAllModelIds(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureModelIdsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, modelIds_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * model_ids is only valid in MODEL_LIST op
+       * </pre>
+       *
+       * <code>repeated uint32 model_ids = 4;</code>
+       */
+      public Builder clearModelIds() {
+        modelIds_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+
+      private int modelId_ ;
+      /**
+       * <pre>
+       * model_id is only valid in SET_MODEL_ID op
+       * </pre>
+       *
+       * <code>int32 model_id = 5;</code>
+       */
+      public int getModelId() {
+        return modelId_;
+      }
+      /**
+       * <pre>
+       * model_id is only valid in SET_MODEL_ID op
+       * </pre>
+       *
+       * <code>int32 model_id = 5;</code>
+       */
+      public Builder setModelId(int value) {
+        
+        modelId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * model_id is only valid in SET_MODEL_ID op
+       * </pre>
+       *
+       * <code>int32 model_id = 5;</code>
+       */
+      public Builder clearModelId() {
+        
+        modelId_ = 0;
         onChanged();
         return this;
       }
@@ -6554,27 +6884,29 @@ public final class Message {
       "\022\n\n\002vz\030\007 \001(\002\"\207\001\n\006Camera\022\024\n\014serialNumber\030" +
       "\002 \001(\r\022\017\n\007delta_x\030\003 \001(\002\022\017\n\007delta_y\030\004 \001(\002\022" +
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
-      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"Y\n\007Editin" +
+      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"~\n\007Editin" +
       "g\022*\n\002op\030\001 \001(\0162\036.StreamingFormat.EditOper" +
       "ation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010screen_y\030\003 \001(",
-      "\002\"u\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave" +
-      "_frame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\ned" +
-      "itingMsg\030\004 \001(\0132\030.StreamingFormat.Editing" +
-      "\"R\n\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006statu" +
-      "s\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageData\030\005" +
-      " \001(\014\"\010\n\006Ending\"\312\002\n\020StreamingMessage\022*\n\004t" +
-      "ype\030\001 \001(\0162\034.StreamingFormat.MessageType\022" +
-      "&\n\007initMsg\030\002 \001(\0132\025.StreamingFormat.Init\022" +
-      "2\n\rdefaultPosMsg\030\003 \001(\0132\033.StreamingFormat" +
-      ".DefaultPos\022*\n\tcameraMsg\030\004 \001(\0132\027.Streami",
-      "ngFormat.Camera\022(\n\010imageMsg\030\005 \001(\0132\026.Stre" +
-      "amingFormat.Image\022*\n\tendingMsg\030\006 \001(\0132\027.S" +
-      "treamingFormat.Ending\022,\n\ncontrolMsg\030\007 \001(" +
-      "\0132\030.StreamingFormat.Control*m\n\013MessageTy" +
-      "pe\022\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultPos\020\001\022\021\n\rMs" +
-      "gCameraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n\tMsgEnding" +
-      "\020\004\022\016\n\nMsgControl\020\005*2\n\rEditOperation\022\t\n\005S" +
-      "TART\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002b\006proto3"
+      "\002\022\021\n\tmodel_ids\030\004 \003(\r\022\020\n\010model_id\030\005 \001(\005\"u" +
+      "\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave_fr" +
+      "ame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\nediti" +
+      "ngMsg\030\004 \001(\0132\030.StreamingFormat.Editing\"R\n" +
+      "\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006status\030\003" +
+      " \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageData\030\005 \001(" +
+      "\014\"\010\n\006Ending\"\312\002\n\020StreamingMessage\022*\n\004type" +
+      "\030\001 \001(\0162\034.StreamingFormat.MessageType\022&\n\007" +
+      "initMsg\030\002 \001(\0132\025.StreamingFormat.Init\0222\n\r" +
+      "defaultPosMsg\030\003 \001(\0132\033.StreamingFormat.De",
+      "faultPos\022*\n\tcameraMsg\030\004 \001(\0132\027.StreamingF" +
+      "ormat.Camera\022(\n\010imageMsg\030\005 \001(\0132\026.Streami" +
+      "ngFormat.Image\022*\n\tendingMsg\030\006 \001(\0132\027.Stre" +
+      "amingFormat.Ending\022,\n\ncontrolMsg\030\007 \001(\0132\030" +
+      ".StreamingFormat.Control*m\n\013MessageType\022" +
+      "\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultPos\020\001\022\021\n\rMsgCa" +
+      "meraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n\tMsgEnding\020\004\022" +
+      "\016\n\nMsgControl\020\005*T\n\rEditOperation\022\t\n\005STAR" +
+      "T\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002\022\016\n\nMODEL_LIS" +
+      "T\020\003\022\020\n\014SET_MODEL_ID\020\004b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6611,7 +6943,7 @@ public final class Message {
     internal_static_StreamingFormat_Editing_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Editing_descriptor,
-        new java.lang.String[] { "Op", "ScreenX", "ScreenY", });
+        new java.lang.String[] { "Op", "ScreenX", "ScreenY", "ModelIds", "ModelId", });
     internal_static_StreamingFormat_Control_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_StreamingFormat_Control_fieldAccessorTable = new
