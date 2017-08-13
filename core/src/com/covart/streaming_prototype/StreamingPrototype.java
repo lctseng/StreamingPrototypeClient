@@ -11,6 +11,7 @@ import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
 import com.covart.streaming_prototype.Net.Network;
+import com.covart.streaming_prototype.UI.EditingPanel;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.UI.UIManager;
@@ -59,6 +60,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     // UI
     public PositionController positionController;
+    public EditingPanel editingPanel;
 
 
     StreamingPrototype(ImageDecoderBase platform_decoder) {
@@ -163,9 +165,9 @@ public class StreamingPrototype extends ApplicationAdapter
         initializeInput();
 
         // Setup UI
-        positionController = new PositionController();
         UIManager.getInstance().registerUI(new MainMenu());
-        UIManager.getInstance().registerUI(positionController);
+        UIManager.getInstance().registerUI(positionController = new PositionController());
+        UIManager.getInstance().registerUI(editingPanel = new EditingPanel());
 
         StringPool.addField("App", "Ready for start");
         updateEditingModeText();

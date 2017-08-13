@@ -34,7 +34,7 @@ public abstract class UIComponent implements Disposable {
         largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
     }
 
-    void registerActors(Stage stage){
+    void setStage(Stage stage){
 
     }
 

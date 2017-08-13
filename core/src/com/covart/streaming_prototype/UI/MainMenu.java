@@ -815,7 +815,7 @@ public class MainMenu extends UIComponent {
     }
 
     @Override
-    void registerActors(Stage stage) {
+    void setStage(Stage stage) {
         stage.addActor(canvas);
         stage.addActor(canvasControlButton);
     }

@@ -105,6 +105,10 @@ public class ConfigManager {
 
     private static float stPlaneRadius = 1f;
 
+    // TODO: retrieve from server
+    private static int[] editingModelList = new int[]{1,2,3,4,5};
+
+    private static int editingCurrentModelId = -1;
 
 
     // getters and setters
@@ -345,6 +349,22 @@ public class ConfigManager {
 
     public static void setStPlaneRadius(float stPlaneRadius) {
         ConfigManager.stPlaneRadius = stPlaneRadius;
+    }
+
+    public static int[] getEditingModelList() {
+        return editingModelList;
+    }
+
+    public static void setEditingModelList(int[] editingModelList) {
+        ConfigManager.editingModelList = editingModelList;
+    }
+
+    public static int getEditingCurrentModelId() {
+        return editingCurrentModelId;
+    }
+
+    public static void setEditingCurrentModelId(int editingCurrentModelId) {
+        ConfigManager.editingCurrentModelId = editingCurrentModelId;
     }
 
     // end of getters and setters
