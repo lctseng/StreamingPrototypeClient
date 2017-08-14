@@ -317,10 +317,6 @@ public class Display implements Disposable{
         float ratioX = screenX / Gdx.graphics.getWidth();
         float ratioY = 1f - screenY / Gdx.graphics.getHeight(); // Y is reversed
         editingScreenPosition.set(eyeWrapper.getViewport().width * ratioX, eyeWrapper.getViewport().height * ratioY);
-        if(ConfigManager.getEditingCurrentModelIndex() >= 0){
-            // is editing model
-            editingPositionFollowCursor = true;
-        }
     }
 
 
@@ -357,5 +353,9 @@ public class Display implements Disposable{
 
     public boolean isEditingPositionFollowCursor() {
         return editingPositionFollowCursor;
+    }
+
+    public void setEditingPositionFollowCursor(boolean editingPositionFollowCursor) {
+        this.editingPositionFollowCursor = editingPositionFollowCursor;
     }
 }

@@ -180,9 +180,27 @@ public class StreamingPrototype extends ApplicationAdapter
 
         InputAdapter localInput = new InputAdapter() {
             @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (ConfigManager.isEditingModeEnabled()) {
+                    return editingTouchDown(screenX, screenY);
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                if (ConfigManager.isEditingModeEnabled()) {
+                    return editingTouchUp(screenX, screenY);
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 if (ConfigManager.isEditingModeEnabled()) {
-                    return editingTouchDragged(screenX, screenY, pointer);
+                    return editingTouchDragged(screenX, screenY);
                 } else {
                     return false;
                 }
@@ -458,7 +476,7 @@ public class StreamingPrototype extends ApplicationAdapter
         editingPanel.setNeedRefreshList(true);
     }
 
-    private boolean editingTouchDragged(int screenX, int screenY, int pointer) {
+    private boolean editingTouchDragged(int screenX, int screenY) {
         display.updateEditingScreenPosition(screenX, screenY);
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
@@ -467,6 +485,20 @@ public class StreamingPrototype extends ApplicationAdapter
         }
         return true;
     }
+
+    private boolean editingTouchDown(int screenX, int screenY){
+        display.updateEditingScreenPosition(screenX, screenY);
+        if(ConfigManager.getEditingCurrentModelIndex() >= 0){
+            display.setEditingPositionFollowCursor(true);
+        }
+        return true;
+    }
+
+    private boolean editingTouchUp(int screenX, int screenY){
+        display.setEditingPositionFollowCursor(false);
+        return true;
+    }
+
 
     private void updateEditing() {
         if (ConfigManager.isEditingModeEnabled()) {
