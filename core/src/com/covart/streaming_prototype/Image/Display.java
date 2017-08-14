@@ -31,6 +31,9 @@ import com.covart.streaming_prototype.UI.UIManager;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import StreamingFormat.Message;
 
 
@@ -73,6 +76,10 @@ public class Display implements Disposable{
     public Vector2 editingScreenPosition;
     public Vector2 editingImagePosition;
 
+    public List<Vector2> editingImagePositions;
+
+    private boolean editingPositionFollowCursor;
+
     private long lastStPlaneUpdateTime = 0;
     private boolean requestChangeStPlane = false;
 
@@ -87,6 +94,7 @@ public class Display implements Disposable{
         // misc
         editingScreenPosition = new Vector2(-1,-1);
         editingImagePosition = new Vector2(-1,-1);
+        editingImagePositions = new ArrayList<Vector2>();
 
         // temps
         tmpVector1 = new Vector3();
@@ -309,6 +317,10 @@ public class Display implements Disposable{
         float ratioX = screenX / Gdx.graphics.getWidth();
         float ratioY = 1f - screenY / Gdx.graphics.getHeight(); // Y is reversed
         editingScreenPosition.set(eyeWrapper.getViewport().width * ratioX, eyeWrapper.getViewport().height * ratioY);
+        if(ConfigManager.getEditingCurrentModelIndex() >= 0){
+            // is editing model
+            editingPositionFollowCursor = true;
+        }
     }
 
 
@@ -320,4 +332,30 @@ public class Display implements Disposable{
         return this.eyeWrapper.getLastEyePosition();
     }
 
+    // Assume model list is ready
+    // TODO: image coordinate should read from list
+    public void prepareForEditingMode(){
+
+        editingImagePositions.clear();
+        // TODO: copy image coordinate from model list
+        for(int i=0;i<ConfigManager.getEditingModelIdList().size();i++){
+            editingImagePositions.add(new Vector2(i * 10,ConfigManager.getImageHeight()/2));
+        }
+    }
+
+    public void startEditingModel(){
+        editingImagePosition.set(editingImagePositions.get(ConfigManager.getEditingCurrentModelIndex()));
+        editingPositionFollowCursor = false;
+    }
+
+    public void finishEditingModel(int lastIndex){
+        // save image position
+        editingImagePositions.get(lastIndex).set(editingImagePosition);
+        editingImagePosition.set(-1, -1);
+        editingPositionFollowCursor = false;
+    }
+
+    public boolean isEditingPositionFollowCursor() {
+        return editingPositionFollowCursor;
+    }
 }

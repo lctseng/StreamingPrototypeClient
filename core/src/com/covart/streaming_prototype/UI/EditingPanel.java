@@ -1,10 +1,8 @@
 package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -123,6 +121,7 @@ public class EditingPanel extends UIComponent {
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                int lastIndex = ConfigManager.getEditingCurrentModelIndex();
                 if( ConfigManager.getEditingCurrentModelId() == modelId){
                     // click on same model id, toggle it
                     ConfigManager.setEditingCurrentModelId(-1);
@@ -130,7 +129,7 @@ public class EditingPanel extends UIComponent {
                 else{
                     ConfigManager.setEditingCurrentModelId(modelId);
                 }
-                onModelChanged();
+                onModelChanged(lastIndex);
             }
         };
         ModelButton button = new ModelButton(modelId, skin);
@@ -148,11 +147,11 @@ public class EditingPanel extends UIComponent {
         return canvas.add(button);
     }
 
-    private void onModelChanged(){
+    private void onModelChanged(int lastIndex){
         for(ModelButton button : modelButtons){
             button.onModelChanged();
         }
-        ConfigManager.getApp().onEditingModelChanged();
+        ConfigManager.getApp().onEditingModelChanged(lastIndex);
     }
 
     public boolean isNeedRefreshList() {

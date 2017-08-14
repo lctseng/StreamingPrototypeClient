@@ -367,6 +367,7 @@ public class StreamingPrototype extends ApplicationAdapter
                     if(editMsg.getOp() == Message.EditOperation.MODEL_LIST){
                         ConfigManager.setEditingModelIdList(editMsg.getModelIdsList());
                         editingPanel.setNeedRefreshList(true);
+                        display.prepareForEditingMode();
                     }
                 }
                 break;
@@ -442,7 +443,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void startEditingMode() {
-        display.editingScreenPosition.set(0, 0);
+        display.editingScreenPosition.set(-1, -1);
         updateEditingModeText();
         sendEditingOpMessage(Message.EditOperation.START);
         editingPanel.show();
@@ -487,9 +488,19 @@ public class StreamingPrototype extends ApplicationAdapter
         sendEditingModeMessage(builder);
     }
 
-    public  void onEditingModelChanged(){
+    public  void onEditingModelChanged(int lastIndex){
         sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
         StringPool.addField("Model ID", "" + ConfigManager.getEditingCurrentModelId());
+        if(ConfigManager.getEditingCurrentModelId() >= 0){
+            if(lastIndex >= 0) {
+                // this happens when directly change model
+                display.finishEditingModel(lastIndex);
+            }
+            display.startEditingModel();
+        }
+        else{
+            display.finishEditingModel(lastIndex);
+        }
     }
 
     private void sendEditingSetModelIdMessage(int modelId){

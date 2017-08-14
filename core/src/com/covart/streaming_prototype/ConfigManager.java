@@ -109,7 +109,7 @@ public class ConfigManager {
 
     private static List<Integer> editingModelIdList;
 
-    private static int editingCurrentModelId = -1;
+    private static int editingCurrentModelIndex = -1;
 
 
     // getters and setters
@@ -352,12 +352,12 @@ public class ConfigManager {
         ConfigManager.stPlaneRadius = stPlaneRadius;
     }
 
-    public static int getEditingCurrentModelId() {
-        return editingCurrentModelId;
+    public static int getEditingCurrentModelIndex() {
+        return editingCurrentModelIndex;
     }
 
-    public static void setEditingCurrentModelId(int editingCurrentModelId) {
-        ConfigManager.editingCurrentModelId = editingCurrentModelId;
+    public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
+        ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
     }
 
     public static List<Integer> getEditingModelIdList() {
@@ -367,6 +367,32 @@ public class ConfigManager {
     public static void setEditingModelIdList(List<Integer> editingModelIdList) {
         ConfigManager.editingModelIdList = editingModelIdList;
     }
+
+    public static int getEditingCurrentModelId() {
+        if(editingCurrentModelIndex >= 0){
+            return editingModelIdList.get(editingCurrentModelIndex);
+        }
+        else{
+            return -1;
+        }
+
+    }
+
+    public static void setEditingCurrentModelId(int id) {
+        if(id >= 0){
+            // find index by id
+            for(int i=0;i<editingModelIdList.size();i++){
+                if(editingModelIdList.get(i) == id){
+                    setEditingCurrentModelIndex(i);
+                    break;
+                }
+            }
+        }
+        else{
+            setEditingCurrentModelIndex(-1);
+        }
+    }
+
 
     // end of getters and setters
 

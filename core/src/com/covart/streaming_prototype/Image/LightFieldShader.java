@@ -128,10 +128,13 @@ public class LightFieldShader extends DefaultShader{
         bindConfiguration();
         bindProjections();
         bindTexture();
+        bindEditingInformation();
         if(ConfigManager.isMainEye(display.currentEye())) {
             StringPool.addField("Camera Position", String.format(Locale.TAIWAN, "X: %4f, Y: %4f, Z: %4f", camera.position.x, camera.position.y, camera.position.z));
             visualizeLightFieldStatus();
-            computeCursorUV();
+            if(display.isEditingPositionFollowCursor()) {
+                computeCursorUV();
+            }
         }
         super.render(renderable, combinedAttributes);
     }
@@ -152,6 +155,24 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformf("u_editingScreenY", display.editingScreenPosition.y);
 
         program.setUniformf("u_stPlaneRadius", ConfigManager.getStPlaneRadius());
+
+
+
+    }
+
+    private void bindEditingInformation(){
+        if(display.editingImagePosition.x >=0 && display.editingImagePosition.y >= 0){
+            float editingUVs = clamp(display.editingImagePosition.x / ConfigManager.getImageWidth(), 0f, 1f);
+            float editingUVt = clamp(display.editingImagePosition.y / ConfigManager.getImageHeight(), 0f, 1f);
+
+            program.setUniformi("u_editingImageUV_valid",1);
+            program.setUniformf("u_editingImageUVs",editingUVs);
+            program.setUniformf("u_editingImageUVt",editingUVt);
+        }
+        else{
+            program.setUniformi("u_editingImageUV_valid",0);
+        }
+
     }
 
     private void updateLFIndex(){
