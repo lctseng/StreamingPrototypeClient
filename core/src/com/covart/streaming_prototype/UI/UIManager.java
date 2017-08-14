@@ -65,7 +65,7 @@ public class UIManager implements Disposable{
 
     public void registerUI(UIComponent component){
         components.add(component);
-        component.registerActors(stage);
+        component.setStage(stage);
         component.start();
     }
 

@@ -5,6 +5,8 @@ import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.google.vrtoolkit.cardboard.Eye;
 
+import java.util.List;
+
 import static com.covart.streaming_prototype.UI.PositionController.Direction.NONE;
 
 /**
@@ -105,6 +107,9 @@ public class ConfigManager {
 
     private static float stPlaneRadius = 1f;
 
+    private static List<Integer> editingModelIdList;
+
+    private static int editingCurrentModelIndex = -1;
 
 
     // getters and setters
@@ -346,6 +351,48 @@ public class ConfigManager {
     public static void setStPlaneRadius(float stPlaneRadius) {
         ConfigManager.stPlaneRadius = stPlaneRadius;
     }
+
+    public static int getEditingCurrentModelIndex() {
+        return editingCurrentModelIndex;
+    }
+
+    public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
+        ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
+    }
+
+    public static List<Integer> getEditingModelIdList() {
+        return editingModelIdList;
+    }
+
+    public static void setEditingModelIdList(List<Integer> editingModelIdList) {
+        ConfigManager.editingModelIdList = editingModelIdList;
+    }
+
+    public static int getEditingCurrentModelId() {
+        if(editingCurrentModelIndex >= 0){
+            return editingModelIdList.get(editingCurrentModelIndex);
+        }
+        else{
+            return -1;
+        }
+
+    }
+
+    public static void setEditingCurrentModelId(int id) {
+        if(id >= 0){
+            // find index by id
+            for(int i=0;i<editingModelIdList.size();i++){
+                if(editingModelIdList.get(i) == id){
+                    setEditingCurrentModelIndex(i);
+                    break;
+                }
+            }
+        }
+        else{
+            setEditingCurrentModelIndex(-1);
+        }
+    }
+
 
     // end of getters and setters
 

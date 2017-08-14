@@ -2447,7 +2447,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     java.util.List<java.lang.Integer> getModelIdsList();
     /**
@@ -2455,7 +2455,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     int getModelIdsCount();
     /**
@@ -2463,7 +2463,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     int getModelIds(int index);
 
@@ -2541,7 +2541,7 @@ public final class Message {
                 modelIds_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
-              modelIds_.add(input.readUInt32());
+              modelIds_.add(input.readInt32());
               break;
             }
             case 34: {
@@ -2552,7 +2552,7 @@ public final class Message {
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
-                modelIds_.add(input.readUInt32());
+                modelIds_.add(input.readInt32());
               }
               input.popLimit(limit);
               break;
@@ -2634,7 +2634,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     public java.util.List<java.lang.Integer>
         getModelIdsList() {
@@ -2645,7 +2645,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     public int getModelIdsCount() {
       return modelIds_.size();
@@ -2655,7 +2655,7 @@ public final class Message {
      * model_ids is only valid in MODEL_LIST op
      * </pre>
      *
-     * <code>repeated uint32 model_ids = 4;</code>
+     * <code>repeated int32 model_ids = 4;</code>
      */
     public int getModelIds(int index) {
       return modelIds_.get(index);
@@ -2702,7 +2702,7 @@ public final class Message {
         output.writeUInt32NoTag(modelIdsMemoizedSerializedSize);
       }
       for (int i = 0; i < modelIds_.size(); i++) {
-        output.writeUInt32NoTag(modelIds_.get(i));
+        output.writeInt32NoTag(modelIds_.get(i));
       }
       if (modelId_ != 0) {
         output.writeInt32(5, modelId_);
@@ -2730,7 +2730,7 @@ public final class Message {
         int dataSize = 0;
         for (int i = 0; i < modelIds_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(modelIds_.get(i));
+            .computeInt32SizeNoTag(modelIds_.get(i));
         }
         size += dataSize;
         if (!getModelIdsList().isEmpty()) {
@@ -3169,7 +3169,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public java.util.List<java.lang.Integer>
           getModelIdsList() {
@@ -3180,7 +3180,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public int getModelIdsCount() {
         return modelIds_.size();
@@ -3190,7 +3190,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public int getModelIds(int index) {
         return modelIds_.get(index);
@@ -3200,7 +3200,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public Builder setModelIds(
           int index, int value) {
@@ -3214,7 +3214,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public Builder addModelIds(int value) {
         ensureModelIdsIsMutable();
@@ -3227,7 +3227,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public Builder addAllModelIds(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -3242,7 +3242,7 @@ public final class Message {
        * model_ids is only valid in MODEL_LIST op
        * </pre>
        *
-       * <code>repeated uint32 model_ids = 4;</code>
+       * <code>repeated int32 model_ids = 4;</code>
        */
       public Builder clearModelIds() {
         modelIds_ = java.util.Collections.emptyList();
@@ -6887,7 +6887,7 @@ public final class Message {
       "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"~\n\007Editin" +
       "g\022*\n\002op\030\001 \001(\0162\036.StreamingFormat.EditOper" +
       "ation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010screen_y\030\003 \001(",
-      "\002\022\021\n\tmodel_ids\030\004 \003(\r\022\020\n\010model_id\030\005 \001(\005\"u" +
+      "\002\022\021\n\tmodel_ids\030\004 \003(\005\022\020\n\010model_id\030\005 \001(\005\"u" +
       "\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave_fr" +
       "ame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\nediti" +
       "ngMsg\030\004 \001(\0132\030.StreamingFormat.Editing\"R\n" +
