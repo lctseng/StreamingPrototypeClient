@@ -171,9 +171,11 @@ public class TextureManager implements Disposable {
         }
     }
 
+    // Leftmost: index = numLightfield - 1
+    // Rightmost: index = 0
     public void visualizeColumnStatus(){
         String status = "";
-        for(int i=0;i<nSlots;i++){
+        for(int i=nSlots-1;i>=0;i--){
             if(textures[i] == null){
                 status += "=";
             }

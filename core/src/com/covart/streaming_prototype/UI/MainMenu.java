@@ -330,7 +330,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.100f, 10.0f, 0.001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.100f, 20.0f, 0.001f, false, skin);
         slider.setValue(ConfigManager.getFocusChangeRatio());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -486,7 +486,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 1f, 0.0001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, 3f, 0.0001f, false, skin);
         slider.setValue(ConfigManager.getApertureSize());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
