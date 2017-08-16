@@ -34,7 +34,10 @@ public class TextureManager implements Disposable {
     private Display display;
 
     private int lastColumnIndex = -1;
+    private int lastImageTypeValue = -1;
     private int rowIndex;
+    private int rowIndexStep;
+    private int rowIndexOffset;
 
     private float deltaHorz = 0.f;
     private float deltaVert = 0.f;
@@ -48,11 +51,14 @@ public class TextureManager implements Disposable {
 
     private final List<Integer> droppedIndex;
 
+    private byte[] paddingZeroBytes;
+
     TextureManager(Display display){
         this.display = display;
         slotImage = new Pixmap(ConfigManager.getImageWidth(), ConfigManager.getImageHeight()* ConfigManager.getNumOfSubLFImgs(), Pixmap.Format.RGB888);
         slotImageBuf = slotImage.getPixels();
         droppedIndex = new ArrayList<Integer>();
+        paddingZeroBytes = new byte[ConfigManager.getImageBufferSize()];
 
     }
 
@@ -65,12 +71,33 @@ public class TextureManager implements Disposable {
     public void addImage(Buffer buffer){
         // if lastColumn != current column, then reset rowIndex
         // means a new column is coming!
-        if(lastColumnIndex != buffer.index){
+        if(lastColumnIndex != buffer.index || lastImageTypeValue != buffer.imageTypeValue){
             //Gdx.app.log("TextureManager", "Set new column: " + buffer.index);
-            rowIndex = 0;
+            // setup new offset and step
+            switch(buffer.imageTypeValue){
+                case Message.ImageType.FULL_INDEX_VALUE:
+                    rowIndexOffset = 0;
+                    rowIndexStep = 1;
+                    break;
+                case Message.ImageType.ODD_INDEX_VALUE:
+                    rowIndexOffset = 1;
+                    rowIndexStep = 2;
+                    break;
+                case Message.ImageType.EVEN_INDEX_VALUE:
+                    rowIndexOffset = 0;
+                    rowIndexStep = 2;
+                    break;
+            }
+
+            rowIndex = rowIndexOffset;
             lastColumnIndex = buffer.index;
+            lastImageTypeValue = buffer.imageTypeValue;
             // reset image buffer
             slotImageBuf.rewind();
+            // fill init padding
+            for(int i=1;i<=rowIndexOffset;i++){
+                slotImageBuf.put(paddingZeroBytes);
+            }
         }
         // check boundary
         if(buffer.index >= nSlots){
@@ -79,9 +106,20 @@ public class TextureManager implements Disposable {
         }
         // just concat all images
         slotImageBuf.put(buffer.data, 0, buffer.size);
+        // step padding, without overflow the buffer
+        int fake_row_index = rowIndex + 1;
+        for(int i=2;i<=rowIndexStep;i++){
+            if(fake_row_index < ConfigManager.getNumOfSubLFImgs()) {
+                slotImageBuf.put(paddingZeroBytes);
+                fake_row_index += 1;
+            }
+            else{
+                break;
+            }
+        }
         // if last row, rewind the buffer and submit the texture
-        rowIndex += 1;
-        if(rowIndex == ConfigManager.getNumOfSubLFImgs()){
+        rowIndex += rowIndexStep;
+        if(rowIndex >= ConfigManager.getNumOfSubLFImgs()){
             slotImageBuf.rewind();
             if(textures[buffer.index] != null){
                 textures[buffer.index].dispose();

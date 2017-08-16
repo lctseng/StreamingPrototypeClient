@@ -7,6 +7,7 @@ package com.covart.streaming_prototype;
 
 public class Buffer {
     public int index;
+    public int imageTypeValue;
     public int size;
     public int capacity;
     public byte[] data;
