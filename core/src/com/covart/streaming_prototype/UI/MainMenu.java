@@ -330,13 +330,13 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getFocusRatioText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.100f, 20.0f, 0.001f, false, skin);
-        slider.setValue(ConfigManager.getFocusChangeRatio());
+        final HorzSlider slider = new HorzSlider(inputValueForExpSlider(0.1f), inputValueForExpSlider(20f), 0.0001f, false, skin);
+        slider.setValue(inputValueForExpSlider(ConfigManager.getFocusChangeRatio()));
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setFocusChangeRatio(slider.getValue());
+                ConfigManager.setFocusChangeRatio(outputValueForExpSlider((slider.getValue())));
                 name.setText(getFocusRatioText());
             }
         });
@@ -348,7 +348,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getFocusRatioText(){
-        return String.format(Locale.TAIWAN,"Focus ratio: %.3f",ConfigManager.getFocusChangeRatio());
+        return String.format(Locale.TAIWAN,"Focus ratio: %.4f",ConfigManager.getFocusChangeRatio());
     }
 
 
@@ -484,15 +484,14 @@ public class MainMenu extends UIComponent {
     private void addApertureSizeUI(){
         // label
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
-
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, 3f, 0.0001f, false, skin);
-        slider.setValue(ConfigManager.getApertureSize());
+        final HorzSlider slider = new HorzSlider(0.0f, inputValueForExpSlider(3), 0.0001f, false, skin);
+        slider.setValue(inputValueForExpSlider(ConfigManager.getApertureSize()));
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setApertureSize(slider.getValue());
+                ConfigManager.setApertureSize(outputValueForExpSlider(slider.getValue()));
                 name.setText(getApertureSizeText());
             }
         });
@@ -503,9 +502,8 @@ public class MainMenu extends UIComponent {
     }
 
     private String getApertureSizeText(){
-        return String.format(Locale.TAIWAN,"Aperture size: %.3f", ConfigManager.getApertureSize());
+        return String.format(Locale.TAIWAN,"Aperture size: %.4f", ConfigManager.getApertureSize());
     }
-
 
     private void addDataCameraFOVUI(){
         // label
