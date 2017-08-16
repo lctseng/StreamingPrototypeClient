@@ -149,6 +149,104 @@ public final class Message {
   }
 
   /**
+   * Protobuf enum {@code StreamingFormat.ImageQuality}
+   */
+  public enum ImageQuality
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>LOW = 0;</code>
+     */
+    LOW(0),
+    /**
+     * <code>HIGH = 1;</code>
+     */
+    HIGH(1),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>LOW = 0;</code>
+     */
+    public static final int LOW_VALUE = 0;
+    /**
+     * <code>HIGH = 1;</code>
+     */
+    public static final int HIGH_VALUE = 1;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ImageQuality valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static ImageQuality forNumber(int value) {
+      switch (value) {
+        case 0: return LOW;
+        case 1: return HIGH;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ImageQuality>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ImageQuality> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ImageQuality>() {
+            public ImageQuality findValueByNumber(int number) {
+              return ImageQuality.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return StreamingFormat.Message.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final ImageQuality[] VALUES = values();
+
+    public static ImageQuality valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ImageQuality(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:StreamingFormat.ImageQuality)
+  }
+
+  /**
    * Protobuf enum {@code StreamingFormat.EditOperation}
    */
   public enum EditOperation
@@ -247,7 +345,7 @@ public final class Message {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return StreamingFormat.Message.getDescriptor().getEnumTypes().get(1);
+      return StreamingFormat.Message.getDescriptor().getEnumTypes().get(2);
     }
 
     private static final EditOperation[] VALUES = values();
@@ -271,6 +369,113 @@ public final class Message {
     }
 
     // @@protoc_insertion_point(enum_scope:StreamingFormat.EditOperation)
+  }
+
+  /**
+   * Protobuf enum {@code StreamingFormat.ImageType}
+   */
+  public enum ImageType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>FULL_INDEX = 0;</code>
+     */
+    FULL_INDEX(0),
+    /**
+     * <code>ODD_INDEX = 1;</code>
+     */
+    ODD_INDEX(1),
+    /**
+     * <code>EVEN_INDEX = 2;</code>
+     */
+    EVEN_INDEX(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>FULL_INDEX = 0;</code>
+     */
+    public static final int FULL_INDEX_VALUE = 0;
+    /**
+     * <code>ODD_INDEX = 1;</code>
+     */
+    public static final int ODD_INDEX_VALUE = 1;
+    /**
+     * <code>EVEN_INDEX = 2;</code>
+     */
+    public static final int EVEN_INDEX_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ImageType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static ImageType forNumber(int value) {
+      switch (value) {
+        case 0: return FULL_INDEX;
+        case 1: return ODD_INDEX;
+        case 2: return EVEN_INDEX;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ImageType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ImageType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ImageType>() {
+            public ImageType findValueByNumber(int number) {
+              return ImageType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return StreamingFormat.Message.getDescriptor().getEnumTypes().get(3);
+    }
+
+    private static final ImageType[] VALUES = values();
+
+    public static ImageType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ImageType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:StreamingFormat.ImageType)
   }
 
   public interface InitOrBuilder extends
@@ -1628,6 +1833,15 @@ public final class Message {
      * <code>float delta_vz = 8;</code>
      */
     float getDeltaVz();
+
+    /**
+     * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+     */
+    int getImageQualityValue();
+    /**
+     * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+     */
+    StreamingFormat.Message.ImageQuality getImageQuality();
   }
   /**
    * Protobuf type {@code StreamingFormat.Camera}
@@ -1648,6 +1862,7 @@ public final class Message {
       deltaVx_ = 0F;
       deltaVy_ = 0F;
       deltaVz_ = 0F;
+      imageQuality_ = 0;
     }
 
     @java.lang.Override
@@ -1708,6 +1923,12 @@ public final class Message {
             case 69: {
 
               deltaVz_ = input.readFloat();
+              break;
+            }
+            case 72: {
+              int rawValue = input.readEnum();
+
+              imageQuality_ = rawValue;
               break;
             }
           }
@@ -1796,6 +2017,22 @@ public final class Message {
       return deltaVz_;
     }
 
+    public static final int IMAGEQUALITY_FIELD_NUMBER = 9;
+    private int imageQuality_;
+    /**
+     * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+     */
+    public int getImageQualityValue() {
+      return imageQuality_;
+    }
+    /**
+     * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+     */
+    public StreamingFormat.Message.ImageQuality getImageQuality() {
+      StreamingFormat.Message.ImageQuality result = StreamingFormat.Message.ImageQuality.valueOf(imageQuality_);
+      return result == null ? StreamingFormat.Message.ImageQuality.UNRECOGNIZED : result;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1828,6 +2065,9 @@ public final class Message {
       }
       if (deltaVz_ != 0F) {
         output.writeFloat(8, deltaVz_);
+      }
+      if (imageQuality_ != StreamingFormat.Message.ImageQuality.LOW.getNumber()) {
+        output.writeEnum(9, imageQuality_);
       }
     }
 
@@ -1863,6 +2103,10 @@ public final class Message {
       if (deltaVz_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(8, deltaVz_);
+      }
+      if (imageQuality_ != StreamingFormat.Message.ImageQuality.LOW.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(9, imageQuality_);
       }
       memoizedSize = size;
       return size;
@@ -1906,6 +2150,7 @@ public final class Message {
           java.lang.Float.floatToIntBits(getDeltaVz())
           == java.lang.Float.floatToIntBits(
               other.getDeltaVz()));
+      result = result && imageQuality_ == other.imageQuality_;
       return result;
     }
 
@@ -1936,6 +2181,8 @@ public final class Message {
       hash = (37 * hash) + DELTA_VZ_FIELD_NUMBER;
       hash = (53 * hash) + java.lang.Float.floatToIntBits(
           getDeltaVz());
+      hash = (37 * hash) + IMAGEQUALITY_FIELD_NUMBER;
+      hash = (53 * hash) + imageQuality_;
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2068,6 +2315,8 @@ public final class Message {
 
         deltaVz_ = 0F;
 
+        imageQuality_ = 0;
+
         return this;
       }
 
@@ -2097,6 +2346,7 @@ public final class Message {
         result.deltaVx_ = deltaVx_;
         result.deltaVy_ = deltaVy_;
         result.deltaVz_ = deltaVz_;
+        result.imageQuality_ = imageQuality_;
         onBuilt();
         return result;
       }
@@ -2158,6 +2408,9 @@ public final class Message {
         }
         if (other.getDeltaVz() != 0F) {
           setDeltaVz(other.getDeltaVz());
+        }
+        if (other.imageQuality_ != 0) {
+          setImageQualityValue(other.getImageQualityValue());
         }
         onChanged();
         return this;
@@ -2363,6 +2616,50 @@ public final class Message {
       public Builder clearDeltaVz() {
         
         deltaVz_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private int imageQuality_ = 0;
+      /**
+       * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+       */
+      public int getImageQualityValue() {
+        return imageQuality_;
+      }
+      /**
+       * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+       */
+      public Builder setImageQualityValue(int value) {
+        imageQuality_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+       */
+      public StreamingFormat.Message.ImageQuality getImageQuality() {
+        StreamingFormat.Message.ImageQuality result = StreamingFormat.Message.ImageQuality.valueOf(imageQuality_);
+        return result == null ? StreamingFormat.Message.ImageQuality.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+       */
+      public Builder setImageQuality(StreamingFormat.Message.ImageQuality value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        imageQuality_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.ImageQuality imageQuality = 9;</code>
+       */
+      public Builder clearImageQuality() {
+        
+        imageQuality_ = 0;
         onChanged();
         return this;
       }
@@ -4227,6 +4524,15 @@ public final class Message {
      * <code>bytes imageData = 5;</code>
      */
     com.google.protobuf.ByteString getImageData();
+
+    /**
+     * <code>.StreamingFormat.ImageType imageType = 6;</code>
+     */
+    int getImageTypeValue();
+    /**
+     * <code>.StreamingFormat.ImageType imageType = 6;</code>
+     */
+    StreamingFormat.Message.ImageType getImageType();
   }
   /**
    * Protobuf type {@code StreamingFormat.Image}
@@ -4244,6 +4550,7 @@ public final class Message {
       status_ = 0;
       byteSize_ = 0;
       imageData_ = com.google.protobuf.ByteString.EMPTY;
+      imageType_ = 0;
     }
 
     @java.lang.Override
@@ -4289,6 +4596,12 @@ public final class Message {
             case 42: {
 
               imageData_ = input.readBytes();
+              break;
+            }
+            case 48: {
+              int rawValue = input.readEnum();
+
+              imageType_ = rawValue;
               break;
             }
           }
@@ -4354,6 +4667,22 @@ public final class Message {
       return imageData_;
     }
 
+    public static final int IMAGETYPE_FIELD_NUMBER = 6;
+    private int imageType_;
+    /**
+     * <code>.StreamingFormat.ImageType imageType = 6;</code>
+     */
+    public int getImageTypeValue() {
+      return imageType_;
+    }
+    /**
+     * <code>.StreamingFormat.ImageType imageType = 6;</code>
+     */
+    public StreamingFormat.Message.ImageType getImageType() {
+      StreamingFormat.Message.ImageType result = StreamingFormat.Message.ImageType.valueOf(imageType_);
+      return result == null ? StreamingFormat.Message.ImageType.UNRECOGNIZED : result;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -4378,6 +4707,9 @@ public final class Message {
       if (!imageData_.isEmpty()) {
         output.writeBytes(5, imageData_);
       }
+      if (imageType_ != StreamingFormat.Message.ImageType.FULL_INDEX.getNumber()) {
+        output.writeEnum(6, imageType_);
+      }
     }
 
     public int getSerializedSize() {
@@ -4400,6 +4732,10 @@ public final class Message {
       if (!imageData_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(5, imageData_);
+      }
+      if (imageType_ != StreamingFormat.Message.ImageType.FULL_INDEX.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(6, imageType_);
       }
       memoizedSize = size;
       return size;
@@ -4425,6 +4761,7 @@ public final class Message {
           == other.getByteSize());
       result = result && getImageData()
           .equals(other.getImageData());
+      result = result && imageType_ == other.imageType_;
       return result;
     }
 
@@ -4443,6 +4780,8 @@ public final class Message {
       hash = (53 * hash) + getByteSize();
       hash = (37 * hash) + IMAGEDATA_FIELD_NUMBER;
       hash = (53 * hash) + getImageData().hashCode();
+      hash = (37 * hash) + IMAGETYPE_FIELD_NUMBER;
+      hash = (53 * hash) + imageType_;
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4569,6 +4908,8 @@ public final class Message {
 
         imageData_ = com.google.protobuf.ByteString.EMPTY;
 
+        imageType_ = 0;
+
         return this;
       }
 
@@ -4595,6 +4936,7 @@ public final class Message {
         result.status_ = status_;
         result.byteSize_ = byteSize_;
         result.imageData_ = imageData_;
+        result.imageType_ = imageType_;
         onBuilt();
         return result;
       }
@@ -4647,6 +4989,9 @@ public final class Message {
         }
         if (other.getImageData() != com.google.protobuf.ByteString.EMPTY) {
           setImageData(other.getImageData());
+        }
+        if (other.imageType_ != 0) {
+          setImageTypeValue(other.getImageTypeValue());
         }
         onChanged();
         return this;
@@ -4789,6 +5134,50 @@ public final class Message {
       public Builder clearImageData() {
         
         imageData_ = getDefaultInstance().getImageData();
+        onChanged();
+        return this;
+      }
+
+      private int imageType_ = 0;
+      /**
+       * <code>.StreamingFormat.ImageType imageType = 6;</code>
+       */
+      public int getImageTypeValue() {
+        return imageType_;
+      }
+      /**
+       * <code>.StreamingFormat.ImageType imageType = 6;</code>
+       */
+      public Builder setImageTypeValue(int value) {
+        imageType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.ImageType imageType = 6;</code>
+       */
+      public StreamingFormat.Message.ImageType getImageType() {
+        StreamingFormat.Message.ImageType result = StreamingFormat.Message.ImageType.valueOf(imageType_);
+        return result == null ? StreamingFormat.Message.ImageType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.StreamingFormat.ImageType imageType = 6;</code>
+       */
+      public Builder setImageType(StreamingFormat.Message.ImageType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        imageType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.StreamingFormat.ImageType imageType = 6;</code>
+       */
+      public Builder clearImageType() {
+        
+        imageType_ = 0;
         onChanged();
         return this;
       }
@@ -6881,32 +7270,37 @@ public final class Message {
       "\022\r\n\005width\030\002 \001(\r\022\016\n\006height\030\003 \001(\r\022\020\n\010modul" +
       "eID\030\004 \001(\r\"Q\n\nDefaultPos\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030" +
       "\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\n\n\002vx\030\005 \001(\002\022\n\n\002vy\030\006 \001(\002" +
-      "\022\n\n\002vz\030\007 \001(\002\"\207\001\n\006Camera\022\024\n\014serialNumber\030" +
+      "\022\n\n\002vz\030\007 \001(\002\"\274\001\n\006Camera\022\024\n\014serialNumber\030" +
       "\002 \001(\r\022\017\n\007delta_x\030\003 \001(\002\022\017\n\007delta_y\030\004 \001(\002\022" +
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
-      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\"~\n\007Editin" +
-      "g\022*\n\002op\030\001 \001(\0162\036.StreamingFormat.EditOper" +
-      "ation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010screen_y\030\003 \001(",
-      "\002\022\021\n\tmodel_ids\030\004 \003(\005\022\020\n\010model_id\030\005 \001(\005\"u" +
-      "\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsave_fr" +
-      "ame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\nediti" +
-      "ngMsg\030\004 \001(\0132\030.StreamingFormat.Editing\"R\n" +
-      "\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006status\030\003" +
-      " \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageData\030\005 \001(" +
-      "\014\"\010\n\006Ending\"\312\002\n\020StreamingMessage\022*\n\004type" +
-      "\030\001 \001(\0162\034.StreamingFormat.MessageType\022&\n\007" +
-      "initMsg\030\002 \001(\0132\025.StreamingFormat.Init\0222\n\r" +
-      "defaultPosMsg\030\003 \001(\0132\033.StreamingFormat.De",
-      "faultPos\022*\n\tcameraMsg\030\004 \001(\0132\027.StreamingF" +
-      "ormat.Camera\022(\n\010imageMsg\030\005 \001(\0132\026.Streami" +
-      "ngFormat.Image\022*\n\tendingMsg\030\006 \001(\0132\027.Stre" +
-      "amingFormat.Ending\022,\n\ncontrolMsg\030\007 \001(\0132\030" +
-      ".StreamingFormat.Control*m\n\013MessageType\022" +
-      "\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultPos\020\001\022\021\n\rMsgCa" +
-      "meraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n\tMsgEnding\020\004\022" +
-      "\016\n\nMsgControl\020\005*T\n\rEditOperation\022\t\n\005STAR" +
-      "T\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002\022\016\n\nMODEL_LIS" +
-      "T\020\003\022\020\n\014SET_MODEL_ID\020\004b\006proto3"
+      "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\0223\n\014imageQ" +
+      "uality\030\t \001(\0162\035.StreamingFormat.ImageQual" +
+      "ity\"~\n\007Editing\022*\n\002op\030\001 \001(\0162\036.StreamingFo",
+      "rmat.EditOperation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010" +
+      "screen_y\030\003 \001(\002\022\021\n\tmodel_ids\030\004 \003(\005\022\020\n\010mod" +
+      "el_id\030\005 \001(\005\"u\n\007Control\022\022\n\ndrop_index\030\001 \003" +
+      "(\r\022\022\n\nsave_frame\030\002 \001(\r\022\024\n\014change_scene\030\003" +
+      " \001(\r\022,\n\neditingMsg\030\004 \001(\0132\030.StreamingForm" +
+      "at.Editing\"\201\001\n\005Image\022\024\n\014serialNumber\030\002 \001" +
+      "(\r\022\016\n\006status\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\t" +
+      "imageData\030\005 \001(\014\022-\n\timageType\030\006 \001(\0162\032.Str" +
+      "eamingFormat.ImageType\"\010\n\006Ending\"\312\002\n\020Str" +
+      "eamingMessage\022*\n\004type\030\001 \001(\0162\034.StreamingF",
+      "ormat.MessageType\022&\n\007initMsg\030\002 \001(\0132\025.Str" +
+      "eamingFormat.Init\0222\n\rdefaultPosMsg\030\003 \001(\013" +
+      "2\033.StreamingFormat.DefaultPos\022*\n\tcameraM" +
+      "sg\030\004 \001(\0132\027.StreamingFormat.Camera\022(\n\010ima" +
+      "geMsg\030\005 \001(\0132\026.StreamingFormat.Image\022*\n\te" +
+      "ndingMsg\030\006 \001(\0132\027.StreamingFormat.Ending\022" +
+      ",\n\ncontrolMsg\030\007 \001(\0132\030.StreamingFormat.Co" +
+      "ntrol*m\n\013MessageType\022\013\n\007MsgInit\020\000\022\021\n\rMsg" +
+      "DefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010MsgIm" +
+      "age\020\003\022\r\n\tMsgEnding\020\004\022\016\n\nMsgControl\020\005*!\n\014",
+      "ImageQuality\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\001*T\n\rEditO" +
+      "peration\022\t\n\005START\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDAT" +
+      "E\020\002\022\016\n\nMODEL_LIST\020\003\022\020\n\014SET_MODEL_ID\020\004*:\n" +
+      "\tImageType\022\016\n\nFULL_INDEX\020\000\022\r\n\tODD_INDEX\020" +
+      "\001\022\016\n\nEVEN_INDEX\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6937,7 +7331,7 @@ public final class Message {
     internal_static_StreamingFormat_Camera_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Camera_descriptor,
-        new java.lang.String[] { "SerialNumber", "DeltaX", "DeltaY", "DeltaZ", "DeltaVx", "DeltaVy", "DeltaVz", });
+        new java.lang.String[] { "SerialNumber", "DeltaX", "DeltaY", "DeltaZ", "DeltaVx", "DeltaVy", "DeltaVz", "ImageQuality", });
     internal_static_StreamingFormat_Editing_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_StreamingFormat_Editing_fieldAccessorTable = new
@@ -6955,7 +7349,7 @@ public final class Message {
     internal_static_StreamingFormat_Image_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Image_descriptor,
-        new java.lang.String[] { "SerialNumber", "Status", "ByteSize", "ImageData", });
+        new java.lang.String[] { "SerialNumber", "Status", "ByteSize", "ImageData", "ImageType", });
     internal_static_StreamingFormat_Ending_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_StreamingFormat_Ending_fieldAccessorTable = new
