@@ -34,6 +34,23 @@ public abstract class UIComponent implements Disposable {
         largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
     }
 
+    protected float inputValueForExpSlider(float value, float exp){
+        return (float)Math.pow(value, 1.0/exp);
+    }
+
+    protected float outputValueForExpSlider(float value, float exp){
+        return (float)Math.pow(value, exp);
+    }
+
+    protected float inputValueForExpSlider(float value){
+        return inputValueForExpSlider(value, 3);
+    }
+
+    protected float outputValueForExpSlider(float value){
+        return outputValueForExpSlider(value, 3);
+    }
+
+
     void setStage(Stage stage){
 
     }

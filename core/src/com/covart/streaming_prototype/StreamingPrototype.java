@@ -313,7 +313,8 @@ public class StreamingPrototype extends ApplicationAdapter
                 .setDeltaVx(direction.x)
                 .setDeltaVy(direction.y)
                 .setDeltaVz(direction.z)
-                .setSerialNumber(0);
+                .setSerialNumber(0)
+                .setImageQuality(ConfigManager.isHighQualityImagesNeeded() ? Message.ImageQuality.HIGH : Message.ImageQuality.LOW);
 
        // crafting packet
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
@@ -363,6 +364,8 @@ public class StreamingPrototype extends ApplicationAdapter
                     // fill meta data
                     bufData.size = expectSize;
                     bufData.index = msg.getImageMsg().getStatus();
+                    bufData.imageTypeValue = msg.getImageMsg().getImageTypeValue();
+
                     // start receiving image data
                     BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 }
@@ -371,6 +374,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 Buffer bufData = BufferPool.getInstance().queueDecoderToNetwork.take();
                 bufData.size = 0;
                 bufData.index = msg.getImageMsg().getStatus();
+                bufData.imageTypeValue = msg.getImageMsg().getImageTypeValue();
                 BufferPool.getInstance().queueNetworkToDecoder.put(bufData);
                 // report
                 Profiler.reportOnRecvEnd();
