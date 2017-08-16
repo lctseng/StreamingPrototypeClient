@@ -9,6 +9,12 @@ precision highp float;
 #define HIGH
 #endif
 
+
+#define INVALID_INDEX_VALUE -1
+#define FULL_INDEX_VALUE 0
+#define ODD_INDEX_VALUE 1
+#define EVEN_INDEX_VALUE 2
+
 uniform mat4 u_rk_to_rf;
 
 uniform float u_cameraStep;
@@ -44,6 +50,17 @@ uniform float u_editingImageUVt;
 
 
 uniform mat4 u_rf_to_rd_center;
+
+
+uniform int u_columnImageType0;
+uniform int u_columnImageType1;
+uniform int u_columnImageType2;
+uniform int u_columnImageType3;
+uniform int u_columnImageType4;
+uniform int u_columnImageType5;
+uniform int u_columnImageType6;
+uniform int u_columnImageType7;
+
 
 uniform sampler2D u_custom_texture0;
 uniform int u_texture_valid0;
@@ -112,7 +129,52 @@ void main() {
 			mat4 u_rf_to_rd = u_rf_to_rd_center;
 			// for each D(s,t)
 			for(int i=u_colStart;i<=u_colEnd;++i){
-				for(int j=u_rowStart;j<=u_rowEnd;++j){
+				int columnImageType = INVALID_INDEX_VALUE;
+				int rowOffset = u_rowStart;
+				int rowStep = 1;
+				if(i == 0){
+					columnImageType = u_columnImageType0;
+				}
+				else if(i == 1){
+					columnImageType = u_columnImageType1;
+				}
+				else if(i == 2){
+					columnImageType = u_columnImageType2;
+				}
+				else if(i == 3){
+					columnImageType = u_columnImageType3;
+				}
+				else if(i == 4){
+					columnImageType = u_columnImageType4;
+				}
+				else if(i == 5){
+					columnImageType = u_columnImageType5;
+				}
+				else if(i == 6){
+					columnImageType = u_columnImageType6;
+				}
+				else if(i == 7){
+					columnImageType = u_columnImageType7;
+				}
+				// Note: Row indexes are reversed in shader...
+				// TODO: fix in future
+				if(columnImageType == FULL_INDEX_VALUE){
+					rowOffset = 0;
+					rowStep = 1;
+				}
+				else if(columnImageType == EVEN_INDEX_VALUE){
+					rowOffset = 1;
+					rowStep = 2;
+				}
+				else if(columnImageType == ODD_INDEX_VALUE){
+					rowOffset = 0;
+					rowStep = 2;
+				}
+				else{
+					// invalid
+					rowOffset = u_rowEnd + 1;
+				}
+				for(int j=rowOffset;j<=u_rowEnd;j+=rowStep){
 
 					int columnTextureIndex = i - u_colTextureOffset;
 					

@@ -24,9 +24,13 @@ import StreamingFormat.Message;
 public class TextureManager implements Disposable {
 
 
+    class TextureInfo {
+        public Texture texture;
+        public int imageTypeValue;
+    }
 
     private int nSlots = 0;
-    private Texture[] textures;
+    private TextureInfo[] textures;
 
     private Pixmap slotImage;
     private ByteBuffer slotImageBuf;
@@ -65,7 +69,7 @@ public class TextureManager implements Disposable {
     public void createTextureSlots(int nSlots){
         disposeExistingTextures();
         this.nSlots = nSlots;
-        textures = new Texture[nSlots];
+        textures = new TextureInfo[nSlots];
     }
 
     public void addImage(Buffer buffer){
@@ -122,13 +126,23 @@ public class TextureManager implements Disposable {
         if(rowIndex >= ConfigManager.getNumOfSubLFImgs()){
             slotImageBuf.rewind();
             if(textures[buffer.index] != null){
-                textures[buffer.index].dispose();
+                textures[buffer.index].texture.dispose();
             }
-            textures[buffer.index] = new Texture(slotImage);
+            else{
+                textures[buffer.index] = new TextureInfo();
+            }
+            textures[buffer.index].texture = new Texture(slotImage);
+            textures[buffer.index].imageTypeValue = buffer.imageTypeValue;
+            //Gdx.app.log("Texture", "Binding texture index: " + buffer.index + ", Type:" + buffer.imageTypeValue);
             //textures[buffer.index] = new Texture("grid4.jpg");
             slotImageBuf.rewind();
+            // fill init padding
+            for(int i=1;i<=rowIndexOffset;i++){
+                slotImageBuf.put(paddingZeroBytes);
+            }
+
             //Gdx.app.log("TextureManager", "End of column: " + buffer.index);
-            rowIndex = 0;
+            rowIndex = rowIndexOffset;
             freeUnusedTextures();
 
         }
@@ -141,7 +155,7 @@ public class TextureManager implements Disposable {
                 if (textures[i] != null) {
                     if (Math.abs(lastColumnIndex - i) >= threshold) {
                         // i-th texture is too far
-                        textures[i].dispose();
+                        textures[i].texture.dispose();
                         textures[i] = null;
                         synchronized (droppedIndex) {
                             droppedIndex.add(i);
@@ -172,9 +186,9 @@ public class TextureManager implements Disposable {
 
     public void disposeExistingTextures(){
         if(textures != null){
-            for(Texture tex : textures){
+            for(TextureInfo tex : textures){
                 if(tex != null) {
-                    tex.dispose();
+                    tex.texture.dispose();
                 }
             }
             textures = null;
@@ -185,7 +199,7 @@ public class TextureManager implements Disposable {
         }
     }
 
-    public Texture[] getTextures(){
+    public TextureInfo[] getTextures(){
         return textures;
     }
 
@@ -196,15 +210,17 @@ public class TextureManager implements Disposable {
         for(int i=startIndex;i<=endIndex;i++){
             int textureIndex = i - startIndex;
             if(textures[i] != null) {
-                textures[i].bind(textureIndex);
+                textures[i].texture.bind(textureIndex);
                 shaderProgram.setUniformi("u_custom_texture" + textureIndex, textureIndex);
                 shaderProgram.setUniformi("u_texture_valid" + textureIndex, 1);
+                shaderProgram.setUniformi("u_columnImageType" + textureIndex, textures[i].imageTypeValue);
                 //Gdx.app.log("Tex", "Binding:" + textureIndex);
             }
             else{
                 Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + textureIndex);
                 Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0);
                 shaderProgram.setUniformi("u_texture_valid" + textureIndex, 0);
+                shaderProgram.setUniformi("u_columnImageType" + textureIndex, -1);
             }
         }
     }
