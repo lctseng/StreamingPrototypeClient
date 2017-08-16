@@ -66,7 +66,7 @@ public class ConfigManager {
     private static StreamingPrototype app;
     private static float cameraStep = 1f;
 
-    private static float apertureSize = 0.107f;
+    private static float apertureSize = 0.278f;
 
     private static float focusChangeRatio = 2.508f;
 
@@ -395,6 +395,10 @@ public class ConfigManager {
 
 
     // end of getters and setters
+
+    public static boolean isHighQualityImagesNeeded(){
+        return !editingModeEnabled;
+    }
 
     public static boolean isMainEye(Eye eye){
         return eye.getType() == Eye.Type.LEFT || eye.getType() == Eye.Type.MONOCULAR;

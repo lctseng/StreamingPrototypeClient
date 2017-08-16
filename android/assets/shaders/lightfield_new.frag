@@ -132,6 +132,7 @@ void main() {
 				int columnImageType = INVALID_INDEX_VALUE;
 				int rowOffset = u_rowStart;
 				int rowStep = 1;
+				float apertureFactor = 1.0;
 				if(i == 0){
 					columnImageType = u_columnImageType0;
 				}
@@ -165,15 +166,18 @@ void main() {
 				else if(columnImageType == EVEN_INDEX_VALUE){
 					rowOffset = 1;
 					rowStep = 2;
+					apertureFactor = 2.0;
 				}
 				else if(columnImageType == ODD_INDEX_VALUE){
 					rowOffset = 0;
 					rowStep = 2;
+					apertureFactor = 2.0;
 				}
 				else{
 					// invalid
 					rowOffset = u_rowEnd + 1;
 				}
+				float effectiveAperture = apertureFactor * u_apertureSize;
 				for(int j=rowOffset;j<=u_rowEnd;j+=rowStep){
 
 					int columnTextureIndex = i - u_colTextureOffset;
@@ -186,7 +190,7 @@ void main() {
 
 					float dist = dx * dx +  dy * dy;
 
-					if(dist < u_apertureSize){
+					if(dist < effectiveAperture){
 						// prepare matrix from rf to rd
 						u_rf_to_rd[3][0] = -cameraX;
 						u_rf_to_rd[3][1] = -cameraY;
@@ -206,7 +210,7 @@ void main() {
 
 						if(UV.s >= 0.0 && UV.s <= 1.0 && UV.t >= 0.0 && UV.t <= 1.0){
 							// compute weight
-							float weight = (u_apertureSize - dist)/u_apertureSize;
+							float weight = (effectiveAperture - dist)/effectiveAperture;
 							
 							
 							if(u_editingImageUV_valid == 1){

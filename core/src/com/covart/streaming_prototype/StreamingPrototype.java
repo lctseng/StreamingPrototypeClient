@@ -314,7 +314,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 .setDeltaVy(direction.y)
                 .setDeltaVz(direction.z)
                 .setSerialNumber(0)
-                .setImageQuality(Message.ImageQuality.HIGH);
+                .setImageQuality(ConfigManager.isHighQualityImagesNeeded() ? Message.ImageQuality.HIGH : Message.ImageQuality.LOW);
 
        // crafting packet
         Message.StreamingMessage msg = Message.StreamingMessage.newBuilder()
