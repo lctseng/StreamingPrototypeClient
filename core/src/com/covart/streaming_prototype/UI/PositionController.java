@@ -49,12 +49,13 @@ public class PositionController extends UIComponent {
     private void createCanvas(){
         canvas = new Table();
         canvas.setX(Gdx.graphics.getWidth() / 2);
-        canvas.setY(0);
         canvas.setWidth(Gdx.graphics.getWidth() / 2);
         canvas.setHeight(commonRowHeight);
         canvas.setDebug(false);
         canvas.setVisible(false);
-        canvas.top();
+        canvas.setY(0);
+        canvas.right();
+        canvas.bottom();
         canvas.row().height(commonRowHeight);
         addComponents();
 

@@ -198,6 +198,7 @@ public class CardBoardAndroidApplication extends CardboardActivity implements An
             }
         }
         getCardboardView().setSettingsButtonEnabled(false);
+        getCardboardView().setVRModeEnabled(false);
         if ((listener instanceof CardBoardApplicationListener)) {
             ((CardBoardApplicationListener) listener).initCardboardApplication(this);
         }

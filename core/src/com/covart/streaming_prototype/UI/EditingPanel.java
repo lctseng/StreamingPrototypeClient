@@ -61,7 +61,8 @@ public class EditingPanel extends UIComponent {
         canvas.setY(0);
         canvas.setHeight(commonRowHeight);
         canvas.setDebug(false);
-        canvas.top();
+        canvas.left();
+        canvas.bottom();
         canvas.row().height(commonRowHeight);
         addComponents();
     }
