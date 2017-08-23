@@ -519,7 +519,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private void sendEditingUpdateMessage(float imageX, float imageY){
         Message.Editing.Builder builder = Message.Editing.newBuilder()
                 .setOp(Message.EditOperation.UPDATE)
-                .setScreenX(imageX)
+                .setScreenX(ConfigManager.getImageWidth() - imageX) // TODO: find out why we need to reverse the X, may be due to reversed up vector
                 .setScreenY(imageY);
         sendEditingModeMessage(builder);
     }
