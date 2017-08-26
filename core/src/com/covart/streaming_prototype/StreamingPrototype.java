@@ -457,10 +457,8 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     private void updateEditingModeText() {
-        StringPool.addField("Editing", ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled");
-    }
-
-    private void updateEditingModeText(float imageX, float imageY) {
+        float imageX = ConfigManager.getImageWidth() -  display.editingImagePosition.x;
+        float imageY = display.editingImagePosition.y;
         StringPool.addField("Editing", (ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled") + ", ImageX:" + imageX + ", ImageY:" + imageY);
     }
 
@@ -484,14 +482,14 @@ public class StreamingPrototype extends ApplicationAdapter
         display.updateEditingScreenPosition(screenX, screenY);
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
-            updateEditingModeText(display.editingImagePosition.x, display.editingImagePosition.y);
+            updateEditingModeText();
             sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
         }
         return true;
     }
 
     private boolean editingTouchDown(int screenX, int screenY){
-        display.updateEditingScreenPosition(screenX, screenY);
+        editingTouchDragged(screenX, screenY);
         if(ConfigManager.getEditingCurrentModelIndex() >= 0){
             display.setEditingPositionFollowCursor(true);
         }
