@@ -111,6 +111,8 @@ public class ConfigManager {
 
     private static int editingCurrentModelIndex = -1;
 
+    private static boolean forceLowQuality = false;
+
 
     // getters and setters
 
@@ -393,11 +395,18 @@ public class ConfigManager {
         }
     }
 
+    public static boolean isForceLowQuality() {
+        return forceLowQuality;
+    }
+
+    public static void setForceLowQuality(boolean forceLowQuality) {
+        ConfigManager.forceLowQuality = forceLowQuality;
+    }
 
     // end of getters and setters
 
     public static boolean isHighQualityImagesNeeded(){
-        return !editingModeEnabled;
+        return !isForceLowQuality() && !editingModeEnabled;
     }
 
     public static boolean isMainEye(Eye eye){

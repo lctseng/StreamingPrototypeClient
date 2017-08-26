@@ -134,6 +134,7 @@ public class MainMenu extends UIComponent {
 
         addAutoRotateEnabledUI();
         addAutoRotateSpeedFactorUI();
+        addForceLowQuailityUI();
         canvas.row().height(commonRowHeight);
 
         addEditingReportIntervalUI();
@@ -707,6 +708,28 @@ public class MainMenu extends UIComponent {
                 if(ConfigManager.isAutoRotateEnabled()){
                     ConfigManager.getApp().display.eyeWrapper.resetAutoRotate();
                 }
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
+    }
+
+    private void addForceLowQuailityUI(){
+        // label
+        Label name = new Label("Force low quality:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isForceLowQuality());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setForceLowQuality(box.isChecked());
+                updateCheckBoxText(box);
             }
         });
 
