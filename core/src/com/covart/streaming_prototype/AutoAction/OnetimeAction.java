@@ -14,7 +14,7 @@ public abstract class OnetimeAction extends Action {
     @Override
     public boolean update(float deltaTime) {
         act(deltaTime);
-        return false;
+        return true;
     }
 
     protected abstract void act(float deltaTime);

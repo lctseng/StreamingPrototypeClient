@@ -8,6 +8,8 @@ import com.badlogic.gdx.backends.android.CardBoardAndroidApplication;
 import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.AutoAction.Executor;
+import com.covart.streaming_prototype.AutoAction.ExecutorEventListener;
+import com.covart.streaming_prototype.AutoAction.RecenterAction;
 import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -33,7 +35,7 @@ import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDo
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter, CardBoardApplicationListener {
+        implements MasterComponentAdapter, CardBoardApplicationListener, ExecutorEventListener {
 
 
     public enum State {
@@ -64,6 +66,7 @@ public class StreamingPrototype extends ApplicationAdapter
     // UI
     public PositionController positionController;
     public EditingPanel editingPanel;
+    public MainMenu mainMenu;
 
 
     // Auto action
@@ -157,6 +160,22 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     @Override
+    public void onExecutorStart() {
+        mainMenu.updateActionExecutorText();
+    }
+
+    @Override
+    public void onExecutorStop() {
+        mainMenu.updateActionExecutorText();
+    }
+
+    @Override
+    public void onExecutorUpdateEnded() {
+
+    }
+
+
+    @Override
     public void create() {
         ConfigManager.setApp(this);
 
@@ -173,7 +192,7 @@ public class StreamingPrototype extends ApplicationAdapter
         initializeInput();
 
         // Setup UI
-        UIManager.getInstance().registerUI(new MainMenu());
+        UIManager.getInstance().registerUI(mainMenu = new MainMenu());
         UIManager.getInstance().registerUI(positionController = new PositionController());
         UIManager.getInstance().registerUI(editingPanel = new EditingPanel());
 
@@ -181,8 +200,8 @@ public class StreamingPrototype extends ApplicationAdapter
         updateEditingModeText();
 
         // setup executor
-        autoActionExecutor = new Executor();
-        autoActionExecutor.setTimeFactor(0.3f);
+        autoActionExecutor = new Executor(this);
+        autoActionExecutor.addAction(new RecenterAction());
         autoActionExecutor.addWait(3);
         autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1));
         autoActionExecutor.addWait(3);

@@ -38,6 +38,9 @@ public class MainMenu extends UIComponent {
     private Label startStopLabel;
     private TextButton startStopButton;
 
+    private Label actionExecutorLabel;
+    private TextButton actionExecutorButton;
+
     private TextButton editingModeButton;
 
     private TextButton canvasControlButton;
@@ -124,6 +127,7 @@ public class MainMenu extends UIComponent {
 
         addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
+        addActionExecutorButtonUI();
         canvas.row().height(commonRowHeight);
 
         addEyeWrapperPitchLimitUI();
@@ -203,6 +207,54 @@ public class MainMenu extends UIComponent {
                 return "Unknown";
         }
     }
+
+
+
+
+    private void addActionExecutorButtonUI(){
+        // create label
+        actionExecutorLabel = new Label(getActionExecutorLabelText(), largeLabelStyle);
+
+        actionExecutorButton = new TextButton(getActionExecutorButtonText(), skin);
+        actionExecutorButton.getStyle().font = largeFont;
+        actionExecutorButton.setStyle(startStopButton.getStyle());
+        actionExecutorButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(isActionExecutorRunning()){
+                    ConfigManager.getApp().autoActionExecutor.stop();
+                }
+                else{
+                    ConfigManager.getApp().autoActionExecutor.start();
+
+                }
+                updateActionExecutorText();
+
+            }
+        });
+        canvas.add(actionExecutorLabel);
+        canvas.add(actionExecutorButton).width(buttonWidth);
+    }
+
+    public void updateActionExecutorText(){
+        actionExecutorLabel.setText(getActionExecutorLabelText());
+        actionExecutorButton.setText(getActionExecutorButtonText());
+    }
+
+    private String getActionExecutorButtonText(){
+        return isActionExecutorRunning() ? "Stop" : "Start";
+    }
+
+    private String getActionExecutorLabelText(){
+        return isActionExecutorRunning() ? "Auto action running" : "Auto action stopped";
+    }
+
+    private boolean isActionExecutorRunning(){
+        return ConfigManager.getApp().autoActionExecutor != null && ConfigManager.getApp().autoActionExecutor.isRunning();
+    }
+
+
+
 
     private State getAppState(){
         return ConfigManager.getApp().getState();

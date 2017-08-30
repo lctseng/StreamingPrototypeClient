@@ -15,6 +15,7 @@ import java.util.Set;
 
 public class Executor {
 
+    private ExecutorEventListener listener;
     private boolean running;
 
     private List<Action> allActions;
@@ -25,6 +26,12 @@ public class Executor {
     private float timeFactor;
     private int actionIndex;
 
+
+    public Executor(ExecutorEventListener listener)
+    {
+        this.listener = listener;
+        reset();
+    }
 
     public Executor(){
         reset();
@@ -44,10 +51,16 @@ public class Executor {
         actionIndex = 0;
         activeActions.clear();
         executionTime = 0.0f;
+        if(listener != null){
+            listener.onExecutorStart();
+        }
     }
 
     public void stop(){
         running = false;
+        if(listener != null){
+            listener.onExecutorStop();
+        }
     }
 
     public void addAction(Action action){
@@ -66,7 +79,10 @@ public class Executor {
             startActions();
             updateActions(deltaTime);
             if(isUpdateEnded()){
-                running = false;
+                if(listener != null){
+                    listener.onExecutorUpdateEnded();
+                }
+                stop();
             }
         }
 
