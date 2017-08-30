@@ -50,7 +50,7 @@ public class Executor {
         allActions.add(action);
     }
 
-    public void wait(float time){
+    public void addWait(float time){
         accumulateTime += time;
     }
 
@@ -92,4 +92,7 @@ public class Executor {
         return actionIndex >= allActions.size() && activeActions.isEmpty();
     }
 
+    public void setTimeFactor(float timeFactor) {
+        this.timeFactor = timeFactor;
+    }
 }

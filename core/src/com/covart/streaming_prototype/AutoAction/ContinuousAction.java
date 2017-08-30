@@ -13,10 +13,13 @@ public abstract class ContinuousAction extends Action {
     protected float currentValue;
     protected float executedTime;
 
+    private float lastValue;
+
     protected ContinuousAction(float startValue, float endValue, float duration){
         this.startValue = startValue;
         this.endValue = endValue;
-        this.diffValue = endValue = startValue;
+        this.diffValue = endValue - startValue;
+        this.lastValue = startValue;
         this.duration = duration;
     }
 
@@ -30,8 +33,11 @@ public abstract class ContinuousAction extends Action {
     @Override
     public boolean update(float deltaTime) {
         executedTime += deltaTime;
+        float oldCurrentValue = currentValue;
         currentValue = startValue + diffValue * (executedTime/duration);
-        act(currentValue);
+        float stepValue = currentValue - lastValue;
+        lastValue = oldCurrentValue;
+        act(stepValue);
         if(isEnded()){
             return true;
         }
@@ -40,7 +46,7 @@ public abstract class ContinuousAction extends Action {
         }
     }
 
-    protected abstract void act(float currentValue);
+    protected abstract void act(float stepValue);
 
     private boolean isEnded(){
         if(startValue > endValue){

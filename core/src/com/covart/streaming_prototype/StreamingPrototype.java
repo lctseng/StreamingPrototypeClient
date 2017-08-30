@@ -7,6 +7,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.android.CardBoardAndroidApplication;
 import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.AutoAction.Executor;
+import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
@@ -18,6 +20,7 @@ import com.covart.streaming_prototype.UI.UIManager;
 import com.covart.streaming_prototype.Utils.Profiler;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
+import com.covart.streaming_prototype.UI.PositionController.Direction;
 
 import java.util.Locale;
 
@@ -63,6 +66,9 @@ public class StreamingPrototype extends ApplicationAdapter
     public EditingPanel editingPanel;
 
 
+    // Auto action
+    public Executor autoActionExecutor;
+
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
             decoder = platform_decoder;
@@ -96,6 +102,7 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onNewFrame(HeadTransform paramHeadTransform) {
         display.onNewFrame(paramHeadTransform);
+        autoActionExecutor.update();
         editingPanel.checkRefreshList();
         //Profiler.generateProfilingStrings();
 
@@ -172,6 +179,15 @@ public class StreamingPrototype extends ApplicationAdapter
 
         StringPool.addField("App", "Ready for start");
         updateEditingModeText();
+
+        // setup executor
+        autoActionExecutor = new Executor();
+        autoActionExecutor.setTimeFactor(0.3f);
+        autoActionExecutor.addWait(3);
+        autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1));
+        autoActionExecutor.addWait(3);
+        autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1));
+        autoActionExecutor.start();
     }
 
     private void initializeInput() {

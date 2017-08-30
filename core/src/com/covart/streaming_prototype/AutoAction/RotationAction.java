@@ -7,7 +7,7 @@ package com.covart.streaming_prototype.AutoAction;
 
 public class RotationAction extends ContinuousAction {
 
-    protected RotationAction(float startValue, float endValue, float duration) {
+    public RotationAction(float startValue, float endValue, float duration) {
         super(startValue, endValue, duration);
     }
 

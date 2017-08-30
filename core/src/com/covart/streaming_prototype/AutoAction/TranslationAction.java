@@ -12,13 +12,13 @@ public class TranslationAction extends ContinuousAction {
 
     private Direction direction;
 
-    protected TranslationAction(Direction direction, float distance, float duration) {
+    public TranslationAction(Direction direction, float distance, float duration) {
         super(0f, distance, duration);
         this.direction = direction;
     }
 
     @Override
-    protected void act(float currentValue) {
-        ConfigManager.getApp().display.moveCamera(direction, currentValue);
+    protected void act(float stepValue) {
+        ConfigManager.getApp().display.moveCamera(direction, stepValue);
     }
 }
