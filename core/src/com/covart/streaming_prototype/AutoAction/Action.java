@@ -5,5 +5,11 @@ package com.covart.streaming_prototype.AutoAction;
  * For NCP project at COVART, NTU
  */
 
-public class Action {
+public abstract class Action {
+    public float startTime = 0f;
+
+
+    public abstract void start();
+
+    public abstract boolean update(float deltaTime);
 }

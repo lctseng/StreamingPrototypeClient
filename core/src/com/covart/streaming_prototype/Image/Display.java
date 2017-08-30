@@ -289,26 +289,29 @@ public class Display implements Disposable{
     }
 
     public void manuallyMoveCamera(PositionController.Direction direction){
+        moveCamera(direction, ConfigManager.getManuallyMoveStep());
+    }
+
+    public void moveCamera(PositionController.Direction direction, float distance){
         switch(direction){
             case LEFT:
-                camMain.translate(ConfigManager.getManuallyMoveStep(), 0, 0);
+                camMain.translate(distance, 0, 0);
                 break;
             case RIGHT:
-                camMain.translate(-ConfigManager.getManuallyMoveStep(), 0, 0);
+                camMain.translate(-distance, 0, 0);
                 break;
             case UP:
-                camMain.translate(0, -ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, -distance, 0);
                 break;
             case DOWN:
-                camMain.translate(0, ConfigManager.getManuallyMoveStep(), 0);
+                camMain.translate(0, distance, 0);
                 break;
             case FORWARD:
-                camMain.translate(0, 0, -ConfigManager.getManuallyMoveStep());
+                camMain.translate(0, 0, -distance);
                 break;
             case BACKWARD:
-                camMain.translate(0, 0, ConfigManager.getManuallyMoveStep());
+                camMain.translate(0, 0, distance);
                 break;
-
         }
     }
 
