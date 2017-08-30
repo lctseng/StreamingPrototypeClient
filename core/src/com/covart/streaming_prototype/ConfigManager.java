@@ -97,8 +97,6 @@ public class ConfigManager {
 
     private static boolean enableManuallyMove = false;
 
-    private static float eyeDisparityFactor = 5.0f;
-
     private static float eyeRotationCenterDistance = 3.0f;
 
     private static float autoRotatePitchLimit = 10f;
@@ -300,14 +298,6 @@ public class ConfigManager {
 
     public static void setEnableManuallyMove(boolean enableManuallyMove) {
         ConfigManager.enableManuallyMove = enableManuallyMove;
-    }
-
-    public static float getEyeDisparityFactor() {
-        return eyeDisparityFactor;
-    }
-
-    public static void setEyeDisparityFactor(float eyeDisparityFactor) {
-        ConfigManager.eyeDisparityFactor = eyeDisparityFactor;
     }
 
     public static float getEyeRotationCenterDistance() {

@@ -124,7 +124,6 @@ public class MainMenu extends UIComponent {
 
         addDataCameraFOVUI();
         addFreeUnusedTextureControlUI();
-        addEyeDisparityFactorUI();
         canvas.row().height(commonRowHeight);
 
         addEyeWrapperPitchLimitUI();
@@ -350,33 +349,6 @@ public class MainMenu extends UIComponent {
 
     private String getFocusRatioText(){
         return String.format(Locale.TAIWAN,"Focus ratio: %.4f",ConfigManager.getFocusChangeRatio());
-    }
-
-
-    private void addEyeDisparityFactorUI(){
-        // label
-        final Label name = new Label(getEyeDisparityFactorText(), largeLabelStyle);
-
-        // slider
-        final HorzSlider slider = new HorzSlider(1.000f, 50.0f, 0.01f, false, skin);
-        slider.setValue(ConfigManager.getEyeDisparityFactor());
-        enlargeSlider(slider);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setEyeDisparityFactor(slider.getValue());
-                name.setText(getEyeDisparityFactorText());
-            }
-        });
-
-
-        canvas.add(name);
-        canvas.add(slider).colspan(tableColumnSpan - 1);
-
-    }
-
-    private String getEyeDisparityFactorText(){
-        return String.format(Locale.TAIWAN,"Eye disparity: %.3f",ConfigManager.getEyeDisparityFactor());
     }
 
     private void addeyeRotationCenterDistanceUI(){
