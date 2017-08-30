@@ -1,3 +1,9 @@
+// def debugsuffix = System.
+ //       getProperty('debugsuffix', project.getProperties().get('debugsuffix', null))
+def debugsuffix = "256"
+
+def final yourApplicationId = 'com.covart.streaming_prototype'
+
 android {
     buildToolsVersion "25.0.2"
     compileSdkVersion 22
@@ -18,7 +24,20 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "com.covart.streaming_prototype"
+        applicationId = yourApplicationId
+
+        //These are the values for the authorities and account types.
+        //Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
+
+        buildConfigField "String", "ACCOUNT_TYPE", "\"${applicationId}.account\""
+        buildConfigField "String", "AUTHORITY", "\"${applicationId}.provider\""
+
+        //Reference them in .xml files.
+        resValue "string", "account_type", "${applicationId}.account"
+        resValue "string", "authority", "${applicationId}.provider"
+
+        resValue "string", "app_name", "SP_${debugsuffix}"
+
         minSdkVersion 19
         targetSdkVersion 22
 
@@ -28,6 +47,21 @@ android {
             abiFilters 'armeabi-v7a', 'x86'
         }
     }
+
+    productFlavors {
+        dev {
+            applicationId = yourApplicationId + ".dev" + debugsuffix
+
+            //Reference them again so they get overwritten by the flavor.
+
+            buildConfigField "String", "ACCOUNT_TYPE", "\"${applicationId}.account\""
+            buildConfigField "String", "AUTHORITY", "\"${applicationId}.provider\""
+
+            resValue "string", "account_type", "${applicationId}.account"
+            resValue "string", "authority", "${applicationId}.provider"
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path 'CMakeLists.txt'
@@ -61,6 +95,7 @@ task copyAndroidNatives() {
             }
         }
     }
+
 }
 
 task run(type: Exec) {
