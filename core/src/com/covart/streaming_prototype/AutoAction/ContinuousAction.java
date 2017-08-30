@@ -19,13 +19,13 @@ public abstract class ContinuousAction extends Action {
         this.startValue = startValue;
         this.endValue = endValue;
         this.diffValue = endValue - startValue;
-        this.lastValue = startValue;
         this.duration = duration;
     }
 
     @Override
     public void start() {
         currentValue = startValue;
+        lastValue = startValue;
         executedTime = 0f;
 
     }
@@ -38,12 +38,7 @@ public abstract class ContinuousAction extends Action {
         float stepValue = currentValue - lastValue;
         lastValue = oldCurrentValue;
         act(stepValue);
-        if(isEnded()){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return isEnded();
     }
 
     protected abstract void act(float stepValue);

@@ -36,13 +36,18 @@ public class Executor {
         activeActions = new HashSet<Action>();
 
         accumulateTime = 0.0f;
-        executionTime = 0.0f;
         timeFactor = 1.0f;
-        actionIndex = 0;
     }
 
     public void start(){
         running = true;
+        actionIndex = 0;
+        activeActions.clear();
+        executionTime = 0.0f;
+    }
+
+    public void stop(){
+        running = false;
     }
 
     public void addAction(Action action){
@@ -88,8 +93,12 @@ public class Executor {
     }
 
 
-    public boolean isUpdateEnded(){
+    private boolean isUpdateEnded(){
         return actionIndex >= allActions.size() && activeActions.isEmpty();
+    }
+
+    public boolean isRunning(){
+        return running;
     }
 
     public void setTimeFactor(float timeFactor) {

@@ -187,7 +187,6 @@ public class StreamingPrototype extends ApplicationAdapter
         autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1));
         autoActionExecutor.addWait(3);
         autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1));
-        autoActionExecutor.start();
     }
 
     private void initializeInput() {
