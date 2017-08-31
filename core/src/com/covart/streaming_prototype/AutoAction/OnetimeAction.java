@@ -17,5 +17,10 @@ public abstract class OnetimeAction extends Action {
         return true;
     }
 
+    @Override
+    public float getWaitTime() {
+        return 0f;
+    }
+
     protected abstract void act(float deltaTime);
 }

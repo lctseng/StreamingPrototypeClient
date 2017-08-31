@@ -12,4 +12,5 @@ public abstract class Action {
     public abstract void start();
 
     public abstract boolean update(float deltaTime);
+    public abstract float getWaitTime();
 }

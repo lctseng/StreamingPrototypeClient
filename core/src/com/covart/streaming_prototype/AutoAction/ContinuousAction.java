@@ -23,6 +23,11 @@ public abstract class ContinuousAction extends Action {
     }
 
     @Override
+    public float getWaitTime() {
+        return duration;
+    }
+
+    @Override
     public void start() {
         currentValue = startValue;
         lastValue = startValue;

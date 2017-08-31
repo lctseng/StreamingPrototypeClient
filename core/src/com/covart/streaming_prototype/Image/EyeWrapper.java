@@ -117,7 +117,14 @@ public class EyeWrapper {
     // Setup eyeView and eyeViewLimited
     private void updateEyeView(){
         // get the eye view without translation
-        if(ConfigManager.isAutoRotateEnabled()){
+        if(ConfigManager.getAutoActionState().rotationLocked){
+            // fetch yaw, pitch and roll from auto action state
+            yaw = ConfigManager.getAutoActionState().yaw;
+            pitch = ConfigManager.getAutoActionState().pitch;
+            roll = ConfigManager.getAutoActionState().roll;
+            tmpMatrix1.setFromEulerAngles(yaw, pitch, roll);
+        }
+        else if(ConfigManager.isAutoRotateEnabled()){
             // fetch yaw, pitch and roll from generator
             yaw = (float)autoEyeViewGenerator.getYaw();
             pitch = (float)autoEyeViewGenerator.getPitch();

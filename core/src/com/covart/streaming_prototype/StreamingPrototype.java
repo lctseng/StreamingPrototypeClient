@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.covart.streaming_prototype.AutoAction.Executor;
 import com.covart.streaming_prototype.AutoAction.ExecutorEventListener;
 import com.covart.streaming_prototype.AutoAction.RecenterAction;
+import com.covart.streaming_prototype.AutoAction.RotationAction;
 import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -162,11 +163,13 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onExecutorStart() {
         mainMenu.updateActionExecutorText();
+        ConfigManager.getAutoActionState().rotationLocked = true;
     }
 
     @Override
     public void onExecutorStop() {
         mainMenu.updateActionExecutorText();
+        ConfigManager.getAutoActionState().rotationLocked = false;
     }
 
     @Override
@@ -201,11 +204,33 @@ public class StreamingPrototype extends ApplicationAdapter
 
         // setup executor
         autoActionExecutor = new Executor(this);
+        autoActionExecutor.setWaitByDefault(true);
         autoActionExecutor.addAction(new RecenterAction());
-        autoActionExecutor.addWait(3);
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, -20, 2));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1));
+
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, -20, 2));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1));
+
+        autoActionExecutor.addWait(2);
+
+        /*
+
         autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1));
-        autoActionExecutor.addWait(3);
+        autoActionExecutor.addWait(2);
         autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1));
+        //autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.UP, 1, 1));
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.DOWN, 1, 1));
+        //autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.FORWARD, 1, 1));
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.BACKWARD, 1, 1));
+        */
     }
 
     private void initializeInput() {

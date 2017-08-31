@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype;
 
 
+import com.covart.streaming_prototype.AutoAction.InternalState;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.google.vrtoolkit.cardboard.Eye;
@@ -114,6 +115,8 @@ public class ConfigManager {
     private static int editingCurrentModelIndex = -1;
 
     private static boolean forceLowQuality = false;
+
+    private static InternalState autoActionState = new InternalState();
 
 
     // getters and setters
@@ -395,6 +398,10 @@ public class ConfigManager {
 
     public static void setForceLowQuality(boolean forceLowQuality) {
         ConfigManager.forceLowQuality = forceLowQuality;
+    }
+
+    public static InternalState getAutoActionState() {
+        return autoActionState;
     }
 
     // end of getters and setters

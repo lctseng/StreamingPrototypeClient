@@ -26,6 +26,7 @@ public class Executor {
     private float timeFactor;
     private int actionIndex;
 
+    private boolean waitByDefault;
 
     public Executor(ExecutorEventListener listener)
     {
@@ -42,6 +43,7 @@ public class Executor {
         allActions = new ArrayList<Action>();
         activeActions = new HashSet<Action>();
 
+        waitByDefault = true;
         accumulateTime = 0.0f;
         timeFactor = 1.0f;
     }
@@ -63,9 +65,16 @@ public class Executor {
         }
     }
 
-    public void addAction(Action action){
+    public void addAction(Action action, boolean waitForAction) {
         action.startTime = accumulateTime;
         allActions.add(action);
+        if(waitForAction){
+            addWait(action.getWaitTime());
+        }
+    }
+
+    public void addAction(Action action){
+        addAction(action, waitByDefault);
     }
 
     public void addWait(float time){
@@ -119,5 +128,13 @@ public class Executor {
 
     public void setTimeFactor(float timeFactor) {
         this.timeFactor = timeFactor;
+    }
+
+    public boolean isWaitByDefault() {
+        return waitByDefault;
+    }
+
+    public void setWaitByDefault(boolean waitByDefault) {
+        this.waitByDefault = waitByDefault;
     }
 }
