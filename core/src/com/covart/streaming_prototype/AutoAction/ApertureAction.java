@@ -7,31 +7,23 @@ import com.covart.streaming_prototype.ConfigManager;
  * For NCP project at COVART, NTU
  */
 
-public class ApertureAction extends ContinuousAction {
+public class ApertureAction extends DirectAndIncrementalAction {
 
-    private float changeValue;
-
-    // incremental
     public ApertureAction(float changeValue, float duration) {
-        super(duration);
-        // need to bind the start/end value when started
-        this.changeValue = changeValue;
+        super(changeValue, duration);
     }
 
-    // set to value
     public ApertureAction(float targetValue) {
-        super(targetValue,targetValue,0);
+        super(targetValue);
     }
 
     @Override
-    protected void prepareStartEndValue() {
-        // must be the incremental
-        startValue = ConfigManager.getApertureSize();
-        endValue = startValue + changeValue;
+    protected void setValue(float value) {
+        ConfigManager.setApertureSize(value);
     }
 
     @Override
-    protected void act(float stepValue) {
-        ConfigManager.setApertureSize(currentValue);
+    protected float getIncrementalStartValue() {
+        return ConfigManager.getApertureSize();
     }
 }

@@ -7,31 +7,24 @@ import com.covart.streaming_prototype.ConfigManager;
  * For NCP project at COVART, NTU
  */
 
-public class FocusAction extends ContinuousAction {
+public class FocusAction extends DirectAndIncrementalAction {
 
-    private float changeValue;
 
-    // incremental
     public FocusAction(float changeValue, float duration) {
-        super(duration);
-        // need to bind the start/end value when started
-        this.changeValue = changeValue;
+        super(changeValue, duration);
     }
 
-    // set to value
     public FocusAction(float targetValue) {
-        super(targetValue,targetValue,0);
+        super(targetValue);
     }
 
     @Override
-    protected void prepareStartEndValue() {
-        // must be the incremental
-        startValue = ConfigManager.getFocusChangeRatio();
-        endValue = startValue + changeValue;
+    protected void setValue(float value) {
+        ConfigManager.setFocusChangeRatio(value);
     }
 
     @Override
-    protected void act(float stepValue) {
-        ConfigManager.setFocusChangeRatio(currentValue);
+    protected float getIncrementalStartValue() {
+        return ConfigManager.getFocusChangeRatio();
     }
 }
