@@ -3,6 +3,7 @@ package com.covart.streaming_prototype.Utils.Easing;
 /**
  * Created by lctseng on 2017/9/1.
  * For NCP project at COVART, NTU
+ * Easing Source from: https://github.com/jesusgollonet/processing-penner-easing/tree/master/src
  */
 
 public abstract class EasingBase {
