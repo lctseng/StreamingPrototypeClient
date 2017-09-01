@@ -7,31 +7,31 @@ import com.covart.streaming_prototype.ConfigManager;
  * For NCP project at COVART, NTU
  */
 
-public class ApertureAction extends ContinuousAction {
+public class FocusAction extends ContinuousAction {
 
     private float changeValue;
 
     // incremental
-    public ApertureAction(float changeValue, float duration) {
+    public FocusAction(float changeValue, float duration) {
         super(duration);
         // need to bind the start/end value when started
         this.changeValue = changeValue;
     }
 
     // set to value
-    public ApertureAction(float targetValue) {
+    public FocusAction(float targetValue) {
         super(targetValue,targetValue,0);
     }
 
     @Override
     protected void prepareStartEndValue() {
         // must be the incremental
-        startValue = ConfigManager.getApertureSize();
+        startValue = ConfigManager.getFocusChangeRatio();
         endValue = startValue + changeValue;
     }
 
     @Override
     protected void act(float stepValue) {
-        ConfigManager.setApertureSize(currentValue);
+        ConfigManager.setFocusChangeRatio(currentValue);
     }
 }
