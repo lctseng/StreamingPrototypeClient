@@ -28,6 +28,8 @@ public class Executor {
 
     private boolean waitByDefault;
 
+    private float deltaTime;
+
     public Executor(ExecutorEventListener listener)
     {
         this.listener = listener;
@@ -83,10 +85,10 @@ public class Executor {
 
     public void update(){
         if(running) {
-            float deltaTime = timeFactor * Gdx.graphics.getDeltaTime();
+            deltaTime = timeFactor * Gdx.graphics.getDeltaTime();
             executionTime += deltaTime;
+            updateActions();
             startActions();
-            updateActions(deltaTime);
             if(isUpdateEnded()){
                 if(listener != null){
                     listener.onExecutorUpdateEnded();
@@ -104,10 +106,13 @@ public class Executor {
             action.start();
             activeActions.add(action);
             actionIndex += 1;
+            if(action.updateOnStart()){
+                action.update(deltaTime);
+            }
         }
     }
 
-    private void updateActions(float deltaTime){
+    private void updateActions(){
         for (Iterator<Action> i = activeActions.iterator(); i.hasNext();) {
             Action action = i.next();
             if(action.update(deltaTime)){

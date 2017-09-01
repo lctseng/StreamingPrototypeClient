@@ -13,4 +13,8 @@ public abstract class Action {
 
     public abstract boolean update(float deltaTime);
     public abstract float getWaitTime();
+
+    public boolean updateOnStart(){
+        return true;
+    }
 }

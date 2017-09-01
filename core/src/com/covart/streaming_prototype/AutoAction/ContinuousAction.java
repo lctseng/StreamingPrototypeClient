@@ -1,5 +1,7 @@
 package com.covart.streaming_prototype.AutoAction;
 
+import static com.badlogic.gdx.math.MathUtils.clamp;
+
 /**
  * Created by lctseng on 2017/8/30.
  * For NCP project at COVART, NTU
@@ -13,7 +15,10 @@ public abstract class ContinuousAction extends Action {
     protected float currentValue;
     protected float executedTime;
 
+
+
     private float lastValue;
+    private boolean refreshValuesOnStart = false;
 
     protected ContinuousAction(float startValue, float endValue, float duration){
         this.startValue = startValue;
@@ -22,6 +27,19 @@ public abstract class ContinuousAction extends Action {
         this.duration = duration;
     }
 
+    // start/end value is not provided by constructor
+    // must override prepareStartEndValue in descendant
+    protected ContinuousAction(float duration){
+        refreshValuesOnStart = true;
+        this.duration = duration;
+    }
+
+    protected void prepareStartEndValue(){
+        this.startValue = 0f;
+        this.endValue = 0f;
+    }
+
+
     @Override
     public float getWaitTime() {
         return duration;
@@ -29,6 +47,10 @@ public abstract class ContinuousAction extends Action {
 
     @Override
     public void start() {
+        if(refreshValuesOnStart) {
+            prepareStartEndValue();
+            this.diffValue = endValue - startValue;
+        }
         currentValue = startValue;
         lastValue = startValue;
         executedTime = 0f;
@@ -39,7 +61,14 @@ public abstract class ContinuousAction extends Action {
     public boolean update(float deltaTime) {
         executedTime += deltaTime;
         float oldCurrentValue = currentValue;
-        currentValue = startValue + diffValue * (executedTime/duration);
+        float ratio;
+        if(duration <= 0f){
+            ratio = 1f;
+        }
+        else{
+            ratio = clamp(executedTime/duration,0f,1f);
+        }
+        currentValue = startValue + diffValue * ratio;
         float stepValue = currentValue - lastValue;
         lastValue = oldCurrentValue;
         act(stepValue);
@@ -49,7 +78,11 @@ public abstract class ContinuousAction extends Action {
     protected abstract void act(float stepValue);
 
     private boolean isEnded(){
-        if(startValue > endValue){
+        if(duration <= 0f){
+            // for duration is zero, must immediately finished
+            return true;
+        }
+        else if(startValue > endValue){
             // decreasing
             return currentValue <= endValue;
         }
