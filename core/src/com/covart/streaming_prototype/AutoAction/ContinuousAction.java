@@ -36,7 +36,12 @@ public abstract class ContinuousAction extends Action {
         this.startValue = startValue;
         this.endValue = endValue;
         this.duration = duration;
-        this.easing = easing;
+        if(easing != null){
+            this.easing = easing;
+        }
+        else{
+            this.easing = getDefaultEasing();
+        }
         this.easing.setValues(startValue, endValue, duration);
     }
 
@@ -55,7 +60,12 @@ public abstract class ContinuousAction extends Action {
     protected ContinuousAction(float duration, EasingBase easing){
         refreshValuesOnStart = true;
         this.duration = duration;
-        this.easing = easing;
+        if(easing != null){
+            this.easing = easing;
+        }
+        else{
+            this.easing = getDefaultEasing();
+        }
     }
 
 

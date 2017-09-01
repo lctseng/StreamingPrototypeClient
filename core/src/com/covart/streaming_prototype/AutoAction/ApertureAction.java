@@ -23,7 +23,6 @@ public class ApertureAction extends DirectAndIncrementalAction {
         super(targetValue);
     }
 
-    @Override
     protected EasingBase getDefaultEasing() {
         return new EasingLinear();
     }
