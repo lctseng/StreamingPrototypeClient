@@ -174,12 +174,73 @@ public class StreamingPrototype extends ApplicationAdapter
 
         if(!autoActionExecutor.loadActionFromURL("http://xenial.csie.org:3000/" + ConfigManager.getSelectedIP().replace(":", "_") + "_action.txt")){
             // local actions
+
+            // TODO: following are for debug action
+
             autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1, new EasingLinear()));
             autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1, new EasingQuadInOut()));
             autoActionExecutor.addAction(new TranslationAction(Direction.UP, 1, 1));
             autoActionExecutor.addAction(new TranslationAction(Direction.DOWN, 1, 1));
             autoActionExecutor.addAction(new TranslationAction(Direction.FORWARD, 1, 1, new EasingQuadInOut()));
             autoActionExecutor.addAction(new TranslationAction(Direction.BACKWARD, 1, 1, new EasingLinear()), false);
+
+            /*
+            String actionText = "Action,Aperture,0\n" +
+                    "Action,Aperture,0.1,3\n" +
+                    "\n" +
+                    "Action,Focus,1.0\n" +
+                    "Action,Focus,4.5,3\n" +
+                    "\n" +
+                    "Action,Rotation,YAW,10,1@nowait\n" +
+                    "Action,Rotation,PITCH,10,1@nowait\n" +
+                    "Wait,1\n" +
+                    "Action,Rotation,YAW,-20,2@nowait\n" +
+                    "Action,Rotation,PITCH,-20,2@nowait\n" +
+                    "Wait,2\n" +
+                    "Action,Translation,RIGHT,1,1,Linear\n" +
+                    "Action,Translation,LEFT,1,1,QuadInOut\n" +
+                    "Action,Translation,UP,1,1\n" +
+                    "Action,Translation,DOWN,1,1\n" +
+                    "Action,Translation,FORWARD,1,1,QuadInOut\n" +
+                    "Action,Translation,BACKWARD,1,1,Linear@nowait\n" +
+                    "\n" +
+                    "Action,Rotation,YAW,10,1@nowait\n" +
+                    "Action,Rotation,PITCH,10,1@nowait\n" +
+                    "\n" +
+                    "Wait,2\n" +
+                    "\n";
+
+
+            autoActionExecutor.loadActionText(actionText);
+            */
+
+
+            /*
+            autoActionExecutor.addAction(new ApertureAction(0));
+            autoActionExecutor.addAction(new ApertureAction(0.1f, 3));
+
+            autoActionExecutor.addAction(new FocusAction(1.0f));
+            autoActionExecutor.addAction(new FocusAction(4.5f,3));
+
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1), false);
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1), false);
+            autoActionExecutor.addWait(1);
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, -20, 2), false);
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, -20, 2), false);
+
+            autoActionExecutor.addWait(2);
+
+            autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1, new EasingLinear()));
+            autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1, new EasingQuadInOut()));
+            autoActionExecutor.addAction(new TranslationAction(Direction.UP, 1, 1));
+            autoActionExecutor.addAction(new TranslationAction(Direction.DOWN, 1, 1));
+            autoActionExecutor.addAction(new TranslationAction(Direction.FORWARD, 1, 1, new EasingQuadInOut()));
+            autoActionExecutor.addAction(new TranslationAction(Direction.BACKWARD, 1, 1, new EasingLinear()), false);
+
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1), false);
+            autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1), false);
+            autoActionExecutor.addWait(2);
+            */
         }
         // misc
         mainMenu.updateActionExecutorText();
@@ -227,67 +288,6 @@ public class StreamingPrototype extends ApplicationAdapter
         autoActionExecutor.setWaitByDefault(true);
         autoActionExecutor.setTimeFactor(1f);
 
-
-
-        // TODO: following are for debug action
-
-        /*
-        String actionText = "Action,Aperture,0\n" +
-                "Action,Aperture,0.1,3\n" +
-                "\n" +
-                "Action,Focus,1.0\n" +
-                "Action,Focus,4.5,3\n" +
-                "\n" +
-                "Action,Rotation,YAW,10,1@nowait\n" +
-                "Action,Rotation,PITCH,10,1@nowait\n" +
-                "Wait,1\n" +
-                "Action,Rotation,YAW,-20,2@nowait\n" +
-                "Action,Rotation,PITCH,-20,2@nowait\n" +
-                "Wait,2\n" +
-                "Action,Translation,RIGHT,1,1,Linear\n" +
-                "Action,Translation,LEFT,1,1,QuadInOut\n" +
-                "Action,Translation,UP,1,1\n" +
-                "Action,Translation,DOWN,1,1\n" +
-                "Action,Translation,FORWARD,1,1,QuadInOut\n" +
-                "Action,Translation,BACKWARD,1,1,Linear@nowait\n" +
-                "\n" +
-                "Action,Rotation,YAW,10,1@nowait\n" +
-                "Action,Rotation,PITCH,10,1@nowait\n" +
-                "\n" +
-                "Wait,2\n" +
-                "\n";
-
-
-        autoActionExecutor.loadActionText(actionText);
-        */
-
-
-        /*
-        autoActionExecutor.addAction(new ApertureAction(0));
-        autoActionExecutor.addAction(new ApertureAction(0.1f, 3));
-
-        autoActionExecutor.addAction(new FocusAction(1.0f));
-        autoActionExecutor.addAction(new FocusAction(4.5f,3));
-
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1), false);
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1), false);
-        autoActionExecutor.addWait(1);
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, -20, 2), false);
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, -20, 2), false);
-
-        autoActionExecutor.addWait(2);
-
-        autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1, new EasingLinear()));
-        autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1, new EasingQuadInOut()));
-        autoActionExecutor.addAction(new TranslationAction(Direction.UP, 1, 1));
-        autoActionExecutor.addAction(new TranslationAction(Direction.DOWN, 1, 1));
-        autoActionExecutor.addAction(new TranslationAction(Direction.FORWARD, 1, 1, new EasingQuadInOut()));
-        autoActionExecutor.addAction(new TranslationAction(Direction.BACKWARD, 1, 1, new EasingLinear()), false);
-
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1), false);
-        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1), false);
-        autoActionExecutor.addWait(2);
-        */
 
     }
 
