@@ -7,6 +7,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.android.CardBoardAndroidApplication;
 import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
+import com.covart.streaming_prototype.AutoAction.Executor;
+import com.covart.streaming_prototype.AutoAction.ExecutorEventListener;
+import com.covart.streaming_prototype.AutoAction.RecenterAction;
+import com.covart.streaming_prototype.AutoAction.RotationAction;
+import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
@@ -18,6 +23,7 @@ import com.covart.streaming_prototype.UI.UIManager;
 import com.covart.streaming_prototype.Utils.Profiler;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
+import com.covart.streaming_prototype.UI.PositionController.Direction;
 
 import java.util.Locale;
 
@@ -30,7 +36,7 @@ import static com.covart.streaming_prototype.StreamingPrototype.State.ShuttingDo
 import static com.covart.streaming_prototype.StreamingPrototype.State.Stopped;
 
 public class StreamingPrototype extends ApplicationAdapter
-        implements MasterComponentAdapter, CardBoardApplicationListener {
+        implements MasterComponentAdapter, CardBoardApplicationListener, ExecutorEventListener {
 
 
     public enum State {
@@ -61,7 +67,11 @@ public class StreamingPrototype extends ApplicationAdapter
     // UI
     public PositionController positionController;
     public EditingPanel editingPanel;
+    public MainMenu mainMenu;
 
+
+    // Auto action
+    public Executor autoActionExecutor;
 
     StreamingPrototype(ImageDecoderBase platform_decoder) {
         if (platform_decoder != null) {
@@ -96,6 +106,7 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onNewFrame(HeadTransform paramHeadTransform) {
         display.onNewFrame(paramHeadTransform);
+        autoActionExecutor.update();
         editingPanel.checkRefreshList();
         //Profiler.generateProfilingStrings();
 
@@ -150,6 +161,24 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     @Override
+    public void onExecutorStart() {
+        mainMenu.updateActionExecutorText();
+        ConfigManager.getAutoActionState().rotationLocked = true;
+    }
+
+    @Override
+    public void onExecutorStop() {
+        mainMenu.updateActionExecutorText();
+        ConfigManager.getAutoActionState().rotationLocked = false;
+    }
+
+    @Override
+    public void onExecutorUpdateEnded() {
+
+    }
+
+
+    @Override
     public void create() {
         ConfigManager.setApp(this);
 
@@ -166,12 +195,42 @@ public class StreamingPrototype extends ApplicationAdapter
         initializeInput();
 
         // Setup UI
-        UIManager.getInstance().registerUI(new MainMenu());
+        UIManager.getInstance().registerUI(mainMenu = new MainMenu());
         UIManager.getInstance().registerUI(positionController = new PositionController());
         UIManager.getInstance().registerUI(editingPanel = new EditingPanel());
 
         StringPool.addField("App", "Ready for start");
         updateEditingModeText();
+
+        // setup executor
+        autoActionExecutor = new Executor(this);
+        autoActionExecutor.setWaitByDefault(true);
+        autoActionExecutor.addAction(new RecenterAction());
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, -20, 2));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.YAW, 10, 1));
+
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, -20, 2));
+        autoActionExecutor.addAction(new RotationAction(RotationAction.Type.PITCH, 10, 1));
+
+        autoActionExecutor.addWait(2);
+
+        /*
+
+        autoActionExecutor.addAction(new TranslationAction(Direction.RIGHT, 1, 1));
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.LEFT, 1, 1));
+        //autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.UP, 1, 1));
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.DOWN, 1, 1));
+        //autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.FORWARD, 1, 1));
+        autoActionExecutor.addWait(2);
+        autoActionExecutor.addAction(new TranslationAction(Direction.BACKWARD, 1, 1));
+        */
     }
 
     private void initializeInput() {
