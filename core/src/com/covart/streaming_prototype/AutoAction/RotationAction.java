@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype.AutoAction;
 
 import com.covart.streaming_prototype.ConfigManager;
+import com.covart.streaming_prototype.Utils.Easing.EasingBase;
 
 /**
  * Created by lctseng on 2017/8/30.
@@ -19,6 +20,13 @@ public class RotationAction extends ContinuousAction {
         super(0, change, duration);
         this.rotationType = rotationType;
     }
+
+    public RotationAction(Type rotationType, float change, float duration, EasingBase easing) {
+        super(0, change, duration, easing);
+        this.rotationType = rotationType;
+    }
+
+
 
     @Override
     protected void act(float stepValue) {
