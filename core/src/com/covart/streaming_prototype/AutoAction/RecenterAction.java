@@ -10,6 +10,10 @@ import com.covart.streaming_prototype.ConfigManager;
 public class RecenterAction extends OnetimeAction {
     @Override
     protected void act(float deltaTime) {
+        // recneter app
         ConfigManager.getApp().recenter();
+        // clear rotation internal cache
+        ConfigManager.getAutoActionState().clearRotation();
+
     }
 }

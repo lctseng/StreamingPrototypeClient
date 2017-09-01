@@ -10,4 +10,9 @@ public class InternalState {
     public float yaw = 0f;
     public float pitch = 0f;
     public float roll = 0f;
+
+    public void clearRotation(){
+        yaw = pitch = roll = 0f;
+    }
+
 }
