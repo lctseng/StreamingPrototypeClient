@@ -41,6 +41,8 @@ public class ConfigManager {
     private static final int imageBufferSize =  imageWidth * imageHeight * 3;
     private static final int decoderBufferSize = imageBufferSize;
 
+    private static final String autoActionServerUrl = "http://xenial.csie.org:3000/";
+
     private static final String[] serverList = new String[]{
             "140.112.90.82:8051",
             "140.112.90.82:8052",
@@ -402,6 +404,10 @@ public class ConfigManager {
 
     public static InternalState getAutoActionState() {
         return autoActionState;
+    }
+
+    public static String getAutoActionServerUrl() {
+        return autoActionServerUrl;
     }
 
     // end of getters and setters

@@ -172,7 +172,7 @@ public class StreamingPrototype extends ApplicationAdapter
         autoActionExecutor.addWait(0.5f);
 
 
-        if(!autoActionExecutor.loadActionFromURL("http://xenial.csie.org:3000/" + ConfigManager.getSelectedIP().replace(":", "_") + "_action.txt")){
+        if(!autoActionExecutor.loadActionFromURL(ConfigManager.getAutoActionServerUrl() + ConfigManager.getSelectedIP().replace(":", "_") + "_action.txt")){
             // local actions
 
             // TODO: following are for debug action
