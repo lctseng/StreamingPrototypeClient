@@ -28,7 +28,7 @@ public class FocusAction extends DirectAndIncrementalAction {
     protected EasingBase getDefaultEasing() {
         return new EasingLinear();
     }
-    
+
     @Override
     protected void setValue(float value) {
         ConfigManager.setFocusChangeRatio(value);

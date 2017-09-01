@@ -124,7 +124,7 @@ public class Executor {
 
 
     private boolean isUpdateEnded(){
-        return actionIndex >= allActions.size() && activeActions.isEmpty();
+        return executionTime >= accumulateTime && actionIndex >= allActions.size() && activeActions.isEmpty();
     }
 
     public boolean isRunning(){
