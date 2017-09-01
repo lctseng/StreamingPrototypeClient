@@ -2,6 +2,7 @@ package com.covart.streaming_prototype.AutoAction;
 
 import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.Utils.Easing.EasingBase;
+import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
 
 /**
  * Created by lctseng on 2017/9/1.
@@ -22,6 +23,10 @@ public class ApertureAction extends DirectAndIncrementalAction {
         super(targetValue);
     }
 
+    @Override
+    protected EasingBase getDefaultEasing() {
+        return new EasingLinear();
+    }
 
     @Override
     protected void setValue(float value) {
