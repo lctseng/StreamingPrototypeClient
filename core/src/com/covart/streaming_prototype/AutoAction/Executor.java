@@ -6,6 +6,7 @@ import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.Utils.Easing.EasingBase;
 import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
 import com.covart.streaming_prototype.Utils.Easing.EasingQuadInOut;
+import com.covart.streaming_prototype.Utils.Easing.Http;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,12 @@ public class Executor {
         if(listener != null){
             listener.onExecutorStop();
         }
+    }
+
+    public void clearActions(){
+        allActions.clear();
+        activeActions.clear();
+        accumulateTime = 0f;
     }
 
     public void addAction(Action action, boolean waitForAction) {
@@ -153,6 +160,25 @@ public class Executor {
         this.waitByDefault = waitByDefault;
     }
 
+
+    public boolean loadActionFromURL(String url) {
+        String text = null;
+        try {
+            text = Http.getHTML(url);
+        } catch (Exception e) {
+            Gdx.app.error("AutoAction", "Cannot load action from " + url);
+            return false;
+        }
+        if (text != null) {
+            try {
+                loadActionText(text);
+            } catch (Exception e) {
+                Gdx.app.error("AutoAction", "Cannot parse action from" + text);
+                return false;
+            }
+        }
+        return true;
+    }
 
     public  void loadActionText(String actionText){
         String[] lines = actionText.split("\n");
