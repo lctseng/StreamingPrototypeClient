@@ -1,10 +1,13 @@
 package com.covart.streaming_prototype.AutoAction;
 
+import com.badlogic.gdx.Gdx;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.Utils.Easing.EasingBase;
 import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
 import com.covart.streaming_prototype.Utils.Easing.EasingQuadInOut;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -129,6 +132,59 @@ public class ActionParser {
         return new TranslationAction(direction, change, duration, easing);
     }
 
+
+
+    private DirectAndIncrementalAction parseDirectAndIncrementalAction(Class klass, ArrayList<String> params){
+        if(params.size() == 1){
+            // set value
+            Constructor con = null;
+            try {
+                con = klass.getConstructor(float.class);
+            } catch (NoSuchMethodException e) {
+                Gdx.app.error("ActionParser", "Cannot find method!");
+                e.printStackTrace();
+                return null;
+            }
+            try {
+                return (DirectAndIncrementalAction)(con.newInstance(Float.parseFloat(params.remove(0))));
+            } catch (Exception e) {
+                Gdx.app.error("ActionParser", "Cannot create instance!");
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else if(params.size() >= 2){
+            // incremental
+            // change and duration
+            float change = Float.parseFloat(params.remove(0));
+            float duration = Float.parseFloat(params.remove(0));
+            // easing
+            EasingBase easing = parseEasingStringFromParams(params);
+            // create the class
+            Constructor con = null;
+            try {
+                con = klass.getConstructor(float.class, float.class, EasingBase.class);
+            } catch (NoSuchMethodException e) {
+                Gdx.app.error("ActionParser", "Cannot find method!");
+                e.printStackTrace();
+                return null;
+            }
+            try {
+                return (DirectAndIncrementalAction)(con.newInstance(change, duration, easing));
+            } catch (Exception e) {
+                Gdx.app.error("ActionParser", "Cannot create instance!");
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else{
+            Gdx.app.error("ActionParser", "Unknown params size to handle: " + params.size());
+            return null;
+        }
+    }
+
+
+
     private ApertureAction parseApertureAction(ArrayList<String> params){
         if(params.size() == 1){
             // set value
@@ -185,7 +241,8 @@ public class ActionParser {
             String actionName = actionWords.remove(0);
             Action action = null;
             if(actionName.equals("Aperture")){
-                action = parseApertureAction(actionWords);
+                //action = parseApertureAction(actionWords);
+                action = parseDirectAndIncrementalAction(ApertureAction.class,actionWords);
             }
             else if(actionName.equals("Focus")){
                 action = parseFocusAction(actionWords);
