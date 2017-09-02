@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.Utils.Easing.EasingBase;
 import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
+import com.covart.streaming_prototype.Utils.Easing.EasingQuadIn;
 import com.covart.streaming_prototype.Utils.Easing.EasingQuadInOut;
+import com.covart.streaming_prototype.Utils.Easing.EasingQuadOut;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -63,6 +65,12 @@ public class ActionParser {
             }
             else if(easingString.equals("QuadInOut")){
                 easing = new EasingQuadInOut();
+            }
+            else if(easingString.equals("QuadIn")){
+                easing = new EasingQuadIn();
+            }
+            else if(easingString.equals("QuadOut")){
+                easing = new EasingQuadOut();
             }
             else{
                 // TODO: unknown easing
