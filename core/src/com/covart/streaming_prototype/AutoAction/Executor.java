@@ -318,7 +318,20 @@ public class Executor {
         }
     }
 
-    private  void parseActionLine(String actionLine, ActionControl control){
+    private void parseConfig(ArrayList<String> params){
+        String type = params.remove(0);
+        if(type.equals("TimeFactor")){
+            setTimeFactor(Float.parseFloat(params.remove(0)));
+        }
+        else if((type.equals("WaitByDefault"))){
+            setWaitByDefault(params.remove(0).equals("true"));
+        }
+        else{
+            // TODO" unknown config
+        }
+    }
+
+    private void parseActionLine(String actionLine, ActionControl control){
         ArrayList<String> actionWords = new ArrayList<String>(Arrays.asList(actionLine.split(",")));
         // Action or Wait?
 
@@ -348,6 +361,9 @@ public class Executor {
         }
         else if(type.equals("Wait")){
             addWait(Float.parseFloat(actionWords.remove(0)));
+        }
+        else if(type.equals("Config")){
+            parseConfig(actionWords);
         }
         else{
             // TODO: unknown type
