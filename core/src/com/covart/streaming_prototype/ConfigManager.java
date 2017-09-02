@@ -120,6 +120,10 @@ public class ConfigManager {
 
     private static InternalState autoActionState = new InternalState();
 
+    private static float displayFpsLimit = 60f;
+
+    private static long displayMinDrawTime = (long)((1f/ displayFpsLimit)*1000f);
+
 
     // getters and setters
 
@@ -408,6 +412,20 @@ public class ConfigManager {
 
     public static String getAutoActionServerUrl() {
         return autoActionServerUrl;
+    }
+
+    public static float getDisplayFpsLimit() {
+        return displayFpsLimit;
+    }
+
+    public static void setDisplayFpsLimit(float displayFpsLimit) {
+        ConfigManager.displayFpsLimit = displayFpsLimit;
+        ConfigManager.displayMinDrawTime = (long)((1f/ displayFpsLimit)*1000f);
+
+    }
+
+    public static long getDisplayMinDrawTime() {
+        return displayMinDrawTime;
     }
 
     // end of getters and setters

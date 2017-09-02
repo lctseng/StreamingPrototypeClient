@@ -140,9 +140,12 @@ public class MainMenu extends UIComponent {
         addForceLowQuailityUI();
         canvas.row().height(commonRowHeight);
 
+        addDisplayFPSLimitUI();
+        canvas.row().height(commonRowHeight);
+
         addEditingReportIntervalUI();
         addSensorReportIntervalUI();
-        addeyeRotationCenterDistanceUI();
+        addEyeRotationCenterDistanceUI();
         canvas.row().height(commonRowHeight);
 
 
@@ -403,9 +406,34 @@ public class MainMenu extends UIComponent {
         return String.format(Locale.TAIWAN,"Focus ratio: %.4f",ConfigManager.getFocusChangeRatio());
     }
 
-    private void addeyeRotationCenterDistanceUI(){
+    private void addDisplayFPSLimitUI(){
         // label
-        final Label name = new Label(geteyeRotationCenterDistanceText(), largeLabelStyle);
+        final Label name = new Label(getDisplayFPSLimitText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(1f, 60f, 1f , false, skin);
+        slider.setValue(ConfigManager.getDisplayFpsLimit());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayFpsLimit(slider.getValue());
+                name.setText(getDisplayFPSLimitText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+    }
+
+    private String getDisplayFPSLimitText(){
+        return String.format(Locale.TAIWAN,"Display FPS: %.0f",ConfigManager.getDisplayFpsLimit());
+    }
+
+    private void addEyeRotationCenterDistanceUI(){
+        // label
+        final Label name = new Label(getEyeRotationCenterDistanceText(), largeLabelStyle);
 
         // slider
         final HorzSlider slider = new HorzSlider(0.00f, 5.0f, 0.01f, false, skin);
@@ -415,7 +443,7 @@ public class MainMenu extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEyeRotationCenterDistance(slider.getValue());
-                name.setText(geteyeRotationCenterDistanceText());
+                name.setText(getEyeRotationCenterDistanceText());
             }
         });
 
@@ -425,7 +453,7 @@ public class MainMenu extends UIComponent {
 
     }
 
-    private String geteyeRotationCenterDistanceText(){
+    private String getEyeRotationCenterDistanceText(){
         return String.format(Locale.TAIWAN,"Rotation center: %.3f",ConfigManager.getEyeRotationCenterDistance());
     }
 
@@ -434,7 +462,7 @@ public class MainMenu extends UIComponent {
         final Label name = new Label(getStepChangeText(), largeLabelStyle);
 
         // slider
-        final HorzSlider slider = new HorzSlider(0.1f, 6.0f, 0.1f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.1f, 12.0f, 0.1f, false, skin);
         slider.setValue(ConfigManager.getCameraStep());
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -510,7 +538,7 @@ public class MainMenu extends UIComponent {
         // label
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, inputValueForExpSlider(3), 0.0001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, inputValueForExpSlider(9), 0.0001f, false, skin);
         slider.setValue(inputValueForExpSlider(ConfigManager.getApertureSize()));
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {

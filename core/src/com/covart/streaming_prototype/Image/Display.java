@@ -85,6 +85,8 @@ public class Display implements Disposable{
 
     private boolean drawOverlay = true;
 
+    private long frameStartTime;
+
     public Display(){
 
         texture = new Texture("grid.jpg");
@@ -242,9 +244,21 @@ public class Display implements Disposable{
         collectImages();
         Profiler.reportOnDisplay();
         StringPool.clearFlashMessages();
+        frameStartTime = System.nanoTime();
     }
 
     public void onFinishFrame(com.google.vrtoolkit.cardboard.Viewport paramViewport) {
+        long frameEndTime = System.nanoTime();
+        long currentFrameDrawTime = (frameEndTime - frameStartTime) / 1000000;
+
+        long needSleepTime = ConfigManager.getDisplayMinDrawTime() - currentFrameDrawTime;
+        if(needSleepTime > 0){
+            try {
+                Thread.sleep(needSleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         // record FPS
         StringPool.addField("FPS", Integer.toString(Gdx.graphics.getFramesPerSecond()));
     }
