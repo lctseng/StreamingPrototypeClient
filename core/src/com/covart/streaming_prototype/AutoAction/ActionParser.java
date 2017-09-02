@@ -183,42 +183,6 @@ public class ActionParser {
         }
     }
 
-
-
-    private ApertureAction parseApertureAction(ArrayList<String> params){
-        if(params.size() == 1){
-            // set value
-            return new ApertureAction(Float.parseFloat(params.remove(0)));
-        }
-        else{
-            // TODO: check param size
-            // incremental
-            // change and duration
-            float change = Float.parseFloat(params.remove(0));
-            float duration = Float.parseFloat(params.remove(0));
-            // easing
-            EasingBase easing = parseEasingStringFromParams(params);
-            return new ApertureAction(change, duration, easing);
-        }
-    }
-
-    private  FocusAction parseFocusAction(ArrayList<String> params){
-        if(params.size() == 1){
-            // set value
-            return new FocusAction(Float.parseFloat(params.remove(0)));
-        }
-        else{
-            // TODO: check param size
-            // incremental
-            // change and duration
-            float change = Float.parseFloat(params.remove(0));
-            float duration = Float.parseFloat(params.remove(0));
-            // easing
-            EasingBase easing = parseEasingStringFromParams(params);
-            return new FocusAction(change, duration, easing);
-        }
-    }
-
     private void parseConfig(ArrayList<String> params){
         String type = params.remove(0);
         if(type.equals("TimeFactor")){
@@ -241,11 +205,10 @@ public class ActionParser {
             String actionName = actionWords.remove(0);
             Action action = null;
             if(actionName.equals("Aperture")){
-                //action = parseApertureAction(actionWords);
                 action = parseDirectAndIncrementalAction(ApertureAction.class,actionWords);
             }
             else if(actionName.equals("Focus")){
-                action = parseFocusAction(actionWords);
+                action = parseDirectAndIncrementalAction(FocusAction.class,actionWords);
             }
             else if(actionName.equals("Rotation")){
                 action = parseRotationAction(actionWords);
