@@ -210,6 +210,15 @@ public class ActionParser {
             else if(actionName.equals("Focus")){
                 action = parseDirectAndIncrementalAction(FocusAction.class,actionWords);
             }
+            else if(actionName.equals("DataFov")){
+                action = parseDirectAndIncrementalAction(DataFovAction.class,actionWords);
+            }
+            else if(actionName.equals("CameraStep")){
+                action = parseDirectAndIncrementalAction(CameraStepAction.class,actionWords);
+            }
+            else if(actionName.equals("StPlaneRadius")){
+                action = parseDirectAndIncrementalAction(StPlaneRadiusAction.class,actionWords);
+            }
             else if(actionName.equals("Rotation")){
                 action = parseRotationAction(actionWords);
             }
