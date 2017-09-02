@@ -67,6 +67,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     // editing
     private float editingReportTime;
+    private boolean needSendEditingPositionMessage = false;
 
     // UI
     public PositionController positionController;
@@ -151,6 +152,10 @@ public class StreamingPrototype extends ApplicationAdapter
     @Override
     public void onFinishFrame(com.google.vrtoolkit.cardboard.Viewport paramViewport) {
         display.onFinishFrame(paramViewport);
+        if(needSendEditingPositionMessage){
+            needSendEditingPositionMessage = false;
+            sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
+        }
     }
 
     @Override
@@ -600,7 +605,7 @@ public class StreamingPrototype extends ApplicationAdapter
         if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
             this.editingReportTime = 0f;
             updateEditingModeText();
-            sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
+            needSendEditingPositionMessage = true;
         }
         return true;
     }
