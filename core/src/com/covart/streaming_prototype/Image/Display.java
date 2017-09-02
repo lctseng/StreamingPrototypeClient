@@ -83,6 +83,8 @@ public class Display implements Disposable{
     private long lastStPlaneUpdateTime = 0;
     private boolean requestChangeStPlane = false;
 
+    public boolean drawOverlayText = true;
+
     public Display(){
 
         texture = new Texture("grid.jpg");
@@ -223,14 +225,16 @@ public class Display implements Disposable{
         UIManager.getInstance().draw();
         // draw text
 
-        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.begin();
-        int dy = 20;
-        for(String text : StringPool.getAllText()){
-            font.draw(batch, text, 0, dy);
-            dy += 20;
+        if(drawOverlayText) {
+            batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.begin();
+            int dy = 20;
+            for (String text : StringPool.getAllText()) {
+                font.draw(batch, text, 0, dy);
+                dy += 20;
+            }
+            batch.end();
         }
-        batch.end();
     }
 
     public void onNewFrame(HeadTransform paramHeadTransform) {

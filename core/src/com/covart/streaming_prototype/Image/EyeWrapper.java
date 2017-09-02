@@ -159,6 +159,9 @@ public class EyeWrapper {
         tmpMatrix2.setToTranslation(finalEyeTranslation);
         eyeView.set(tmpMatrix1);
         eyeView.mulLeft(tmpMatrix2);
+        yaw = tmpQuaternion1.getYaw();
+        pitch = tmpQuaternion1.getPitch();
+        roll = tmpQuaternion1.getRoll();
 
         if(ConfigManager.isMainEye(this.eye)){
             this.lastEyePosition.set(finalEyePosition);
