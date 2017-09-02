@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype.AutoAction;
 
 import com.badlogic.gdx.Gdx;
+import com.covart.streaming_prototype.ConfigManager;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.covart.streaming_prototype.Utils.Easing.EasingBase;
 import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 public class ActionParser {
     private class ActionControl {
         public boolean needWait = false;
+        public float offset = 0f;
     }
 
 
@@ -43,11 +45,17 @@ public class ActionParser {
         ActionControl control = getDefaultActionControl();
         String[] controlWords = controlLine.split(",");
         for(String controlWord : controlWords){
-            if(controlLine.equals("wait")){
+            if(controlWord.equals("wait")){
                 control.needWait = true;
             }
-            else if(controlLine.equals("nowait")){
+            else if(controlWord.equals("nowait")){
                 control.needWait = false;
+            }
+            else if(controlWord.startsWith("offset")) {
+                String[] parts = controlWord.split("=");
+                if(parts.length == 2){
+                    control.offset = Float.parseFloat(parts[1]);
+                }
             }
             else{
                 // TODO: unknown control word
@@ -191,6 +199,16 @@ public class ActionParser {
         }
     }
 
+    private DrawOverlayAction parseDrawOverlayAction(ArrayList<String> params){
+        if(params.size() == 1){
+            return new DrawOverlayAction(params.remove(0).equals("true"));
+        }
+        else{
+            Gdx.app.error("ActionParser","Incorrect number of params for overlay action:" + params.size());
+            return null;
+        }
+    }
+
     private void parseConfig(ArrayList<String> params){
         String type = params.remove(0);
         if(type.equals("TimeFactor")){
@@ -233,11 +251,15 @@ public class ActionParser {
             else if(actionName.equals("Translation")){
                 action = parseTranslationAction(actionWords);
             }
+            else if(actionName.equals("DrawOverlay")){
+                action = parseDrawOverlayAction(actionWords);
+            }
             else{
                 // TODO: unknown action
             }
             // apply control
             if(action != null){
+                action.offset = control.offset;
                 executor.addAction(action, control.needWait);
             }
         }

@@ -83,7 +83,7 @@ public class Display implements Disposable{
     private long lastStPlaneUpdateTime = 0;
     private boolean requestChangeStPlane = false;
 
-    public boolean drawOverlayText = true;
+    private boolean drawOverlay = true;
 
     public Display(){
 
@@ -215,7 +215,7 @@ public class Display implements Disposable{
         modelBatch.end();
 
         // only draw for LEFT eye or MONOCULAR
-        if(ConfigManager.isMainEye(eye)) {
+        if(drawOverlay && ConfigManager.isMainEye(eye)) {
             drawOverlay();
         }
     }
@@ -224,17 +224,14 @@ public class Display implements Disposable{
         // draw UI
         UIManager.getInstance().draw();
         // draw text
-
-        if(drawOverlayText) {
-            batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            batch.begin();
-            int dy = 20;
-            for (String text : StringPool.getAllText()) {
-                font.draw(batch, text, 0, dy);
-                dy += 20;
-            }
-            batch.end();
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        int dy = 20;
+        for (String text : StringPool.getAllText()) {
+            font.draw(batch, text, 0, dy);
+            dy += 20;
         }
+        batch.end();
     }
 
     public void onNewFrame(HeadTransform paramHeadTransform) {
@@ -364,5 +361,13 @@ public class Display implements Disposable{
 
     public void setEditingPositionFollowCursor(boolean editingPositionFollowCursor) {
         this.editingPositionFollowCursor = editingPositionFollowCursor;
+    }
+
+    public boolean isDrawOverlay() {
+        return drawOverlay;
+    }
+
+    public void setDrawOverlay(boolean drawOverlay) {
+        this.drawOverlay = drawOverlay;
     }
 }

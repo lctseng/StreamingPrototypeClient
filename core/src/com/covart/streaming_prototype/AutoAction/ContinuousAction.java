@@ -94,7 +94,7 @@ public abstract class ContinuousAction extends Action {
     }
 
     @Override
-    public boolean update(float deltaTime) {
+    protected boolean updateAction(float deltaTime) {
         executedTime += deltaTime;
         float oldCurrentValue = currentValue;
         currentValue = easing.valueAt(executedTime);

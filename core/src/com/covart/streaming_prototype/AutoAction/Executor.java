@@ -119,7 +119,7 @@ public class Executor {
         while(actionIndex < allActions.size() && allActions.get(actionIndex).startTime < executionTime){
             // start this action
             Action action = allActions.get(actionIndex);
-            action.start();
+            action.requestStart();
             activeActions.add(action);
             actionIndex += 1;
             if(action.updateOnStart()){

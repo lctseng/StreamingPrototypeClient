@@ -12,7 +12,7 @@ public abstract class OnetimeAction extends Action {
     }
 
     @Override
-    public boolean update(float deltaTime) {
+    protected boolean updateAction(float deltaTime) {
         act(deltaTime);
         return true;
     }

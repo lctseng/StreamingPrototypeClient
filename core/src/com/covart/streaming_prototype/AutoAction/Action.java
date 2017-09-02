@@ -7,14 +7,37 @@ package com.covart.streaming_prototype.AutoAction;
 
 public abstract class Action {
     public float startTime = 0f;
-
+    public float offset = 0f;
 
     public abstract void start();
 
-    public abstract boolean update(float deltaTime);
+    public void requestStart(){
+        if(offset <= 0f){
+            start();
+        }
+    }
+
+    public boolean update(float deltaTime){
+        if(offset <= 0f){
+            return updateAction(deltaTime);
+        }
+        else{
+            offset -= deltaTime;
+            if(offset <= 0f){
+                start();
+                if(updateOnStart()){
+                    return updateAction(deltaTime);
+                }
+            }
+            return false;
+        }
+    }
+
+    protected abstract boolean updateAction(float deltaTime);
+
     public abstract float getWaitTime();
 
     public boolean updateOnStart(){
-        return true;
+        return offset <= 0f;
     }
 }
