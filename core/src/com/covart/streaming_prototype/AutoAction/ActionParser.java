@@ -47,10 +47,38 @@ public class ActionParser {
         }
     }
 
+    private void parseVariable(ArrayList<String> params){
+        String type = params.remove(0);
+        String dst = params.remove(0);
+        if(type.equals("Assign")){
+            addVariable(dst, params.remove(0));
+        }
+        else {
+            float lfs = parseOperand(params.remove(0));
+            float rfs = parseOperand(params.remove(0));
+            if (type.equals("Add")) {
+                addVariable(dst, lfs + rfs);
+
+            } else if (type.equals("Sub")) {
+                addVariable(dst, lfs - rfs);
+
+            } else if (type.equals("Mul")) {
+                addVariable(dst, lfs * rfs);
+
+            } else if (type.equals("Div")) {
+                addVariable(dst, lfs / rfs);
+            }
+        }
+    }
+
+    private void addVariable(String name, float value){
+        variables.put(name, value);
+    }
+
     private void addVariable(String name, String operand){
         if(name.startsWith("$")){
             float value = parseOperand(operand);
-            variables.put(name, value);
+            addVariable(name,value);
         }
         else{
             Gdx.app.error("ActionParser","Variable name must starts with '$', got " + name);
@@ -308,12 +336,7 @@ public class ActionParser {
             parseConfig(actionWords);
         }
         else if(type.equals("Variable")){
-            if(actionWords.size() == 2){
-                addVariable(actionWords.get(0), actionWords.get(1));
-            }
-            else{
-                Gdx.app.error("ActionParser","Invalid parameter size for adding variable");
-            }
+            parseVariable(actionWords);
         }
         else{
             // TODO: unknown type
