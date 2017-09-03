@@ -34,9 +34,16 @@ public abstract class DirectAndIncrementalAction extends ContinuousAction {
 
     @Override
     protected void prepareStartEndValue() {
-        // must be the incremental
         startValue = getIncrementalStartValue();
-        endValue = startValue + changeValue;
+        if(forceAbsolute){
+            // absolute
+            endValue = changeValue;
+        }
+        else{
+            // incremental
+            endValue = startValue + changeValue;
+        }
+
     }
 
     @Override

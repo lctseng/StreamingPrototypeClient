@@ -23,6 +23,7 @@ public class ActionParser {
     private class ActionControl {
         public boolean needWait = false;
         public float offset = 0f;
+        public boolean forceAbsolute = false;
     }
 
 
@@ -50,6 +51,9 @@ public class ActionParser {
             }
             else if(controlWord.equals("nowait")){
                 control.needWait = false;
+            }
+            else if(controlWord.equals("absolute")){
+                control.forceAbsolute = true;
             }
             else if(controlWord.startsWith("offset")) {
                 String[] parts = controlWord.split("=");
@@ -260,6 +264,7 @@ public class ActionParser {
             // apply control
             if(action != null){
                 action.offset = control.offset;
+                action.forceAbsolute = control.forceAbsolute;
                 executor.addAction(action, control.needWait);
             }
         }

@@ -8,6 +8,8 @@ package com.covart.streaming_prototype.AutoAction;
 public abstract class Action {
     public float startTime = 0f;
     public float offset = 0f;
+    // this attribute is valid in some specific actions
+    public boolean forceAbsolute = false;
 
     public abstract void start();
 
