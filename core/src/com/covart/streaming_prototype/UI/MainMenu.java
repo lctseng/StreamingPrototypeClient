@@ -141,6 +141,7 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
 
         addDisplayFPSLimitUI();
+        addDrawStPlaneBackgroundUI();
         canvas.row().height(commonRowHeight);
 
         addEditingReportIntervalUI();
@@ -348,6 +349,28 @@ public class MainMenu extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setStopOnDisconnected(box.isChecked());
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
+    }
+
+    private void addDrawStPlaneBackgroundUI(){
+        // label
+        Label name = new Label("Draw St Background:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.isDrawStPlaneBackground());
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDrawStPlaneBackground(box.isChecked());
                 updateCheckBoxText(box);
             }
         });

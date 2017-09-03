@@ -124,6 +124,7 @@ public class ConfigManager {
 
     private static long displayMinDrawTime = (long)((1f/ displayFpsLimit)*1000f);
 
+    private static boolean drawStPlaneBackground = true;
 
     // getters and setters
 
@@ -426,6 +427,14 @@ public class ConfigManager {
 
     public static long getDisplayMinDrawTime() {
         return displayMinDrawTime;
+    }
+
+    public static boolean isDrawStPlaneBackground() {
+        return drawStPlaneBackground;
+    }
+
+    public static void setDrawStPlaneBackground(boolean drawStPlaneBackground) {
+        ConfigManager.drawStPlaneBackground = drawStPlaneBackground;
     }
 
     // end of getters and setters

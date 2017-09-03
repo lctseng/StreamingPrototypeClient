@@ -34,6 +34,7 @@ uniform int u_colTextureOffset;
 uniform float u_columnPositionRatio;
 
 uniform float u_stPlaneRadius;
+uniform vec3 u_stPlaneColor;
 
 uniform int u_screenWidth;
 uniform int u_screenHeight;
@@ -269,18 +270,18 @@ void main() {
 				outputColor = outputColor / accumulateWeight;
 			}
 			else{
-				outputColor = vec4(0,0.4,0,1);
+				outputColor = vec4(u_stPlaneColor,1);
 			}
 				
 			gl_FragColor.rgb = outputColor.rgb;
 			//gl_FragColor.rgb = vec3(rf.x, rf.y, 0);
 		}
 		else{
-			gl_FragColor.rgb = vec3(0.4,0,0);
+			gl_FragColor.rgb = vec3(0,0,0);
 		}
 	}
 	else{
-		gl_FragColor.rgb = vec3(0,0,1);
+		gl_FragColor.rgb = vec3(0,0,0);
 	}
 	// cursor
 	if(u_editingScreenX >= 0.0 && u_editingScreenY >= 0.0){
