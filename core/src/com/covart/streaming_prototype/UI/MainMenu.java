@@ -142,6 +142,7 @@ public class MainMenu extends UIComponent {
 
         addDisplayFPSLimitUI();
         addDrawStPlaneBackgroundUI();
+        addForceWeightingFixUI();
         canvas.row().height(commonRowHeight);
 
         addEditingReportIntervalUI();
@@ -358,6 +359,32 @@ public class MainMenu extends UIComponent {
         canvas.add(box).colspan(tableColumnSpan - 1);
     }
 
+
+
+
+
+    private void addDisplayModeToggleUI(){
+        // label
+        Label name = new Label("VR Mode enabled:", largeLabelStyle);
+
+        // checkbox
+        final CheckBox box = new CheckBox("",skin);
+        box.setChecked(ConfigManager.getDisplayMode() == Display.Mode.VR);
+        updateCheckBoxText(box);
+        enlargeCheckBoxFont(box);
+        box.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayMode(box.isChecked() ? Display.Mode.VR : Display.Mode.NORMAL);
+                updateCheckBoxText(box);
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(box).colspan(tableColumnSpan - 1);
+    }
+
     private void addDrawStPlaneBackgroundUI(){
         // label
         Label name = new Label("Draw St Background:", largeLabelStyle);
@@ -380,19 +407,19 @@ public class MainMenu extends UIComponent {
         canvas.add(box).colspan(tableColumnSpan - 1);
     }
 
-    private void addDisplayModeToggleUI(){
+    private void addForceWeightingFixUI(){
         // label
-        Label name = new Label("VR Mode enabled:", largeLabelStyle);
+        Label name = new Label("Force weighting fix:", largeLabelStyle);
 
         // checkbox
         final CheckBox box = new CheckBox("",skin);
-        box.setChecked(ConfigManager.getDisplayMode() == Display.Mode.VR);
+        box.setChecked(ConfigManager.isForceWeightingFix());
         updateCheckBoxText(box);
         enlargeCheckBoxFont(box);
         box.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.setDisplayMode(box.isChecked() ? Display.Mode.VR : Display.Mode.NORMAL);
+                ConfigManager.setForceWeightingFix(box.isChecked());
                 updateCheckBoxText(box);
             }
         });

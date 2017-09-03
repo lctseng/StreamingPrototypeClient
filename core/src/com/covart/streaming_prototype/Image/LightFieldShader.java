@@ -271,6 +271,8 @@ public class LightFieldShader extends DefaultShader{
             program.setUniformf("u_stPlaneColor", Vector3.Zero);
         }
 
+        program.setUniformi("u_forceWeightingFix",ConfigManager.isForceWeightingFix() ? 1 : 0);
+
 
 
         StringPool.addField("Columns", "" + startIndex + "-" + endIndex);

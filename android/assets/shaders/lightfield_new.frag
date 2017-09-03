@@ -36,6 +36,8 @@ uniform float u_columnPositionRatio;
 uniform float u_stPlaneRadius;
 uniform vec3 u_stPlaneColor;
 
+uniform int u_forceWeightingFix;
+
 uniform int u_screenWidth;
 uniform int u_screenHeight;
 
@@ -267,7 +269,9 @@ void main() {
 			
 			if(accumulateWeight > 0.0){
 				// output color maybe overweight
-				outputColor = outputColor / accumulateWeight;
+				if(u_forceWeightingFix == 1 || accumulateWeight >= 1.0){
+					outputColor = outputColor / accumulateWeight;
+				}
 			}
 			else{
 				outputColor = vec4(u_stPlaneColor,1);

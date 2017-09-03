@@ -126,6 +126,8 @@ public class ConfigManager {
 
     private static boolean drawStPlaneBackground = true;
 
+    private static boolean forceWeightingFix = false;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -435,6 +437,14 @@ public class ConfigManager {
 
     public static void setDrawStPlaneBackground(boolean drawStPlaneBackground) {
         ConfigManager.drawStPlaneBackground = drawStPlaneBackground;
+    }
+
+    public static boolean isForceWeightingFix() {
+        return forceWeightingFix;
+    }
+
+    public static void setForceWeightingFix(boolean forceWeightingFix) {
+        ConfigManager.forceWeightingFix = forceWeightingFix;
     }
 
     // end of getters and setters
