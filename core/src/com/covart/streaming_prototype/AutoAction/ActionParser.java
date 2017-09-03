@@ -13,6 +13,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lctseng on 2017/9/2.
@@ -28,9 +30,12 @@ public class ActionParser {
 
 
     private Executor executor;
+    private Map<String,Float> variables;
     public ActionParser(Executor executor){
         this.executor = executor;
+        this.variables = new HashMap<String, Float>();
     }
+
 
 
     public  void loadActionText(String actionText){
@@ -39,6 +44,34 @@ public class ActionParser {
             if(!line.startsWith("#") && line.length() > 0){
                 parseActionLineWithControl(line);
             }
+        }
+    }
+
+    private void addVariable(String name, String operand){
+        if(name.startsWith("$")){
+            float value = parseOperand(operand);
+            variables.put(name, value);
+        }
+        else{
+            Gdx.app.error("ActionParser","Variable name must starts with '$', got " + name);
+        }
+
+    }
+
+
+    private float parseOperand(String text){
+        if(text.startsWith("$")){
+            // read from variable
+            if(variables.containsKey(text)){
+                return variables.get(text);
+            }
+            else{
+                Gdx.app.error("ActionParser","Unknown variable:" + text + ", return default value: 0.0f");
+                return 0f;
+            }
+        }
+        else{
+            return Float.parseFloat(text);
         }
     }
 
@@ -58,7 +91,7 @@ public class ActionParser {
             else if(controlWord.startsWith("offset")) {
                 String[] parts = controlWord.split("=");
                 if(parts.length == 2){
-                    control.offset = Float.parseFloat(parts[1]);
+                    control.offset = parseOperand(parts[1]);
                 }
             }
             else{
@@ -109,8 +142,8 @@ public class ActionParser {
             type = RotationAction.Type.YAW;
         }
         // change and duration
-        float change = Float.parseFloat(params.remove(0));
-        float duration = Float.parseFloat(params.remove(0));
+        float change = parseOperand(params.remove(0));
+        float duration = parseOperand(params.remove(0));
         // easing
         EasingBase easing = parseEasingStringFromParams(params);
 
@@ -144,8 +177,8 @@ public class ActionParser {
             direction = PositionController.Direction.RIGHT;
         }
         // change and duration
-        float change = Float.parseFloat(params.remove(0));
-        float duration = Float.parseFloat(params.remove(0));
+        float change = parseOperand(params.remove(0));
+        float duration = parseOperand(params.remove(0));
         // easing
         EasingBase easing = parseEasingStringFromParams(params);
 
@@ -166,7 +199,7 @@ public class ActionParser {
                 return null;
             }
             try {
-                return (DirectAndIncrementalAction)(con.newInstance(Float.parseFloat(params.remove(0))));
+                return (DirectAndIncrementalAction)(con.newInstance(parseOperand(params.remove(0))));
             } catch (Exception e) {
                 Gdx.app.error("ActionParser", "Cannot create instance!");
                 e.printStackTrace();
@@ -176,8 +209,8 @@ public class ActionParser {
         else if(params.size() >= 2){
             // incremental
             // change and duration
-            float change = Float.parseFloat(params.remove(0));
-            float duration = Float.parseFloat(params.remove(0));
+            float change = parseOperand(params.remove(0));
+            float duration = parseOperand(params.remove(0));
             // easing
             EasingBase easing = parseEasingStringFromParams(params);
             // create the class
@@ -216,7 +249,7 @@ public class ActionParser {
     private void parseConfig(ArrayList<String> params){
         String type = params.remove(0);
         if(type.equals("TimeFactor")){
-            executor.setTimeFactor(Float.parseFloat(params.remove(0)));
+            executor.setTimeFactor(parseOperand(params.remove(0)));
         }
         else if((type.equals("WaitByDefault"))){
             executor.setWaitByDefault(params.remove(0).equals("true"));
@@ -269,10 +302,18 @@ public class ActionParser {
             }
         }
         else if(type.equals("Wait")){
-            executor.addWait(Float.parseFloat(actionWords.remove(0)));
+            executor.addWait(parseOperand(actionWords.remove(0)));
         }
         else if(type.equals("Config")){
             parseConfig(actionWords);
+        }
+        else if(type.equals("Variable")){
+            if(actionWords.size() == 2){
+                addVariable(actionWords.get(0), actionWords.get(1));
+            }
+            else{
+                Gdx.app.error("ActionParser","Invalid parameter size for adding variable");
+            }
         }
         else{
             // TODO: unknown type

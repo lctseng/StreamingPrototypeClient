@@ -37,12 +37,9 @@ public class Executor {
 
     private float deltaTime;
 
-    private ActionParser parser;
-
     public Executor(ExecutorEventListener listener)
     {
         this.listener = listener;
-        this.parser = new ActionParser(this);
         reset();
     }
 
@@ -180,8 +177,7 @@ public class Executor {
     }
 
     public  void loadActionText(String actionText){
+        ActionParser parser = new ActionParser(this);
         parser.loadActionText(actionText);
     }
-
-
 }
