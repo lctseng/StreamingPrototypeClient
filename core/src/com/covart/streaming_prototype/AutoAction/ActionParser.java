@@ -274,6 +274,31 @@ public class ActionParser {
         }
     }
 
+    private DisplayIndexAction parseDisplayIndexAction(ArrayList<String> params){
+        if(params.size() == 2){
+            String typeString = params.remove(0);
+            DisplayIndexAction.Type type;
+            if(typeString.equals("COLUMN")){
+                type = DisplayIndexAction.Type.COLUMN;
+            }
+            else if(typeString.equals("ROW")){
+                type = DisplayIndexAction.Type.ROW;
+            }
+            else if(typeString.equals("SERIAL")){
+                type = DisplayIndexAction.Type.SERIAL;
+            }
+            else{
+                Gdx.app.error("ActionParser","Unknown DisplayIndexAction type:" + typeString);
+                return null;
+            }
+            return new DisplayIndexAction(type, (int)parseOperand(params.remove(0)));
+        }
+        else{
+            Gdx.app.error("ActionParser","Incorrect number of params for DisplayIndexAction:" + params.size());
+            return null;
+        }
+    }
+
     private void parseConfig(ArrayList<String> params){
         String type = params.remove(0);
         if(type.equals("TimeFactor")){
@@ -318,6 +343,9 @@ public class ActionParser {
             }
             else if(actionName.equals("DrawOverlay")){
                 action = parseDrawOverlayAction(actionWords);
+            }
+            else if(actionName.equals("DisplayIndex")){
+                action = parseDisplayIndexAction(actionWords);
             }
             else{
                 // TODO: unknown action
