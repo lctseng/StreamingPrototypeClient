@@ -25,6 +25,7 @@ uniform int u_cols;
 uniform int u_rows;
 uniform int u_display_index_row;
 uniform int u_display_index_col;
+uniform int u_display_index_serial;
 
 uniform int u_colStart;
 uniform int u_colEnd;
@@ -191,6 +192,12 @@ void main() {
 					if(u_display_index_row >= 0 && u_display_index_row != j){
 						continue;
 					}
+
+					// FIXME: column index is reversed here
+					if(u_display_index_serial >= 0 && (j * u_rows + (u_cols - i - 1) ) > u_display_index_serial ){
+						continue;
+					}
+
 					int columnTextureIndex = i - u_colTextureOffset;
 					
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;

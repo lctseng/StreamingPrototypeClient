@@ -153,6 +153,7 @@ public class MainMenu extends UIComponent {
 
         addDisplayIndexRowUI();
         addDisplayIndexColumnUI();
+        addDisplayIndexSerialUI();
         canvas.row().height(commonRowHeight);
 
 
@@ -592,7 +593,7 @@ public class MainMenu extends UIComponent {
         // label
         final Label name = new Label(getApertureSizeText(), largeLabelStyle);
         // slider
-        final HorzSlider slider = new HorzSlider(0.0f, inputValueForExpSlider(9), 0.0001f, false, skin);
+        final HorzSlider slider = new HorzSlider(0.0f, inputValueForExpSlider(30), 0.0001f, false, skin);
         slider.setValue(inputValueForExpSlider(ConfigManager.getApertureSize()));
         enlargeSlider(slider);
         slider.addListener(new ChangeListener() {
@@ -716,7 +717,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getDisplayIndexRowText(){
-        return String.format(Locale.TAIWAN,"Display index row: %.0f",ConfigManager.getDisplayIndexRow());
+        return String.format(Locale.TAIWAN,"Display index row: %d",ConfigManager.getDisplayIndexRow());
     }
 
     private void addDisplayIndexColumnUI(){
@@ -742,8 +743,35 @@ public class MainMenu extends UIComponent {
     }
 
     private String getDisplayIndexColumnText(){
-        return String.format(Locale.TAIWAN,"Display index column: %.0f",ConfigManager.getDisplayIndexColumn());
+        return String.format(Locale.TAIWAN,"Display index column: %d",ConfigManager.getDisplayIndexColumn());
     }
+
+    private void addDisplayIndexSerialUI(){
+        // label
+        final Label name = new Label(getDisplayIndexSerialText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(-1f, ConfigManager.getNumOfLFs() * ConfigManager.getNumOfSubLFImgs() - 1, 1f, false, skin);
+        slider.setValue(ConfigManager.getDisplayIndexSerial());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayIndexSerial((int)slider.getValue());
+                name.setText(getDisplayIndexSerialText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayIndexSerialText(){
+        return String.format(Locale.TAIWAN,"Display index serial: %d",ConfigManager.getDisplayIndexSerial());
+    }
+
 
 
     private void addEyeWrapperPitchLimitUI(){

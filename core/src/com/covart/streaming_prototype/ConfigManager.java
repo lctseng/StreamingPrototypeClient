@@ -132,6 +132,8 @@ public class ConfigManager {
 
     private static int displayIndexColumn = -1;
 
+    private static int displayIndexSerial = -1;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -466,6 +468,15 @@ public class ConfigManager {
     public static void setDisplayIndexColumn(int displayIndexColumn) {
         ConfigManager.displayIndexColumn = displayIndexColumn;
     }
+
+    public static int getDisplayIndexSerial() {
+        return displayIndexSerial;
+    }
+
+    public static void setDisplayIndexSerial(int displayIndexSerial) {
+        ConfigManager.displayIndexSerial = displayIndexSerial;
+    }
+
 
     // end of getters and setters
 

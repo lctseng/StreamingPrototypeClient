@@ -264,6 +264,11 @@ public class LightFieldShader extends DefaultShader{
         program.setUniformi("u_rowStart",startRow);
         program.setUniformi("u_rowEnd",endRow);
 
+        program.setUniformi("u_display_index_row", ConfigManager.getDisplayIndexRow());
+        program.setUniformi("u_display_index_col", ConfigManager.getDisplayIndexColumn());
+        program.setUniformi("u_display_index_serial", ConfigManager.getDisplayIndexSerial());
+
+
         if(ConfigManager.isDrawStPlaneBackground()){
             program.setUniformf("u_stPlaneColor", new Vector3(0,0.4f,0));
         }
