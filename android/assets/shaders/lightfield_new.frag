@@ -23,6 +23,8 @@ uniform float u_apertureSize;
 
 uniform int u_cols;
 uniform int u_rows;
+uniform int u_display_index_row;
+uniform int u_display_index_col;
 
 uniform int u_colStart;
 uniform int u_colEnd;
@@ -132,6 +134,9 @@ void main() {
 			mat4 u_rf_to_rd = u_rf_to_rd_center;
 			// for each D(s,t)
 			for(int i=u_colStart;i<=u_colEnd;++i){
+				if(u_display_index_col >= 0 && u_display_index_col != i){
+					continue;
+				}
 				int columnImageType = INVALID_INDEX_VALUE;
 				int rowOffset = u_rowStart;
 				int rowStep = 1;
@@ -183,6 +188,9 @@ void main() {
 				float effectiveAperture = apertureFactor * u_apertureSize;
 				for(int j=rowOffset;j<=u_rowEnd;j+=rowStep){
 
+					if(u_display_index_row >= 0 && u_display_index_row != j){
+						continue;
+					}
 					int columnTextureIndex = i - u_colTextureOffset;
 					
 					float cameraX = (initCameraX + float(i) * spanX) * u_cameraStep;

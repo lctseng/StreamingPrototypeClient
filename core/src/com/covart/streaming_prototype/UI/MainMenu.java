@@ -151,6 +151,10 @@ public class MainMenu extends UIComponent {
         canvas.row().height(commonRowHeight);
 
 
+        addDisplayIndexRowUI();
+        addDisplayIndexColumnUI();
+        canvas.row().height(commonRowHeight);
+
 
         addButtons();
 
@@ -685,6 +689,60 @@ public class MainMenu extends UIComponent {
 
         canvas.add(name);
         canvas.add(box).colspan(tableColumnSpan - 1);
+    }
+
+
+
+    private void addDisplayIndexRowUI(){
+        // label
+        final Label name = new Label(getDisplayIndexRowText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(-1f, ConfigManager.getNumOfSubLFImgs() - 1, 1f, false, skin);
+        slider.setValue(ConfigManager.getDisplayIndexRow());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayIndexRow((int)slider.getValue());
+                name.setText(getDisplayIndexRowText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayIndexRowText(){
+        return String.format(Locale.TAIWAN,"Display index row: %.0f",ConfigManager.getDisplayIndexRow());
+    }
+
+    private void addDisplayIndexColumnUI(){
+        // label
+        final Label name = new Label(getDisplayIndexColumnText(), largeLabelStyle);
+
+        // slider
+        final HorzSlider slider = new HorzSlider(-1f, ConfigManager.getNumOfLFs() - 1, 1f, false, skin);
+        slider.setValue(ConfigManager.getDisplayIndexColumn());
+        enlargeSlider(slider);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ConfigManager.setDisplayIndexColumn((int)slider.getValue());
+                name.setText(getDisplayIndexColumnText());
+            }
+        });
+
+
+        canvas.add(name);
+        canvas.add(slider).colspan(tableColumnSpan - 1);
+
+    }
+
+    private String getDisplayIndexColumnText(){
+        return String.format(Locale.TAIWAN,"Display index column: %.0f",ConfigManager.getDisplayIndexColumn());
     }
 
 

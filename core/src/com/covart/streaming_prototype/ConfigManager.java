@@ -128,6 +128,10 @@ public class ConfigManager {
 
     private static boolean forceWeightingFix = false;
 
+    private static int displayIndexRow = -1;
+
+    private static int displayIndexColumn = -1;
+
     // getters and setters
 
     public static int getImageWidth() {
@@ -445,6 +449,22 @@ public class ConfigManager {
 
     public static void setForceWeightingFix(boolean forceWeightingFix) {
         ConfigManager.forceWeightingFix = forceWeightingFix;
+    }
+
+    public static int getDisplayIndexRow() {
+        return displayIndexRow;
+    }
+
+    public static void setDisplayIndexRow(int displayIndexRow) {
+        ConfigManager.displayIndexRow = displayIndexRow;
+    }
+
+    public static int getDisplayIndexColumn() {
+        return displayIndexColumn;
+    }
+
+    public static void setDisplayIndexColumn(int displayIndexColumn) {
+        ConfigManager.displayIndexColumn = displayIndexColumn;
     }
 
     // end of getters and setters
