@@ -1,4 +1,4 @@
-package com.covart.streaming_prototype.Utils.Easing;
+package com.covart.streaming_prototype.Utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

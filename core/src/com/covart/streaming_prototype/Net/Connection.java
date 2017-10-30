@@ -47,38 +47,47 @@ public class Connection {
         readable = false;
     }
 
+    public static boolean validateServerString(String text){
+        return text.matches("\\A\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}\\z");
+    }
+
     public void connect(){
-        // only issue a connection when disconnected
-        if(state == State.Disconnected){
-            if(socket  != null){
-                // delete previous socket  if exists
-                socket.dispose();
-                socket = null;
+        String ipString =ConfigManager.getSelectedIP();
+        if(validateServerString(ipString)) {
+
+            // only issue a connection when disconnected
+            if (state == State.Disconnected) {
+                if (socket != null) {
+                    // delete previous socket  if exists
+                    socket.dispose();
+                    socket = null;
+                }
+                state = State.Connecting;
+                listener.onConnectionStarted();
+                Gdx.app.log("Connection", "Connecting...");
+                SocketHints hints = new SocketHints();
+                try {
+                    String[] tokens = ipString.split(Pattern.quote(":"));
+                    String ip_str = tokens[0];
+                    String port_str = tokens[1];
+                    socket = net.newClientSocket(Protocol.TCP, ip_str, Integer.parseInt(port_str), hints);
+                    recvStream = socket.getInputStream();
+                    sendStream = socket.getOutputStream();
+                    state = State.Connected;
+                    writable = true;
+                    readable = true;
+                    listener.onConnectionReady();
+                    Gdx.app.log("Connection", "Connected");
+                } catch (GdxRuntimeException e) {
+                    Gdx.app.log("Connection", "Disconnected");
+                    e.printStackTrace();
+                    close();
+                }
             }
-            state = State.Connecting;
-            listener.onConnectionStarted();
-            Gdx.app.log("Connection", "Connecting...");
-            SocketHints hints = new SocketHints();
-            try {
-                String ip_port = ConfigManager.getSelectedIP();
-                String[] tokens = ip_port.split(Pattern.quote(":"));
-                String ip_str = tokens[0];
-                String port_str = tokens[1];
-                socket = net.newClientSocket(Protocol.TCP, ip_str, Integer.parseInt(port_str), hints);
-                recvStream = socket.getInputStream();
-                sendStream = socket.getOutputStream();
-                state = State.Connected;
-                writable = true;
-                readable = true;
-                listener.onConnectionReady();
-                Gdx.app.log("Connection", "Connected");
-            }
-            catch (GdxRuntimeException e){
-                Gdx.app.log("Connection", "Disconnected");
-                e.printStackTrace();
-                close();
-            }
-         }
+        }
+        else{
+            Gdx.app.log("Connection", "Cannot connect, IP string invalid: " + ipString);
+        }
     }
 
     public boolean getReady(){

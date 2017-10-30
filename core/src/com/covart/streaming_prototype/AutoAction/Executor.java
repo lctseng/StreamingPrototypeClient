@@ -1,15 +1,9 @@
 package com.covart.streaming_prototype.AutoAction;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction;
-import com.covart.streaming_prototype.UI.PositionController;
-import com.covart.streaming_prototype.Utils.Easing.EasingBase;
-import com.covart.streaming_prototype.Utils.Easing.EasingLinear;
-import com.covart.streaming_prototype.Utils.Easing.EasingQuadInOut;
-import com.covart.streaming_prototype.Utils.Easing.Http;
+import com.covart.streaming_prototype.Utils.Http;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
