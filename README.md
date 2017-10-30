@@ -6,6 +6,9 @@ This is the client side application for [StreamingPrototype](https://github.com/
 ## Demo Video
 [Demo Video on Youtube](https://youtu.be/lMdvIzpLWpQ)
 
+## Pre-built binary (apk)
+- [Download link](https://drive.google.com/file/d/0B6KmSTnbOf-CaUpqbnVFSHpEWkE/view?usp=sharing) : Commit version [e402b05](https://github.com/lctseng/StreamingPrototypeClient/tree/e402b0596da3881d55c02d06bc9e82a7448e769e), built on 2017/10/30
+
 ## Environment
 - Android Studio 2.3 or higher
 - Windows 10 and Mac OSX 10.11 are tested and they can build this application successfully
