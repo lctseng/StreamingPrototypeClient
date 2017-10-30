@@ -17,6 +17,7 @@ import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
+import com.covart.streaming_prototype.Net.Connection;
 import com.covart.streaming_prototype.Net.Network;
 import com.covart.streaming_prototype.UI.EditingPanel;
 import com.covart.streaming_prototype.UI.MainMenu;
@@ -574,8 +575,18 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void onStartCalled() {
-        StringPool.addField("App", "Starting");
-        requireStart();
+        if(isStartReady()){
+            StringPool.addField("App", "Starting");
+            requireStart();
+        }
+        else{
+            StringPool.addField("App", "Cannot Start, reason: invalid server IP: " + ConfigManager.getSelectedIP());
+        }
+
+    }
+
+    private boolean isStartReady(){
+        return Connection.validateServerString(ConfigManager.getSelectedIP());
     }
 
     private void updateEditingModeText() {

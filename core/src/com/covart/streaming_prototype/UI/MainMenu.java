@@ -115,7 +115,12 @@ public class MainMenu extends UIComponent {
         addDisplayModeToggleUI();
         canvas.row().height(commonRowHeight);
 
-        addIPSelectUI();
+        if(ConfigManager.isUseCustomServerText()){
+            addCustomIPInputUI();
+        }
+        else{
+            addIPSelectUI();
+        }
         addChangeSceneUI();
         addManualMoveUI();
         canvas.row().height(commonRowHeight);
@@ -294,6 +299,25 @@ public class MainMenu extends UIComponent {
         canvas.add(selectBox).colspan(tableColumnSpan - 1);
 
 
+    }
+
+    private void addCustomIPInputUI(){
+        // label
+        Label name = new Label("Server IP:", largeLabelStyle);
+
+        final IPStringInputListener inputListener = new IPStringInputListener();
+        TextButton button = new TextButton("Enter Server IP/Port", skin);
+        inputListener.setButton(button);
+        button.getStyle().font = largeFont;
+        button.setStyle(button.getStyle());
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.input.getTextInput(inputListener, "Enter Server IP:Port", "140.112.1.1:8051", "Example: 140.112.1.1:8051");
+            }
+        });
+        canvas.add(name);
+        canvas.add(button).width(buttonWidth);
     }
 
     private void addChangeSceneUI(){

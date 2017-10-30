@@ -43,6 +43,8 @@ public class ConfigManager {
 
     private static final String autoActionServerUrl = "http://covart2.csie.ntu.edu.tw:3000/";
 
+    private static final boolean useCustomServerText = true;
+
     private static final String[] serverList = new String[]{
             "140.112.90.82:8051",
             "140.112.90.82:8052",
@@ -82,7 +84,7 @@ public class ConfigManager {
     private static float sensorReportInterval = 2.0f;
 
     private static Integer sceneIndex = 0;
-    private static String selectedIP = serverList[0];
+    private static String selectedIP = useCustomServerText ? "<Server IP Not Configured>" : serverList[0];
 
     private static int freeUnusedTextureThreshold = 0;
 
@@ -231,6 +233,10 @@ public class ConfigManager {
 
     public static void setSceneIndex(Integer sceneIndex) {
         ConfigManager.sceneIndex = sceneIndex;
+    }
+
+    public static boolean isUseCustomServerText() {
+        return useCustomServerText;
     }
 
     public static StreamingPrototype getApp() {
