@@ -30,7 +30,7 @@ uniform int u_display_index_serial;
 uniform int u_colStart;
 uniform int u_colEnd;
 
-uniform int u_rowStart;
+// uniform int u_rowStart; // not used
 uniform int u_rowEnd;
 
 uniform int u_colTextureOffset;
@@ -139,7 +139,7 @@ void main() {
 					continue;
 				}
 				int columnImageType = INVALID_INDEX_VALUE;
-				int rowOffset = u_rowStart;
+				int rowOffset;
 				int rowStep = 1;
 				float apertureFactor = 1.0;
 				if(i == 0){

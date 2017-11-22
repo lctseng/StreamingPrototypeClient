@@ -261,7 +261,7 @@ public class LightFieldShader extends DefaultShader{
 
         program.setUniformi("u_colStart",startIndex);
         program.setUniformi("u_colEnd",endIndex);
-        program.setUniformi("u_rowStart",startRow);
+        //program.setUniformi("u_rowStart",startRow);
         program.setUniformi("u_rowEnd",endRow);
 
         program.setUniformi("u_display_index_row", ConfigManager.getDisplayIndexRow());
