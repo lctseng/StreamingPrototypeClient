@@ -69,6 +69,16 @@ public class ConfigManager {
     };
 
 
+    public enum EditingState {
+        Normal,
+        WaitForList,
+        SelectOperation,
+        MovingModel,
+        SelectAddingModel,
+        SelectAddingPosition,
+        MoveAddingModel
+    };
+
 
     // variables
 
@@ -90,7 +100,7 @@ public class ConfigManager {
 
     private static Display.Mode displayMode = Display.Mode.NORMAL;
 
-    private static boolean editingModeEnabled = false;
+    private static EditingState editingState = EditingState.Normal;
 
     private static float editingReportInterval = 1.000f;
 
@@ -114,9 +124,13 @@ public class ConfigManager {
 
     private static float stPlaneRadius = 1f;
 
-    private static List<Integer> editingModelIdList;
+    private static List<Integer> editingCurrentModelIdList;
+
+    private static List<Integer> editingNewModelIdList;
 
     private static int editingCurrentModelIndex = -1;
+
+    private static int editingNewModelIndex = -1;
 
     private static boolean forceLowQuality = false;
 
@@ -272,18 +286,6 @@ public class ConfigManager {
         return displayModeList;
     }
 
-    public static boolean isEditingModeEnabled() {
-        return editingModeEnabled;
-    }
-
-    public static void setEditingModeEnabled(boolean editingModeEnabled) {
-        ConfigManager.editingModeEnabled = editingModeEnabled;
-    }
-
-    public static void toggleEditingModeEnabled() {
-        ConfigManager.editingModeEnabled = !ConfigManager.editingModeEnabled;
-    }
-
     public static float getEditingReportInterval() {
         return editingReportInterval;
     }
@@ -380,17 +382,33 @@ public class ConfigManager {
         ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
     }
 
-    public static List<Integer> getEditingModelIdList() {
-        return editingModelIdList;
+    public static List<Integer> getEditingCurrentModelIdList() {
+        return editingCurrentModelIdList;
     }
 
-    public static void setEditingModelIdList(List<Integer> editingModelIdList) {
-        ConfigManager.editingModelIdList = editingModelIdList;
+    public static void setEditingCurrentModelIdList(List<Integer> editingCurrentModelIdList) {
+        ConfigManager.editingCurrentModelIdList = editingCurrentModelIdList;
+    }
+
+    public static List<Integer> getEditingNewModelIdList() {
+        return editingNewModelIdList;
+    }
+
+    public static void setEditingNewModelIdList(List<Integer> editingNewModelIdList) {
+        ConfigManager.editingNewModelIdList = editingNewModelIdList;
+    }
+
+    public static int getEditingNewModelIndex() {
+        return editingNewModelIndex;
+    }
+
+    public static void setEditingNewModelIndex(int editingNewModelIndex) {
+        ConfigManager.editingNewModelIndex = editingNewModelIndex;
     }
 
     public static int getEditingCurrentModelId() {
         if(editingCurrentModelIndex >= 0){
-            return editingModelIdList.get(editingCurrentModelIndex);
+            return editingCurrentModelIdList.get(editingCurrentModelIndex);
         }
         else{
             return -1;
@@ -401,8 +419,8 @@ public class ConfigManager {
     public static void setEditingCurrentModelId(int id) {
         if(id >= 0){
             // find index by id
-            for(int i=0;i<editingModelIdList.size();i++){
-                if(editingModelIdList.get(i) == id){
+            for(int i = 0; i< editingCurrentModelIdList.size(); i++){
+                if(editingCurrentModelIdList.get(i) == id){
                     setEditingCurrentModelIndex(i);
                     break;
                 }
@@ -410,6 +428,31 @@ public class ConfigManager {
         }
         else{
             setEditingCurrentModelIndex(-1);
+        }
+    }
+
+    public static int getEditingNewModelId() {
+        if(editingNewModelIndex >= 0){
+            return editingNewModelIdList.get(editingNewModelIndex);
+        }
+        else{
+            return -1;
+        }
+
+    }
+
+    public static void setEditingNewModelId(int id) {
+        if(id >= 0){
+            // find index by id
+            for(int i = 0; i< editingNewModelIdList.size(); i++){
+                if(editingNewModelIdList.get(i) == id){
+                    setEditingNewModelIndex(i);
+                    break;
+                }
+            }
+        }
+        else{
+            setEditingNewModelIndex(-1);
         }
     }
 
@@ -483,11 +526,18 @@ public class ConfigManager {
         ConfigManager.displayIndexSerial = displayIndexSerial;
     }
 
+    public static EditingState getEditingState() {
+        return editingState;
+    }
+
+    public static void setEditingState(EditingState editingState) {
+        ConfigManager.editingState = editingState;
+    }
 
     // end of getters and setters
 
     public static boolean isHighQualityImagesNeeded(){
-        return !isForceLowQuality() && !editingModeEnabled;
+        return !isForceLowQuality() && editingState != EditingState.Normal;
     }
 
     public static boolean isMainEye(Eye eye){
@@ -505,6 +555,12 @@ public class ConfigManager {
             default:
                 return "Unknown";
         }
+    }
+
+    // true and we need to interacting with scene object
+    // input adapter works when it is true
+    public static boolean isEditingScreenInput(){
+        return editingState == EditingState.MovingModel || editingState == EditingState.SelectAddingPosition || editingState == EditingState.MoveAddingModel;
     }
 
     private ConfigManager() {

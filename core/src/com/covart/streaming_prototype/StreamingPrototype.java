@@ -7,12 +7,9 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.android.CardBoardAndroidApplication;
 import com.badlogic.gdx.backends.android.CardBoardApplicationListener;
 import com.badlogic.gdx.math.Vector3;
-import com.covart.streaming_prototype.AutoAction.ApertureAction;
 import com.covart.streaming_prototype.AutoAction.Executor;
 import com.covart.streaming_prototype.AutoAction.ExecutorEventListener;
-import com.covart.streaming_prototype.AutoAction.FocusAction;
 import com.covart.streaming_prototype.AutoAction.RecenterAction;
-import com.covart.streaming_prototype.AutoAction.RotationAction;
 import com.covart.streaming_prototype.AutoAction.TranslationAction;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.Image.ImageDecoderBase;
@@ -304,7 +301,7 @@ public class StreamingPrototype extends ApplicationAdapter
         InputAdapter localInput = new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                if (ConfigManager.isEditingModeEnabled()) {
+                if (ConfigManager.isEditingScreenInput()) {
                     return editingTouchDown(screenX, screenY);
                 } else {
                     return false;
@@ -313,7 +310,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                if (ConfigManager.isEditingModeEnabled()) {
+                if (ConfigManager.isEditingScreenInput()) {
                     return editingTouchUp(screenX, screenY);
                 } else {
                     return false;
@@ -322,7 +319,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
-                if (ConfigManager.isEditingModeEnabled()) {
+                if (ConfigManager.isEditingScreenInput()) {
                     return editingTouchDragged(screenX, screenY);
                 } else {
                     return false;
@@ -510,9 +507,11 @@ public class StreamingPrototype extends ApplicationAdapter
                 Message.Editing editMsg = msg.getControlMsg().getEditingMsg();
                 if(editMsg != null){
                     if(editMsg.getOp() == Message.EditOperation.MODEL_LIST){
-                        ConfigManager.setEditingModelIdList(editMsg.getModelIdsList());
+                        ConfigManager.setEditingNewModelIdList(editMsg.getAddModelIdsList());
+                        ConfigManager.setEditingCurrentModelIdList(editMsg.getCurrentModelIdsList());
                         editingPanel.setNeedRefreshList(true);
                         display.prepareForEditingMode();
+                        ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
                     }
                 }
                 break;
@@ -592,22 +591,24 @@ public class StreamingPrototype extends ApplicationAdapter
     private void updateEditingModeText() {
         float imageX = ConfigManager.getImageWidth() -  display.editingImagePosition.x;
         float imageY = display.editingImagePosition.y;
-        StringPool.addField("Editing", (ConfigManager.isEditingModeEnabled() ? "Enabled" : "Disabled") + ", ImageX:" + imageX + ", ImageY:" + imageY);
+        StringPool.addField("Editing",  ConfigManager.getEditingState() + ", ImageX:" + imageX + ", ImageY:" + imageY);
     }
 
     public void startEditingMode() {
         display.editingScreenPosition.set(-1, -1);
         updateEditingModeText();
         sendEditingOpMessage(Message.EditOperation.START);
+        ConfigManager.setEditingState(ConfigManager.EditingState.WaitForList);
         editingPanel.show();
     }
 
     public void finishEditingMode() {
         updateEditingModeText();
         sendEditingOpMessage(Message.EditOperation.FINISH);
+        ConfigManager.setEditingState(ConfigManager.EditingState.Normal);
         display.editingScreenPosition.set(-1, -1);
         editingPanel.hide();
-        ConfigManager.setEditingModelIdList(null);
+        ConfigManager.setEditingCurrentModelIdList(null);
         editingPanel.setNeedRefreshList(true);
     }
 
@@ -636,7 +637,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
 
     private void updateEditing() {
-        if (ConfigManager.isEditingModeEnabled()) {
+        if (ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
             this.editingReportTime += Gdx.graphics.getDeltaTime();
         }
     }
@@ -655,15 +656,32 @@ public class StreamingPrototype extends ApplicationAdapter
         sendEditingModeMessage(builder);
     }
 
-    public  void onEditingModelChanged(int lastIndex){
+    public void onEditingCurrentModelChanged(int lastIndex){
         sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
-        StringPool.addField("Model ID", "" + ConfigManager.getEditingCurrentModelId());
+        ConfigManager.setEditingState(ConfigManager.EditingState.MovingModel);
+        StringPool.addField("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
         if(ConfigManager.getEditingCurrentModelId() >= 0){
             if(lastIndex >= 0) {
                 // this happens when directly change model
                 display.finishEditingModel(lastIndex);
             }
-            display.startEditingModel();
+            display.startEditingModel(ConfigManager.getEditingCurrentModelIndex());
+        }
+        else{
+            display.finishEditingModel(lastIndex);
+        }
+    }
+
+    public void onEditingNewModelChanged(int lastIndex){
+        sendEditingSetModelIdMessage(ConfigManager.getEditingNewModelId());
+        ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
+        StringPool.addField("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
+        if(ConfigManager.getEditingNewModelId() >= 0){
+            if(lastIndex >= 0) {
+                // this happens when directly change model
+                display.finishEditingModel(lastIndex);
+            }
+            display.startEditingModel(-1); // We dont need to load previous position
         }
         else{
             display.finishEditingModel(lastIndex);
@@ -672,7 +690,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private void sendEditingSetModelIdMessage(int modelId){
         Message.Editing.Builder builder = Message.Editing.newBuilder()
-                .setOp(Message.EditOperation.SET_MODEL_ID)
+                .setOp(Message.EditOperation.SET_MODEL)
                 .setModelId(modelId);
         sendEditingModeMessage(builder);
     }

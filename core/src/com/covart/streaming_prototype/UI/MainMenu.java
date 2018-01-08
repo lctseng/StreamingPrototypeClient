@@ -990,16 +990,12 @@ public class MainMenu extends UIComponent {
         editingModeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ConfigManager.toggleEditingModeEnabled();
-                if(ConfigManager.isEditingModeEnabled()){
-                    // enable editing
+                if(ConfigManager.getEditingState() == ConfigManager.EditingState.Normal){
                     ConfigManager.getApp().startEditingMode();
                 }
                 else{
-                    // disable editing
                     ConfigManager.getApp().finishEditingMode();
                 }
-
                 updateEditingModeText();
 
             }
@@ -1012,7 +1008,7 @@ public class MainMenu extends UIComponent {
     }
 
     private String getEditingModeButtonText(){
-        if(ConfigManager.isEditingModeEnabled()){
+        if(ConfigManager.getEditingState() != ConfigManager.EditingState.Normal){
             return "Finish Editing";
         }
         else{

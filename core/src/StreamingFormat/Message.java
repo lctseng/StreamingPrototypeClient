@@ -260,17 +260,37 @@ public final class Message {
      */
     FINISH(1),
     /**
+     * <pre>
+     * param: screenX, screenY
+     * </pre>
+     *
      * <code>UPDATE = 2;</code>
      */
     UPDATE(2),
     /**
+     * <pre>
+     * param: currentModelIds, addModelIds
+     * </pre>
+     *
      * <code>MODEL_LIST = 3;</code>
      */
     MODEL_LIST(3),
     /**
-     * <code>SET_MODEL_ID = 4;</code>
+     * <pre>
+     * param: modelId
+     * </pre>
+     *
+     * <code>SET_MODEL = 4;</code>
      */
-    SET_MODEL_ID(4),
+    SET_MODEL(4),
+    /**
+     * <pre>
+     * param: modelId, screenX, screenY
+     * </pre>
+     *
+     * <code>ADD_MODEL = 5;</code>
+     */
+    ADD_MODEL(5),
     UNRECOGNIZED(-1),
     ;
 
@@ -283,17 +303,37 @@ public final class Message {
      */
     public static final int FINISH_VALUE = 1;
     /**
+     * <pre>
+     * param: screenX, screenY
+     * </pre>
+     *
      * <code>UPDATE = 2;</code>
      */
     public static final int UPDATE_VALUE = 2;
     /**
+     * <pre>
+     * param: currentModelIds, addModelIds
+     * </pre>
+     *
      * <code>MODEL_LIST = 3;</code>
      */
     public static final int MODEL_LIST_VALUE = 3;
     /**
-     * <code>SET_MODEL_ID = 4;</code>
+     * <pre>
+     * param: modelId
+     * </pre>
+     *
+     * <code>SET_MODEL = 4;</code>
      */
-    public static final int SET_MODEL_ID_VALUE = 4;
+    public static final int SET_MODEL_VALUE = 4;
+    /**
+     * <pre>
+     * param: modelId, screenX, screenY
+     * </pre>
+     *
+     * <code>ADD_MODEL = 5;</code>
+     */
+    public static final int ADD_MODEL_VALUE = 5;
 
 
     public final int getNumber() {
@@ -318,7 +358,8 @@ public final class Message {
         case 1: return FINISH;
         case 2: return UPDATE;
         case 3: return MODEL_LIST;
-        case 4: return SET_MODEL_ID;
+        case 4: return SET_MODEL;
+        case 5: return ADD_MODEL;
         default: return null;
       }
     }
@@ -2727,7 +2768,7 @@ public final class Message {
 
     /**
      * <pre>
-     * screen x are only valid in UPDATE op
+     * screen x,y are only valid in: UPDATE, ADD_MODEL
      * </pre>
      *
      * <code>float screen_x = 2;</code>
@@ -2741,35 +2782,60 @@ public final class Message {
 
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
-    java.util.List<java.lang.Integer> getModelIdsList();
+    java.util.List<java.lang.Integer> getCurrentModelIdsList();
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
-    int getModelIdsCount();
+    int getCurrentModelIdsCount();
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
-    int getModelIds(int index);
+    int getCurrentModelIds(int index);
 
     /**
      * <pre>
-     * model_id is only valid in SET_MODEL_ID op
+     * for list of new models
      * </pre>
      *
-     * <code>int32 model_id = 5;</code>
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    java.util.List<java.lang.Integer> getAddModelIdsList();
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    int getAddModelIdsCount();
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    int getAddModelIds(int index);
+
+    /**
+     * <pre>
+     * modelId is only valid in: SET_MODEL, ADD_MODEL
+     * </pre>
+     *
+     * <code>int32 model_id = 6;</code>
      */
     int getModelId();
   }
@@ -2788,7 +2854,8 @@ public final class Message {
       op_ = 0;
       screenX_ = 0F;
       screenY_ = 0F;
-      modelIds_ = java.util.Collections.emptyList();
+      currentModelIds_ = java.util.Collections.emptyList();
+      addModelIds_ = java.util.Collections.emptyList();
       modelId_ = 0;
     }
 
@@ -2835,26 +2902,47 @@ public final class Message {
             }
             case 32: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                modelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                currentModelIds_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
-              modelIds_.add(input.readInt32());
+              currentModelIds_.add(input.readInt32());
               break;
             }
             case 34: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                modelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                currentModelIds_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
-                modelIds_.add(input.readInt32());
+                currentModelIds_.add(input.readInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 40: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                addModelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              addModelIds_.add(input.readInt32());
+              break;
+            }
+            case 42: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
+                addModelIds_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                addModelIds_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 48: {
 
               modelId_ = input.readInt32();
               break;
@@ -2868,7 +2956,10 @@ public final class Message {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-          modelIds_ = java.util.Collections.unmodifiableList(modelIds_);
+          currentModelIds_ = java.util.Collections.unmodifiableList(currentModelIds_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          addModelIds_ = java.util.Collections.unmodifiableList(addModelIds_);
         }
         makeExtensionsImmutable();
       }
@@ -2906,7 +2997,7 @@ public final class Message {
     private float screenX_;
     /**
      * <pre>
-     * screen x are only valid in UPDATE op
+     * screen x,y are only valid in: UPDATE, ADD_MODEL
      * </pre>
      *
      * <code>float screen_x = 2;</code>
@@ -2924,49 +3015,84 @@ public final class Message {
       return screenY_;
     }
 
-    public static final int MODEL_IDS_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Integer> modelIds_;
+    public static final int CURRENT_MODEL_IDS_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Integer> currentModelIds_;
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
     public java.util.List<java.lang.Integer>
-        getModelIdsList() {
-      return modelIds_;
+        getCurrentModelIdsList() {
+      return currentModelIds_;
     }
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
-    public int getModelIdsCount() {
-      return modelIds_.size();
+    public int getCurrentModelIdsCount() {
+      return currentModelIds_.size();
     }
     /**
      * <pre>
-     * model_ids is only valid in MODEL_LIST op
+     * modelIds is only valid in: MODEL_LIST
      * </pre>
      *
-     * <code>repeated int32 model_ids = 4;</code>
+     * <code>repeated int32 current_model_ids = 4;</code>
      */
-    public int getModelIds(int index) {
-      return modelIds_.get(index);
+    public int getCurrentModelIds(int index) {
+      return currentModelIds_.get(index);
     }
-    private int modelIdsMemoizedSerializedSize = -1;
+    private int currentModelIdsMemoizedSerializedSize = -1;
 
-    public static final int MODEL_ID_FIELD_NUMBER = 5;
+    public static final int ADD_MODEL_IDS_FIELD_NUMBER = 5;
+    private java.util.List<java.lang.Integer> addModelIds_;
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getAddModelIdsList() {
+      return addModelIds_;
+    }
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    public int getAddModelIdsCount() {
+      return addModelIds_.size();
+    }
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated int32 add_model_ids = 5;</code>
+     */
+    public int getAddModelIds(int index) {
+      return addModelIds_.get(index);
+    }
+    private int addModelIdsMemoizedSerializedSize = -1;
+
+    public static final int MODEL_ID_FIELD_NUMBER = 6;
     private int modelId_;
     /**
      * <pre>
-     * model_id is only valid in SET_MODEL_ID op
+     * modelId is only valid in: SET_MODEL, ADD_MODEL
      * </pre>
      *
-     * <code>int32 model_id = 5;</code>
+     * <code>int32 model_id = 6;</code>
      */
     public int getModelId() {
       return modelId_;
@@ -2994,15 +3120,22 @@ public final class Message {
       if (screenY_ != 0F) {
         output.writeFloat(3, screenY_);
       }
-      if (getModelIdsList().size() > 0) {
+      if (getCurrentModelIdsList().size() > 0) {
         output.writeUInt32NoTag(34);
-        output.writeUInt32NoTag(modelIdsMemoizedSerializedSize);
+        output.writeUInt32NoTag(currentModelIdsMemoizedSerializedSize);
       }
-      for (int i = 0; i < modelIds_.size(); i++) {
-        output.writeInt32NoTag(modelIds_.get(i));
+      for (int i = 0; i < currentModelIds_.size(); i++) {
+        output.writeInt32NoTag(currentModelIds_.get(i));
+      }
+      if (getAddModelIdsList().size() > 0) {
+        output.writeUInt32NoTag(42);
+        output.writeUInt32NoTag(addModelIdsMemoizedSerializedSize);
+      }
+      for (int i = 0; i < addModelIds_.size(); i++) {
+        output.writeInt32NoTag(addModelIds_.get(i));
       }
       if (modelId_ != 0) {
-        output.writeInt32(5, modelId_);
+        output.writeInt32(6, modelId_);
       }
     }
 
@@ -3025,21 +3158,35 @@ public final class Message {
       }
       {
         int dataSize = 0;
-        for (int i = 0; i < modelIds_.size(); i++) {
+        for (int i = 0; i < currentModelIds_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(modelIds_.get(i));
+            .computeInt32SizeNoTag(currentModelIds_.get(i));
         }
         size += dataSize;
-        if (!getModelIdsList().isEmpty()) {
+        if (!getCurrentModelIdsList().isEmpty()) {
           size += 1;
           size += com.google.protobuf.CodedOutputStream
               .computeInt32SizeNoTag(dataSize);
         }
-        modelIdsMemoizedSerializedSize = dataSize;
+        currentModelIdsMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < addModelIds_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(addModelIds_.get(i));
+        }
+        size += dataSize;
+        if (!getAddModelIdsList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        addModelIdsMemoizedSerializedSize = dataSize;
       }
       if (modelId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, modelId_);
+          .computeInt32Size(6, modelId_);
       }
       memoizedSize = size;
       return size;
@@ -3066,8 +3213,10 @@ public final class Message {
           java.lang.Float.floatToIntBits(getScreenY())
           == java.lang.Float.floatToIntBits(
               other.getScreenY()));
-      result = result && getModelIdsList()
-          .equals(other.getModelIdsList());
+      result = result && getCurrentModelIdsList()
+          .equals(other.getCurrentModelIdsList());
+      result = result && getAddModelIdsList()
+          .equals(other.getAddModelIdsList());
       result = result && (getModelId()
           == other.getModelId());
       return result;
@@ -3088,9 +3237,13 @@ public final class Message {
       hash = (37 * hash) + SCREEN_Y_FIELD_NUMBER;
       hash = (53 * hash) + java.lang.Float.floatToIntBits(
           getScreenY());
-      if (getModelIdsCount() > 0) {
-        hash = (37 * hash) + MODEL_IDS_FIELD_NUMBER;
-        hash = (53 * hash) + getModelIdsList().hashCode();
+      if (getCurrentModelIdsCount() > 0) {
+        hash = (37 * hash) + CURRENT_MODEL_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getCurrentModelIdsList().hashCode();
+      }
+      if (getAddModelIdsCount() > 0) {
+        hash = (37 * hash) + ADD_MODEL_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getAddModelIdsList().hashCode();
       }
       hash = (37 * hash) + MODEL_ID_FIELD_NUMBER;
       hash = (53 * hash) + getModelId();
@@ -3218,8 +3371,10 @@ public final class Message {
 
         screenY_ = 0F;
 
-        modelIds_ = java.util.Collections.emptyList();
+        currentModelIds_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
+        addModelIds_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);
         modelId_ = 0;
 
         return this;
@@ -3250,10 +3405,15 @@ public final class Message {
         result.screenX_ = screenX_;
         result.screenY_ = screenY_;
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          modelIds_ = java.util.Collections.unmodifiableList(modelIds_);
+          currentModelIds_ = java.util.Collections.unmodifiableList(currentModelIds_);
           bitField0_ = (bitField0_ & ~0x00000008);
         }
-        result.modelIds_ = modelIds_;
+        result.currentModelIds_ = currentModelIds_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          addModelIds_ = java.util.Collections.unmodifiableList(addModelIds_);
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.addModelIds_ = addModelIds_;
         result.modelId_ = modelId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -3306,13 +3466,23 @@ public final class Message {
         if (other.getScreenY() != 0F) {
           setScreenY(other.getScreenY());
         }
-        if (!other.modelIds_.isEmpty()) {
-          if (modelIds_.isEmpty()) {
-            modelIds_ = other.modelIds_;
+        if (!other.currentModelIds_.isEmpty()) {
+          if (currentModelIds_.isEmpty()) {
+            currentModelIds_ = other.currentModelIds_;
             bitField0_ = (bitField0_ & ~0x00000008);
           } else {
-            ensureModelIdsIsMutable();
-            modelIds_.addAll(other.modelIds_);
+            ensureCurrentModelIdsIsMutable();
+            currentModelIds_.addAll(other.currentModelIds_);
+          }
+          onChanged();
+        }
+        if (!other.addModelIds_.isEmpty()) {
+          if (addModelIds_.isEmpty()) {
+            addModelIds_ = other.addModelIds_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureAddModelIdsIsMutable();
+            addModelIds_.addAll(other.addModelIds_);
           }
           onChanged();
         }
@@ -3393,7 +3563,7 @@ public final class Message {
       private float screenX_ ;
       /**
        * <pre>
-       * screen x are only valid in UPDATE op
+       * screen x,y are only valid in: UPDATE, ADD_MODEL
        * </pre>
        *
        * <code>float screen_x = 2;</code>
@@ -3403,7 +3573,7 @@ public final class Message {
       }
       /**
        * <pre>
-       * screen x are only valid in UPDATE op
+       * screen x,y are only valid in: UPDATE, ADD_MODEL
        * </pre>
        *
        * <code>float screen_x = 2;</code>
@@ -3416,7 +3586,7 @@ public final class Message {
       }
       /**
        * <pre>
-       * screen x are only valid in UPDATE op
+       * screen x,y are only valid in: UPDATE, ADD_MODEL
        * </pre>
        *
        * <code>float screen_x = 2;</code>
@@ -3454,96 +3624,190 @@ public final class Message {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> modelIds_ = java.util.Collections.emptyList();
-      private void ensureModelIdsIsMutable() {
+      private java.util.List<java.lang.Integer> currentModelIds_ = java.util.Collections.emptyList();
+      private void ensureCurrentModelIdsIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          modelIds_ = new java.util.ArrayList<java.lang.Integer>(modelIds_);
+          currentModelIds_ = new java.util.ArrayList<java.lang.Integer>(currentModelIds_);
           bitField0_ |= 0x00000008;
          }
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
       public java.util.List<java.lang.Integer>
-          getModelIdsList() {
-        return java.util.Collections.unmodifiableList(modelIds_);
+          getCurrentModelIdsList() {
+        return java.util.Collections.unmodifiableList(currentModelIds_);
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public int getModelIdsCount() {
-        return modelIds_.size();
+      public int getCurrentModelIdsCount() {
+        return currentModelIds_.size();
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public int getModelIds(int index) {
-        return modelIds_.get(index);
+      public int getCurrentModelIds(int index) {
+        return currentModelIds_.get(index);
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public Builder setModelIds(
+      public Builder setCurrentModelIds(
           int index, int value) {
-        ensureModelIdsIsMutable();
-        modelIds_.set(index, value);
+        ensureCurrentModelIdsIsMutable();
+        currentModelIds_.set(index, value);
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public Builder addModelIds(int value) {
-        ensureModelIdsIsMutable();
-        modelIds_.add(value);
+      public Builder addCurrentModelIds(int value) {
+        ensureCurrentModelIdsIsMutable();
+        currentModelIds_.add(value);
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public Builder addAllModelIds(
+      public Builder addAllCurrentModelIds(
           java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureModelIdsIsMutable();
+        ensureCurrentModelIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, modelIds_);
+            values, currentModelIds_);
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * model_ids is only valid in MODEL_LIST op
+       * modelIds is only valid in: MODEL_LIST
        * </pre>
        *
-       * <code>repeated int32 model_ids = 4;</code>
+       * <code>repeated int32 current_model_ids = 4;</code>
        */
-      public Builder clearModelIds() {
-        modelIds_ = java.util.Collections.emptyList();
+      public Builder clearCurrentModelIds() {
+        currentModelIds_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> addModelIds_ = java.util.Collections.emptyList();
+      private void ensureAddModelIdsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          addModelIds_ = new java.util.ArrayList<java.lang.Integer>(addModelIds_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getAddModelIdsList() {
+        return java.util.Collections.unmodifiableList(addModelIds_);
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public int getAddModelIdsCount() {
+        return addModelIds_.size();
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public int getAddModelIds(int index) {
+        return addModelIds_.get(index);
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public Builder setAddModelIds(
+          int index, int value) {
+        ensureAddModelIdsIsMutable();
+        addModelIds_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public Builder addAddModelIds(int value) {
+        ensureAddModelIdsIsMutable();
+        addModelIds_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public Builder addAllAddModelIds(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureAddModelIdsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, addModelIds_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated int32 add_model_ids = 5;</code>
+       */
+      public Builder clearAddModelIds() {
+        addModelIds_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
@@ -3551,20 +3815,20 @@ public final class Message {
       private int modelId_ ;
       /**
        * <pre>
-       * model_id is only valid in SET_MODEL_ID op
+       * modelId is only valid in: SET_MODEL, ADD_MODEL
        * </pre>
        *
-       * <code>int32 model_id = 5;</code>
+       * <code>int32 model_id = 6;</code>
        */
       public int getModelId() {
         return modelId_;
       }
       /**
        * <pre>
-       * model_id is only valid in SET_MODEL_ID op
+       * modelId is only valid in: SET_MODEL, ADD_MODEL
        * </pre>
        *
-       * <code>int32 model_id = 5;</code>
+       * <code>int32 model_id = 6;</code>
        */
       public Builder setModelId(int value) {
         
@@ -3574,10 +3838,10 @@ public final class Message {
       }
       /**
        * <pre>
-       * model_id is only valid in SET_MODEL_ID op
+       * modelId is only valid in: SET_MODEL, ADD_MODEL
        * </pre>
        *
-       * <code>int32 model_id = 5;</code>
+       * <code>int32 model_id = 6;</code>
        */
       public Builder clearModelId() {
         
@@ -7275,32 +7539,33 @@ public final class Message {
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
       "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\0223\n\014imageQ" +
       "uality\030\t \001(\0162\035.StreamingFormat.ImageQual" +
-      "ity\"~\n\007Editing\022*\n\002op\030\001 \001(\0162\036.StreamingFo",
-      "rmat.EditOperation\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010" +
-      "screen_y\030\003 \001(\002\022\021\n\tmodel_ids\030\004 \003(\005\022\020\n\010mod" +
-      "el_id\030\005 \001(\005\"u\n\007Control\022\022\n\ndrop_index\030\001 \003" +
-      "(\r\022\022\n\nsave_frame\030\002 \001(\r\022\024\n\014change_scene\030\003" +
-      " \001(\r\022,\n\neditingMsg\030\004 \001(\0132\030.StreamingForm" +
-      "at.Editing\"\201\001\n\005Image\022\024\n\014serialNumber\030\002 \001" +
-      "(\r\022\016\n\006status\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\t" +
-      "imageData\030\005 \001(\014\022-\n\timageType\030\006 \001(\0162\032.Str" +
-      "eamingFormat.ImageType\"\010\n\006Ending\"\312\002\n\020Str" +
-      "eamingMessage\022*\n\004type\030\001 \001(\0162\034.StreamingF",
-      "ormat.MessageType\022&\n\007initMsg\030\002 \001(\0132\025.Str" +
-      "eamingFormat.Init\0222\n\rdefaultPosMsg\030\003 \001(\013" +
-      "2\033.StreamingFormat.DefaultPos\022*\n\tcameraM" +
-      "sg\030\004 \001(\0132\027.StreamingFormat.Camera\022(\n\010ima" +
-      "geMsg\030\005 \001(\0132\026.StreamingFormat.Image\022*\n\te" +
-      "ndingMsg\030\006 \001(\0132\027.StreamingFormat.Ending\022" +
-      ",\n\ncontrolMsg\030\007 \001(\0132\030.StreamingFormat.Co" +
-      "ntrol*m\n\013MessageType\022\013\n\007MsgInit\020\000\022\021\n\rMsg" +
-      "DefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010MsgIm" +
-      "age\020\003\022\r\n\tMsgEnding\020\004\022\016\n\nMsgControl\020\005*!\n\014",
-      "ImageQuality\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\001*T\n\rEditO" +
-      "peration\022\t\n\005START\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDAT" +
-      "E\020\002\022\016\n\nMODEL_LIST\020\003\022\020\n\014SET_MODEL_ID\020\004*:\n" +
-      "\tImageType\022\016\n\nFULL_INDEX\020\000\022\r\n\tODD_INDEX\020" +
-      "\001\022\016\n\nEVEN_INDEX\020\002b\006proto3"
+      "ity\"\235\001\n\007Editing\022*\n\002op\030\001 \001(\0162\036.StreamingF",
+      "ormat.EditOperation\022\020\n\010screen_x\030\002 \001(\002\022\020\n" +
+      "\010screen_y\030\003 \001(\002\022\031\n\021current_model_ids\030\004 \003" +
+      "(\005\022\025\n\radd_model_ids\030\005 \003(\005\022\020\n\010model_id\030\006 " +
+      "\001(\005\"u\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsa" +
+      "ve_frame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\n" +
+      "editingMsg\030\004 \001(\0132\030.StreamingFormat.Editi" +
+      "ng\"\201\001\n\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006st" +
+      "atus\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageDat" +
+      "a\030\005 \001(\014\022-\n\timageType\030\006 \001(\0162\032.StreamingFo" +
+      "rmat.ImageType\"\010\n\006Ending\"\312\002\n\020StreamingMe",
+      "ssage\022*\n\004type\030\001 \001(\0162\034.StreamingFormat.Me" +
+      "ssageType\022&\n\007initMsg\030\002 \001(\0132\025.StreamingFo" +
+      "rmat.Init\0222\n\rdefaultPosMsg\030\003 \001(\0132\033.Strea" +
+      "mingFormat.DefaultPos\022*\n\tcameraMsg\030\004 \001(\013" +
+      "2\027.StreamingFormat.Camera\022(\n\010imageMsg\030\005 " +
+      "\001(\0132\026.StreamingFormat.Image\022*\n\tendingMsg" +
+      "\030\006 \001(\0132\027.StreamingFormat.Ending\022,\n\ncontr" +
+      "olMsg\030\007 \001(\0132\030.StreamingFormat.Control*m\n" +
+      "\013MessageType\022\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultP" +
+      "os\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n",
+      "\tMsgEnding\020\004\022\016\n\nMsgControl\020\005*!\n\014ImageQua" +
+      "lity\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\001*`\n\rEditOperation" +
+      "\022\t\n\005START\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002\022\016\n\nM" +
+      "ODEL_LIST\020\003\022\r\n\tSET_MODEL\020\004\022\r\n\tADD_MODEL\020" +
+      "\005*:\n\tImageType\022\016\n\nFULL_INDEX\020\000\022\r\n\tODD_IN" +
+      "DEX\020\001\022\016\n\nEVEN_INDEX\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -7337,7 +7602,7 @@ public final class Message {
     internal_static_StreamingFormat_Editing_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Editing_descriptor,
-        new java.lang.String[] { "Op", "ScreenX", "ScreenY", "ModelIds", "ModelId", });
+        new java.lang.String[] { "Op", "ScreenX", "ScreenY", "CurrentModelIds", "AddModelIds", "ModelId", });
     internal_static_StreamingFormat_Control_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_StreamingFormat_Control_fieldAccessorTable = new

@@ -352,19 +352,23 @@ public class Display implements Disposable{
 
         editingImagePositions.clear();
         // TODO: copy image coordinate from model list
-        for(int i=0;i<ConfigManager.getEditingModelIdList().size();i++){
+        for(int i = 0; i<ConfigManager.getEditingCurrentModelIdList().size(); i++){
             editingImagePositions.add(new Vector2(i * 10,ConfigManager.getImageHeight()/2));
         }
     }
 
-    public void startEditingModel(){
-        editingImagePosition.set(editingImagePositions.get(ConfigManager.getEditingCurrentModelIndex()));
+    public void startEditingModel(int index){
+        if(index > 0){
+            editingImagePosition.set(editingImagePositions.get(index));
+        }
         editingPositionFollowCursor = false;
     }
 
     public void finishEditingModel(int lastIndex){
         // save image position
-        editingImagePositions.get(lastIndex).set(editingImagePosition);
+        if(lastIndex > 0) {
+            editingImagePositions.get(lastIndex).set(editingImagePosition);
+        }
         editingImagePosition.set(-1, -1);
         editingPositionFollowCursor = false;
     }
