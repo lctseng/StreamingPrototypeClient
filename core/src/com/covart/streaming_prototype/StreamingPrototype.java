@@ -613,6 +613,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     private boolean editingTouchDragged(int screenX, int screenY) {
+        StringPool.addField("Editing Pos", "X: " + screenX + " Y: " + screenY );
         display.updateEditingScreenPosition(screenX, screenY);
         if(ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
             if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
@@ -627,6 +628,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private boolean editingTouchDown(int screenX, int screenY){
         if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingPosition){
             ConfigManager.setEditingState(ConfigManager.EditingState.MoveAddingModel);
+            editingPanel.showAddingCancel();
         }
         editingTouchDragged(screenX, screenY);
         if(ConfigManager.getEditingCurrentModelIndex() >= 0 || ConfigManager.getEditingNewModelIndex() >= 0){
@@ -638,19 +640,30 @@ public class StreamingPrototype extends ApplicationAdapter
     private boolean editingTouchUp(int screenX, int screenY){
         display.setEditingPositionFollowCursor(false);
         if(ConfigManager.getEditingState() == ConfigManager.EditingState.MoveAddingModel){
-            // upload to server and back to SelectOperation
-            ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
-            Message.Editing.Builder builder = Message.Editing.newBuilder()
-                    .setOp(Message.EditOperation.ADD_MODEL)
-                    .setModelId(ConfigManager.getEditingNewModelId())
-                    .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
-                    .setScreenY(display.editingImagePosition.y);
-            sendEditingModeMessage(builder);
-            display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
-            editingPanel.goToSelectOperationMode();
+            editingPanel.hideAddingCancel();
+            if(isEditingCancelAddArea(screenX, screenY)) {
+                Gdx.app.log("Editing", "Adding canceled");
+                ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
+            }
+            else {
+                // upload to server and back to SelectOperation
+                ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                Message.Editing.Builder builder = Message.Editing.newBuilder()
+                        .setOp(Message.EditOperation.ADD_MODEL)
+                        .setModelId(ConfigManager.getEditingNewModelId())
+                        .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
+                        .setScreenY(display.editingImagePosition.y);
+                sendEditingModeMessage(builder);
+                display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
+                editingPanel.goToSelectOperationMode();
+            }
 
         }
         return true;
+    }
+
+    private boolean isEditingCancelAddArea(int screenX, int screenY){
+        return screenX >= Gdx.graphics.getWidth() - 200 && screenY <= 200;
     }
 
 

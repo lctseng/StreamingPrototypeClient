@@ -23,13 +23,10 @@ public abstract class UIComponent implements Disposable {
 
     UIComponent(){
         // resources
-        largeFont = new BitmapFont();
-        largeFont.getData().setScale(1.5f);
-
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         largeFont = new BitmapFont();
-        largeFont.getData().setScale(1.5f);
+        largeFont.getData().setScale(1.5f); // FIXME: seems no effect?
 
         largeLabelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
     }

@@ -44,7 +44,7 @@ public class ConfigManager {
 
     private static final String autoActionServerUrl = "http://covart2.csie.ntu.edu.tw:3000/";
 
-    private static final boolean useCustomServerText = false;
+    private static final boolean useCustomServerText = true;
 
     private static final String[] serverList = new String[]{
             "140.112.90.82:8051",
@@ -105,7 +105,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 1.000f;
 
-    private static float dataCameraFOV = 120.0f;
+    private static float dataCameraFOV = 77.0f;
 
     private static float manuallyMoveStep = 0.01f;
 

@@ -1,12 +1,17 @@
 package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -39,17 +44,42 @@ public class EditingPanel extends UIComponent {
     private ArrayList<ModelButton> newModelButtons;
     private ArrayList<ModelButton> currentModelButtons;
 
+    private Label addCancelLabel;
+    private Pixmap addCancelLabelColor;
+
 
     private boolean needRefreshList = false;
 
     public EditingPanel(){
         newModelButtons = new ArrayList<ModelButton>();
         currentModelButtons = new ArrayList<ModelButton>();
+        setupCancelLabel();
+
+    }
+
+    private void setupCancelLabel(){
+        int labelWidth = 200, labelHeight = 200;
+
+        // style
+        Label.LabelStyle style = new Label.LabelStyle(largeFont, Color.WHITE);;
+
+        // label
+        addCancelLabel = new Label("        Cancel Adding", style);
+        addCancelLabel.setX(Gdx.graphics.getWidth() - labelWidth);
+        addCancelLabel.setY(Gdx.graphics.getHeight() - labelHeight);
+        addCancelLabel.setWidth(labelWidth);
+        addCancelLabel.setHeight(labelHeight);
+        addCancelLabelColor = new Pixmap(labelWidth, labelHeight, Pixmap.Format.RGB888);
+        addCancelLabelColor.setColor(new Color(1f, 0.5f, 0.5f, 1f));
+        addCancelLabelColor.fill();
+        addCancelLabel.getStyle().background = new Image(new Texture(addCancelLabelColor)).getDrawable();
+        addCancelLabel.setVisible(false);
     }
 
     @Override
     void start() {
         super.start();
+        this.stage.addActor(addCancelLabel);
         refreshModelList();
     }
 
@@ -106,6 +136,7 @@ public class EditingPanel extends UIComponent {
         if(needRefreshList){
             needRefreshList = false;
             refreshModelList();
+            goToSelectOperationMode();
         }
     }
 
@@ -116,6 +147,7 @@ public class EditingPanel extends UIComponent {
         if(currentButtonPane != null){
             currentButtonPane.remove();
         }
+
         newModelButtons.clear();
         currentModelButtons.clear();
 
@@ -128,9 +160,7 @@ public class EditingPanel extends UIComponent {
         currentsButtonCanvas = createCanvas();
         currentButtonPane = createPane(currentsButtonCanvas);
         addCurrentModelComponents();
-        currentsButtonCanvas.setVisible(true);
-
-
+        currentsButtonCanvas.setVisible(false);
 
         this.stage.addActor(newButtonPane);
         this.stage.addActor(currentButtonPane);
@@ -174,12 +204,21 @@ public class EditingPanel extends UIComponent {
         }
     }
 
+    public void showAddingCancel(){
+        addCancelLabel.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
+    }
+
+    public void hideAddingCancel(){
+        addCancelLabel.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
+    }
+
     public void goToAddingMode(){
         // hide current buttons
-        currentsButtonCanvas.setVisible(false);
+        //currentsButtonCanvas.setVisible(false);
+        currentsButtonCanvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
         currentButtonPane.setY(-1000);
-        // show new buttons
-        newButtonCanvas.setVisible(true);
+        //newButtonCanvas.setVisible(true);
+        newButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
         newButtonPane.setY(0);
 
         clearAllIndex();
@@ -187,11 +226,15 @@ public class EditingPanel extends UIComponent {
 
     public void goToSelectOperationMode(){
         // show current buttons
-        currentsButtonCanvas.setVisible(true);
+        //currentsButtonCanvas.setVisible(true);
+        currentsButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
         currentButtonPane.setY(0);
         // hide new buttons
-        newButtonCanvas.setVisible(false);
+        //newButtonCanvas.setVisible(false);
+        newButtonCanvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
         newButtonPane.setY(-1000);
+
+        hideAddingCancel();
 
         clearAllIndex();
     }
@@ -308,5 +351,11 @@ public class EditingPanel extends UIComponent {
 
     public void setNeedRefreshList(boolean needRefreshList) {
         this.needRefreshList = needRefreshList;
+    }
+
+    @Override
+    public void dispose() {
+        addCancelLabelColor.dispose();
+        super.dispose();
     }
 }

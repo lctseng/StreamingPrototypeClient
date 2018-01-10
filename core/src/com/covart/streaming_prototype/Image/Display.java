@@ -370,6 +370,7 @@ public class Display implements Disposable{
             editingImagePositions.get(lastIndex).set(editingImagePosition);
         }
         editingImagePosition.set(-1, -1);
+        editingScreenPosition.set(-1, -1);
         editingPositionFollowCursor = false;
     }
 
