@@ -1,6 +1,7 @@
 package com.covart.streaming_prototype;
 
 
+import com.badlogic.gdx.Gdx;
 import com.covart.streaming_prototype.AutoAction.InternalState;
 import com.covart.streaming_prototype.Image.Display;
 import com.covart.streaming_prototype.UI.PositionController;
@@ -43,7 +44,7 @@ public class ConfigManager {
 
     private static final String autoActionServerUrl = "http://covart2.csie.ntu.edu.tw:3000/";
 
-    private static final boolean useCustomServerText = true;
+    private static final boolean useCustomServerText = false;
 
     private static final String[] serverList = new String[]{
             "140.112.90.82:8051",
@@ -104,7 +105,7 @@ public class ConfigManager {
 
     private static float editingReportInterval = 1.000f;
 
-    private static float dataCameraFOV = 77.0f;
+    private static float dataCameraFOV = 120.0f;
 
     private static float manuallyMoveStep = 0.01f;
 
@@ -379,6 +380,8 @@ public class ConfigManager {
     }
 
     public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
+        Gdx.app.log("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
+        StringPool.addField("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
         ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
     }
 
@@ -403,6 +406,8 @@ public class ConfigManager {
     }
 
     public static void setEditingNewModelIndex(int editingNewModelIndex) {
+        Gdx.app.log("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
+        StringPool.addField("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
         ConfigManager.editingNewModelIndex = editingNewModelIndex;
     }
 
@@ -531,6 +536,8 @@ public class ConfigManager {
     }
 
     public static void setEditingState(EditingState editingState) {
+        Gdx.app.log("Config", "Editing state changed from " + ConfigManager.editingState + " to " + editingState);
+        getApp().onEditingStateChanged(ConfigManager.editingState, editingState);
         ConfigManager.editingState = editingState;
     }
 

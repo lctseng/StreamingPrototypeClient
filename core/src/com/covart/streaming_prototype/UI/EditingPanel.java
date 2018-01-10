@@ -174,20 +174,48 @@ public class EditingPanel extends UIComponent {
         }
     }
 
+    public void goToAddingMode(){
+        // hide current buttons
+        currentsButtonCanvas.setVisible(false);
+        currentButtonPane.setY(-1000);
+        // show new buttons
+        newButtonCanvas.setVisible(true);
+        newButtonPane.setY(0);
+
+        clearAllIndex();
+    }
+
+    public void goToSelectOperationMode(){
+        // show current buttons
+        currentsButtonCanvas.setVisible(true);
+        currentButtonPane.setY(0);
+        // hide new buttons
+        newButtonCanvas.setVisible(false);
+        newButtonPane.setY(-1000);
+
+        clearAllIndex();
+    }
+
     private void addNewModelButton(){
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingModel);
-                // hide current buttons
-                currentsButtonCanvas.setVisible(false);
-                currentButtonPane.setY(-1000);
-                // show new buttons
-                newButtonCanvas.setVisible(true);
-                newButtonPane.setY(0);
+                goToAddingMode();
             }
         };
         addButton(currentsButtonCanvas,"[Add New Model]", listener).width(buttonWidth);;
+    }
+
+    public void clearAllIndex(){
+        ConfigManager.setEditingCurrentModelIndex(-1);
+        ConfigManager.setEditingNewModelIndex(-1);
+        for(ModelButton button : newModelButtons){
+            button.onModelChanged();
+        }
+        for(ModelButton button : newModelButtons){
+            button.onModelChanged();
+        }
     }
 
     private void addCancelAddButton(){
@@ -195,12 +223,7 @@ public class EditingPanel extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
-                // show current buttons
-                currentsButtonCanvas.setVisible(true);
-                currentButtonPane.setY(0);
-                // hide new buttons
-                newButtonCanvas.setVisible(false);
-                newButtonPane.setY(-1000);
+                goToSelectOperationMode();
             }
         };
         addButton(newButtonCanvas, "[Back to select]", listener).width(buttonWidth);;
@@ -210,7 +233,7 @@ public class EditingPanel extends UIComponent {
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectOperation) {
+                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectOperation || ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
                     int lastIndex = ConfigManager.getEditingCurrentModelIndex();
                     if (ConfigManager.getEditingCurrentModelId() == modelId) {
                         // click on same model id, toggle it
@@ -219,6 +242,9 @@ public class EditingPanel extends UIComponent {
                         ConfigManager.setEditingCurrentModelId(modelId);
                     }
                     onCurrentModelChanged(lastIndex);
+                }
+                else{
+                    Gdx.app.log("Editing", "Current model button is no allowed in this state: " + ConfigManager.getEditingState());
                 }
             }
         };
@@ -232,7 +258,7 @@ public class EditingPanel extends UIComponent {
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel) {
+                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel ) {
                     int lastIndex = ConfigManager.getEditingNewModelIndex();
                     if (ConfigManager.getEditingNewModelId() == modelId) {
                         // click on same model id, toggle it
@@ -241,6 +267,9 @@ public class EditingPanel extends UIComponent {
                         ConfigManager.setEditingNewModelId(modelId);
                     }
                     onNewModelChanged(lastIndex);
+                }
+                else{
+                    Gdx.app.log("Editing", "New model button is no allowed in this state: " + ConfigManager.getEditingState());
                 }
             }
         };

@@ -591,7 +591,7 @@ public class StreamingPrototype extends ApplicationAdapter
     private void updateEditingModeText() {
         float imageX = ConfigManager.getImageWidth() -  display.editingImagePosition.x;
         float imageY = display.editingImagePosition.y;
-        StringPool.addField("Editing",  ConfigManager.getEditingState() + ", ImageX:" + imageX + ", ImageY:" + imageY);
+        StringPool.addField("Editing",  "ImageX:" + imageX + ", ImageY:" + imageY);
     }
 
     public void startEditingMode() {
@@ -614,17 +614,22 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean editingTouchDragged(int screenX, int screenY) {
         display.updateEditingScreenPosition(screenX, screenY);
-        if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
-            this.editingReportTime = 0f;
-            updateEditingModeText();
-            needSendEditingPositionMessage = true;
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
+            if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
+                this.editingReportTime = 0f;
+                updateEditingModeText();
+                needSendEditingPositionMessage = true;
+            }
         }
         return true;
     }
 
     private boolean editingTouchDown(int screenX, int screenY){
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingPosition){
+            ConfigManager.setEditingState(ConfigManager.EditingState.MoveAddingModel);
+        }
         editingTouchDragged(screenX, screenY);
-        if(ConfigManager.getEditingCurrentModelIndex() >= 0){
+        if(ConfigManager.getEditingCurrentModelIndex() >= 0 || ConfigManager.getEditingNewModelIndex() >= 0){
             display.setEditingPositionFollowCursor(true);
         }
         return true;
@@ -632,11 +637,25 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean editingTouchUp(int screenX, int screenY){
         display.setEditingPositionFollowCursor(false);
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.MoveAddingModel){
+            // upload to server and back to SelectOperation
+            ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+            Message.Editing.Builder builder = Message.Editing.newBuilder()
+                    .setOp(Message.EditOperation.ADD_MODEL)
+                    .setModelId(ConfigManager.getEditingNewModelId())
+                    .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
+                    .setScreenY(display.editingImagePosition.y);
+            sendEditingModeMessage(builder);
+            display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
+            editingPanel.goToSelectOperationMode();
+
+        }
         return true;
     }
 
 
     private void updateEditing() {
+        StringPool.addField("Editing State", ConfigManager.getEditingState().toString());
         if (ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
             this.editingReportTime += Gdx.graphics.getDeltaTime();
         }
@@ -659,7 +678,6 @@ public class StreamingPrototype extends ApplicationAdapter
     public void onEditingCurrentModelChanged(int lastIndex){
         sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
         ConfigManager.setEditingState(ConfigManager.EditingState.MovingModel);
-        StringPool.addField("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
         if(ConfigManager.getEditingCurrentModelId() >= 0){
             if(lastIndex >= 0) {
                 // this happens when directly change model
@@ -673,9 +691,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void onEditingNewModelChanged(int lastIndex){
-        sendEditingSetModelIdMessage(ConfigManager.getEditingNewModelId());
         ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
-        StringPool.addField("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
         if(ConfigManager.getEditingNewModelId() >= 0){
             if(lastIndex >= 0) {
                 // this happens when directly change model
@@ -712,5 +728,22 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void manuallyMoveCamera(PositionController.Direction direction){
         display.manuallyMoveCamera(direction);
+    }
+
+    public void onEditingStateChanged(ConfigManager.EditingState oldState, ConfigManager.EditingState newState){
+        switch(newState){
+            case SelectAddingModel:
+                // this state may be entered from "SelectOperation" and "MovingModel"
+                switch (oldState){
+                    case SelectOperation:
+                        break;
+                    case MovingModel:
+                        // terminate current moving
+                        sendEditingSetModelIdMessage(-1);
+                        display.finishEditingModel(ConfigManager.getEditingCurrentModelIndex());
+                        break;
+                }
+                break;
+        }
     }
 }

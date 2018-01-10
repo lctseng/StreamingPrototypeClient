@@ -358,7 +358,7 @@ public class Display implements Disposable{
     }
 
     public void startEditingModel(int index){
-        if(index > 0){
+        if(index >= 0){
             editingImagePosition.set(editingImagePositions.get(index));
         }
         editingPositionFollowCursor = false;
@@ -366,7 +366,7 @@ public class Display implements Disposable{
 
     public void finishEditingModel(int lastIndex){
         // save image position
-        if(lastIndex > 0) {
+        if(lastIndex >= 0) {
             editingImagePositions.get(lastIndex).set(editingImagePosition);
         }
         editingImagePosition.set(-1, -1);
