@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import StreamingFormat.Message;
 
+import static StreamingFormat.Message.EditOperation.MODEL_LIST;
 import static com.badlogic.gdx.Gdx.app;
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
@@ -506,12 +507,24 @@ public class StreamingPrototype extends ApplicationAdapter
             case MsgControl:
                 Message.Editing editMsg = msg.getControlMsg().getEditingMsg();
                 if(editMsg != null){
-                    if(editMsg.getOp() == Message.EditOperation.MODEL_LIST){
-                        ConfigManager.setEditingNewModelIdList(editMsg.getAddModelIdsList());
-                        ConfigManager.setEditingCurrentModelIdList(editMsg.getCurrentModelIdsList());
-                        editingPanel.setNeedRefreshList(true);
-                        display.prepareForEditingMode();
-                        ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                    switch(editMsg.getOp()){
+                        case MODEL_LIST:
+                            ConfigManager.setEditingNewModelIdList(editMsg.getAddModelIdsList());
+                            ConfigManager.setEditingCurrentModelIdList(editMsg.getCurrentModelIdsList());
+                            editingPanel.setNeedRefreshList(true);
+                            display.prepareForEditingMode();
+                            ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                            break;
+                        case ADD_MODEL:
+                            if(ConfigManager.getEditingState() == ConfigManager.EditingState.ConfirmAdding){
+                                Gdx.app.log("Editing", "Confirm adding, model id = " + editMsg.getModelId());
+                                ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                                editingPanel.finishConfirmAddingMode();
+                            }
+                            break;
+                        default:
+                            Gdx.app.error("Dispatch", "Unknown editing op: " + editMsg.getOp());
+                            break;
                     }
                 }
                 break;
@@ -647,7 +660,7 @@ public class StreamingPrototype extends ApplicationAdapter
             }
             else {
                 // upload to server and back to SelectOperation
-                ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                ConfigManager.setEditingState(ConfigManager.EditingState.ConfirmAdding);
                 Message.Editing.Builder builder = Message.Editing.newBuilder()
                         .setOp(Message.EditOperation.ADD_MODEL)
                         .setModelId(ConfigManager.getEditingNewModelId())
@@ -655,7 +668,7 @@ public class StreamingPrototype extends ApplicationAdapter
                         .setScreenY(display.editingImagePosition.y);
                 sendEditingModeMessage(builder);
                 display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
-                editingPanel.goToSelectOperationMode();
+                editingPanel.goToConfirmAddingMode();
             }
 
         }

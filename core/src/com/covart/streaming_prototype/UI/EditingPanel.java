@@ -4,11 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -47,6 +45,8 @@ public class EditingPanel extends UIComponent {
     private Label addCancelLabel;
     private Pixmap addCancelLabelColor;
 
+    private Label addConfirmLabel;
+
 
     private boolean needRefreshList = false;
 
@@ -54,6 +54,7 @@ public class EditingPanel extends UIComponent {
         newModelButtons = new ArrayList<ModelButton>();
         currentModelButtons = new ArrayList<ModelButton>();
         setupCancelLabel();
+        setupConfirmLabel();
 
     }
 
@@ -76,10 +77,18 @@ public class EditingPanel extends UIComponent {
         addCancelLabel.setVisible(false);
     }
 
+    private void setupConfirmLabel(){
+        addConfirmLabel = new Label("Waiting for server to confirm the change...", largeLabelStyle);
+        addConfirmLabel.setX(600);
+        addConfirmLabel.setY(0);
+        addConfirmLabel.setVisible(false);
+    }
+
     @Override
     void start() {
         super.start();
         this.stage.addActor(addCancelLabel);
+        this.stage.addActor(addConfirmLabel);
         refreshModelList();
     }
 
@@ -212,31 +221,57 @@ public class EditingPanel extends UIComponent {
         addCancelLabel.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
     }
 
-    public void goToAddingMode(){
+    public void hideAddingModels(){
+        // hide new buttons
+        //newButtonCanvas.setVisible(false);
+        newButtonCanvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
+        newButtonPane.setY(-1000);
+    }
+
+    public void showAddingModels(){
+        //newButtonCanvas.setVisible(true);
+        newButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
+        newButtonPane.setY(0);
+    }
+
+    public void showCurrentModels(){
+        // show current buttons
+        //currentsButtonCanvas.setVisible(true);
+        currentsButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
+        currentButtonPane.setY(0);
+    }
+
+    public void hideCurrentModels(){
         // hide current buttons
         //currentsButtonCanvas.setVisible(false);
         currentsButtonCanvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
         currentButtonPane.setY(-1000);
-        //newButtonCanvas.setVisible(true);
-        newButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
-        newButtonPane.setY(0);
+    }
+
+    public void goToAddingMode(){
+        hideCurrentModels();
+        showAddingModels();
 
         clearAllIndex();
     }
 
     public void goToSelectOperationMode(){
-        // show current buttons
-        //currentsButtonCanvas.setVisible(true);
-        currentsButtonCanvas.addAction(Actions.sequence(Actions.alpha(0), Actions.show(), Actions.fadeIn(fadeTime)));
-        currentButtonPane.setY(0);
-        // hide new buttons
-        //newButtonCanvas.setVisible(false);
-        newButtonCanvas.addAction(Actions.sequence(Actions.fadeOut(fadeTime), Actions.hide()));
-        newButtonPane.setY(-1000);
-
-        hideAddingCancel();
+        showCurrentModels();
+        hideAddingModels();
 
         clearAllIndex();
+    }
+
+    public void goToConfirmAddingMode(){
+        hideAddingModels();
+        addConfirmLabel.setVisible(true);
+
+        clearAllIndex();
+    }
+
+    public void finishConfirmAddingMode(){
+        addConfirmLabel.setVisible(false);
+        goToSelectOperationMode();
     }
 
     private void addNewModelButton(){

@@ -77,7 +77,8 @@ public class ConfigManager {
         MovingModel,
         SelectAddingModel,
         SelectAddingPosition,
-        MoveAddingModel
+        MoveAddingModel,
+        ConfirmAdding,
     };
 
 
