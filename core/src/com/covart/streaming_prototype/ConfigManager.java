@@ -381,8 +381,8 @@ public class ConfigManager {
     }
 
     public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
-        Gdx.app.log("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
-        StringPool.addField("Moving Model ID", "" + ConfigManager.getEditingCurrentModelId());
+        Gdx.app.log("Moving Model ID", "" + editingCurrentModelIndex);
+        StringPool.addField("Moving Model ID", "" + editingCurrentModelIndex);
         ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
     }
 

@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import StreamingFormat.Message;
 
-import static StreamingFormat.Message.EditOperation.MODEL_LIST;
 import static com.badlogic.gdx.Gdx.app;
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static com.covart.streaming_prototype.StreamingPrototype.State.Running;
@@ -67,6 +66,7 @@ public class StreamingPrototype extends ApplicationAdapter
     // editing
     private float editingReportTime;
     private boolean needSendEditingPositionMessage = false;
+    private boolean editingPositionIsDirty = false;
 
     // UI
     public PositionController positionController;
@@ -153,7 +153,7 @@ public class StreamingPrototype extends ApplicationAdapter
         display.onFinishFrame(paramViewport);
         if(needSendEditingPositionMessage){
             needSendEditingPositionMessage = false;
-            sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
+            sendEditingCurrentMovingPositionMessage();
         }
     }
 
@@ -609,6 +609,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void startEditingMode() {
         display.editingScreenPosition.set(-1, -1);
+        editingPositionIsDirty = false;
         updateEditingModeText();
         sendEditingOpMessage(Message.EditOperation.START);
         ConfigManager.setEditingState(ConfigManager.EditingState.WaitForList);
@@ -620,6 +621,7 @@ public class StreamingPrototype extends ApplicationAdapter
         sendEditingOpMessage(Message.EditOperation.FINISH);
         ConfigManager.setEditingState(ConfigManager.EditingState.Normal);
         display.editingScreenPosition.set(-1, -1);
+        editingPositionIsDirty = false;
         editingPanel.hide();
         ConfigManager.setEditingCurrentModelIdList(null);
         editingPanel.setNeedRefreshList(true);
@@ -627,6 +629,7 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean editingTouchDragged(int screenX, int screenY) {
         StringPool.addField("Editing Pos", "X: " + screenX + " Y: " + screenY );
+        editingPositionIsDirty = true;
         display.updateEditingScreenPosition(screenX, screenY);
         if(ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
             if (this.editingReportTime >= ConfigManager.getEditingReportInterval()) {
@@ -652,25 +655,29 @@ public class StreamingPrototype extends ApplicationAdapter
 
     private boolean editingTouchUp(int screenX, int screenY){
         display.setEditingPositionFollowCursor(false);
-        if(ConfigManager.getEditingState() == ConfigManager.EditingState.MoveAddingModel){
-            editingPanel.hideAddingCancel();
-            if(isEditingCancelAddArea(screenX, screenY)) {
-                Gdx.app.log("Editing", "Adding canceled");
-                ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
-            }
-            else {
-                // upload to server and back to SelectOperation
-                ConfigManager.setEditingState(ConfigManager.EditingState.ConfirmAdding);
-                Message.Editing.Builder builder = Message.Editing.newBuilder()
-                        .setOp(Message.EditOperation.ADD_MODEL)
-                        .setModelId(ConfigManager.getEditingNewModelId())
-                        .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
-                        .setScreenY(display.editingImagePosition.y);
-                sendEditingModeMessage(builder);
-                display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
-                editingPanel.goToConfirmAddingMode();
-            }
-
+        switch (ConfigManager.getEditingState()){
+            case MoveAddingModel:
+                editingPanel.hideAddingCancel();
+                if(isEditingCancelAddArea(screenX, screenY)) {
+                    Gdx.app.log("Editing", "Adding canceled");
+                    ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
+                }
+                else {
+                    // upload to server and back to SelectOperation
+                    ConfigManager.setEditingState(ConfigManager.EditingState.ConfirmAdding);
+                    Message.Editing.Builder builder = Message.Editing.newBuilder()
+                            .setOp(Message.EditOperation.ADD_MODEL)
+                            .setModelId(ConfigManager.getEditingNewModelId())
+                            .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
+                            .setScreenY(display.editingImagePosition.y);
+                    sendEditingModeMessage(builder);
+                    display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
+                    editingPanel.goToConfirmAddingMode();
+                }
+                break;
+            case MovingModel:
+                sendEditingFinalMovingPositionMessage();
+                break;
         }
         return true;
     }
@@ -702,9 +709,13 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     public void onEditingCurrentModelChanged(int lastIndex){
+        if(lastIndex >= 0) {
+            // sending final editing position
+            sendEditingFinalMovingPositionMessage();
+        }
         sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
-        ConfigManager.setEditingState(ConfigManager.EditingState.MovingModel);
         if(ConfigManager.getEditingCurrentModelId() >= 0){
+            ConfigManager.setEditingState(ConfigManager.EditingState.MovingModel);
             if(lastIndex >= 0) {
                 // this happens when directly change model
                 display.finishEditingModel(lastIndex);
@@ -712,6 +723,7 @@ public class StreamingPrototype extends ApplicationAdapter
             display.startEditingModel(ConfigManager.getEditingCurrentModelIndex());
         }
         else{
+            ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
             display.finishEditingModel(lastIndex);
         }
     }
@@ -756,6 +768,18 @@ public class StreamingPrototype extends ApplicationAdapter
         display.manuallyMoveCamera(direction);
     }
 
+
+    private void sendEditingCurrentMovingPositionMessage(){
+        editingPositionIsDirty = false;
+        sendEditingUpdateMessage(display.editingImagePosition.x, display.editingImagePosition.y);
+    }
+
+    private void sendEditingFinalMovingPositionMessage(){
+        if(editingPositionIsDirty) {
+            sendEditingCurrentMovingPositionMessage();
+        }
+    }
+
     public void onEditingStateChanged(ConfigManager.EditingState oldState, ConfigManager.EditingState newState){
         switch(newState){
             case SelectAddingModel:
@@ -765,6 +789,7 @@ public class StreamingPrototype extends ApplicationAdapter
                         break;
                     case MovingModel:
                         // terminate current moving
+                        sendEditingFinalMovingPositionMessage();
                         sendEditingSetModelIdMessage(-1);
                         display.finishEditingModel(ConfigManager.getEditingCurrentModelIndex());
                         break;
