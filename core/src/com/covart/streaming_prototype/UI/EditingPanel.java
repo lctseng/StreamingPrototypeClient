@@ -2,7 +2,6 @@ package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -36,15 +35,14 @@ public class EditingPanel extends UIComponent {
 
     private boolean visible;
 
-    private float commonRowHeight = 100f;
+    private float commonRowHeight = 200f;
     private int buttonWidth = 200;
 
     private ArrayList<ModelButton> newModelButtons;
     private ArrayList<ModelButton> currentModelButtons;
 
     private Label addCancelLabel;
-    private Pixmap addCancelLabelColor;
-
+    private Texture addCancelTexture;
     private Label addConfirmLabel;
 
 
@@ -59,21 +57,19 @@ public class EditingPanel extends UIComponent {
     }
 
     private void setupCancelLabel(){
-        int labelWidth = 200, labelHeight = 200;
+        int labelWidth = 256, labelHeight = 256;
 
         // style
         Label.LabelStyle style = new Label.LabelStyle(largeFont, Color.WHITE);;
 
         // label
-        addCancelLabel = new Label("        Cancel Adding", style);
+        addCancelLabel = new Label("", style);
         addCancelLabel.setX(Gdx.graphics.getWidth() - labelWidth);
         addCancelLabel.setY(Gdx.graphics.getHeight() - labelHeight);
         addCancelLabel.setWidth(labelWidth);
         addCancelLabel.setHeight(labelHeight);
-        addCancelLabelColor = new Pixmap(labelWidth, labelHeight, Pixmap.Format.RGB888);
-        addCancelLabelColor.setColor(new Color(1f, 0.5f, 0.5f, 1f));
-        addCancelLabelColor.fill();
-        addCancelLabel.getStyle().background = new Image(new Texture(addCancelLabelColor)).getDrawable();
+        addCancelTexture = new Texture(Gdx.files.internal("cancel.png"));
+        addCancelLabel.getStyle().background = new Image(addCancelTexture).getDrawable();
         addCancelLabel.setVisible(false);
     }
 
@@ -97,6 +93,7 @@ public class EditingPanel extends UIComponent {
         pane.setX(600);
         pane.setY(0);
         pane.setWidth(Gdx.graphics.getWidth()/2);
+        pane.setHeight(commonRowHeight);
         pane.setDebug(false);
         pane.setVisible(visible);
         return pane;
@@ -157,8 +154,8 @@ public class EditingPanel extends UIComponent {
             currentButtonPane.remove();
         }
 
-        newModelButtons.clear();
-        currentModelButtons.clear();
+        disposeNewModelButtons();
+        disposeCurrentModelButtons();
 
         newButtonCanvas = createCanvas();
         newButtonPane = createPane(newButtonCanvas);
@@ -282,7 +279,7 @@ public class EditingPanel extends UIComponent {
                 goToAddingMode();
             }
         };
-        addButton(currentsButtonCanvas,"[Add New Model]", listener).width(buttonWidth);;
+        addButton(currentsButtonCanvas,"[Add New Model]", "add.png", listener).width(buttonWidth);;
     }
 
     public void clearAllIndex(){
@@ -305,7 +302,7 @@ public class EditingPanel extends UIComponent {
                 goToSelectOperationMode();
             }
         };
-        addButton(newButtonCanvas, "[Back to select]", listener).width(buttonWidth);;
+        addButton(newButtonCanvas, "[Back to select]", "back.png", listener).width(buttonWidth);;
     }
 
     private Cell<ModelButton> addCurrentModelItemButton(final int modelId){
@@ -327,8 +324,7 @@ public class EditingPanel extends UIComponent {
                 }
             }
         };
-        ModelButton button = new ModelButton(modelId, skin);
-        button.getStyle().font = largeFont;
+        ModelButton button = new ModelButton(modelId);
         button.addListener(listener);
         return currentsButtonCanvas.add(button);
     }
@@ -352,8 +348,7 @@ public class EditingPanel extends UIComponent {
                 }
             }
         };
-        ModelButton button = new ModelButton(modelId, skin);
-        button.getStyle().font = largeFont;
+        ModelButton button = new NewModelButton(modelId);
         button.addListener(listener);
         return newButtonCanvas.add(button);
     }
@@ -361,6 +356,14 @@ public class EditingPanel extends UIComponent {
 
     private Cell<TextButton> addButton(Table canvas, String buttonText, EventListener listener){
         TextButton button = new TextButton(buttonText, skin);
+        button.getStyle().font = largeFont;
+        button.setStyle(button.getStyle());
+        button.addListener(listener);
+        return canvas.add(button);
+    }
+
+    private Cell<VerticalImageTextButton> addButton(Table canvas, String buttonText, String filename , EventListener listener){
+        VerticalImageTextButton button = new VerticalImageTextButton(buttonText, filename);
         button.getStyle().font = largeFont;
         button.setStyle(button.getStyle());
         button.addListener(listener);
@@ -393,7 +396,25 @@ public class EditingPanel extends UIComponent {
 
     @Override
     public void dispose() {
-        addCancelLabelColor.dispose();
+        addCancelTexture.dispose();
+        disposeNewModelButtons();
+        disposeCurrentModelButtons();
         super.dispose();
     }
+
+    private void disposeNewModelButtons(){
+        for(ModelButton btn : newModelButtons){
+            btn.dispose();
+        }
+        newModelButtons.clear();
+    }
+
+    private void disposeCurrentModelButtons(){
+        for(ModelButton btn : currentModelButtons){
+            btn.dispose();
+        }
+        currentModelButtons.clear();
+    }
+
+
 }

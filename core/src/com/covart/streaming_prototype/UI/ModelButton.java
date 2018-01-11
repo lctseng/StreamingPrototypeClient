@@ -1,20 +1,22 @@
 package com.covart.streaming_prototype.UI;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.covart.streaming_prototype.ConfigManager;
-
 /**
  * Created by lctseng on 2017/8/13.
  * For NCP project at COVART, NTU
  */
 
-public class ModelButton extends TextButton{
+public class ModelButton extends VerticalImageTextButton {
     private int modelId;
 
-    public ModelButton(int modelId, Skin skin) {
-        super("Model " + modelId, new TextButtonStyle(skin.get(TextButtonStyle.class)));
+
+
+    public ModelButton(int modelId, String filename) {
+        super("Model " + modelId, filename);
+        this.modelId = modelId;
+    }
+
+    public ModelButton(int modelId) {
+        super("Model " + modelId, "base.png");
         this.modelId = modelId;
     }
 
@@ -23,8 +25,7 @@ public class ModelButton extends TextButton{
     }
 
     public void onModelChanged(int currentId){
-        Color color = modelId == currentId ? Color.GREEN : Color.WHITE;
-        getStyle().fontColor = color;
+        //Color color = modelId == currentId ? Color.GREEN : Color.WHITE;
+        //getStyle().fontColor = color;
     }
-
 }

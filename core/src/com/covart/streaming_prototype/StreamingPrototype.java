@@ -683,7 +683,7 @@ public class StreamingPrototype extends ApplicationAdapter
     }
 
     private boolean isEditingCancelAddArea(int screenX, int screenY){
-        return screenX >= Gdx.graphics.getWidth() - 200 && screenY <= 200;
+        return screenX >= Gdx.graphics.getWidth() - 256 && screenY <= 256;
     }
 
 
