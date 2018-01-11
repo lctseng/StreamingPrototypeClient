@@ -288,11 +288,11 @@ public class EditingPanel extends UIComponent {
     public void clearAllIndex(){
         ConfigManager.setEditingCurrentModelIndex(-1);
         ConfigManager.setEditingNewModelIndex(-1);
-        for(ModelButton button : newModelButtons){
-            button.onModelChanged();
+        for(ModelButton button : currentModelButtons){
+            button.onModelChanged(-1);
         }
         for(ModelButton button : newModelButtons){
-            button.onModelChanged();
+            button.onModelChanged(-1);
         }
     }
 
@@ -301,6 +301,7 @@ public class EditingPanel extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                ConfigManager.setEditingNewModelId(-1);
                 goToSelectOperationMode();
             }
         };
@@ -336,7 +337,7 @@ public class EditingPanel extends UIComponent {
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel ) {
+                if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel || ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingPosition ) {
                     int lastIndex = ConfigManager.getEditingNewModelIndex();
                     if (ConfigManager.getEditingNewModelId() == modelId) {
                         // click on same model id, toggle it
@@ -367,15 +368,17 @@ public class EditingPanel extends UIComponent {
     }
 
     private void onCurrentModelChanged(int lastIndex){
-        for(ModelButton button : newModelButtons){
-            button.onModelChanged();
+        int currentId = ConfigManager.getEditingCurrentModelId();
+        for(ModelButton button : currentModelButtons){
+            button.onModelChanged(currentId);
         }
         ConfigManager.getApp().onEditingCurrentModelChanged(lastIndex);
     }
 
     private void onNewModelChanged(int lastIndex){
+        int currentId = ConfigManager.getEditingNewModelId();
         for(ModelButton button : newModelButtons){
-            button.onModelChanged();
+            button.onModelChanged(currentId);
         }
         ConfigManager.getApp().onEditingNewModelChanged(lastIndex);
     }

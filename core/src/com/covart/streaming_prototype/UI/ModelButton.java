@@ -22,8 +22,9 @@ public class ModelButton extends TextButton{
         return modelId;
     }
 
-    public void onModelChanged(){
-        Color color = modelId == ConfigManager.getEditingCurrentModelId() ? Color.GREEN : Color.WHITE;
+    public void onModelChanged(int currentId){
+        Color color = modelId == currentId ? Color.GREEN : Color.WHITE;
         getStyle().fontColor = color;
     }
+
 }

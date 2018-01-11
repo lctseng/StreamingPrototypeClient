@@ -381,8 +381,8 @@ public class ConfigManager {
     }
 
     public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
-        Gdx.app.log("Moving Model ID", "" + editingCurrentModelIndex);
-        StringPool.addField("Moving Model ID", "" + editingCurrentModelIndex);
+        Gdx.app.log("Moving Model Index", "" + editingCurrentModelIndex);
+        StringPool.addField("Moving Model Index", "" + editingCurrentModelIndex);
         ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
     }
 
@@ -407,8 +407,8 @@ public class ConfigManager {
     }
 
     public static void setEditingNewModelIndex(int editingNewModelIndex) {
-        Gdx.app.log("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
-        StringPool.addField("Adding Model ID", "" + ConfigManager.getEditingNewModelId());
+        Gdx.app.log("Adding Model Index", "" + editingNewModelIndex);
+        StringPool.addField("Adding Model Index", "" + editingNewModelIndex);
         ConfigManager.editingNewModelIndex = editingNewModelIndex;
     }
 
