@@ -46,7 +46,8 @@ public class EditingPanel extends UIComponent {
     private Label addConfirmLabel;
 
 
-    private boolean needRefreshList = false;
+    private boolean needRefreshCurrentList = false;
+    private boolean needRefreshNewList = false;
 
     public EditingPanel(){
         newModelButtons = new ArrayList<ModelButton>();
@@ -60,7 +61,7 @@ public class EditingPanel extends UIComponent {
         int labelWidth = 256, labelHeight = 256;
 
         // style
-        Label.LabelStyle style = new Label.LabelStyle(largeFont, Color.WHITE);;
+        Label.LabelStyle style = new Label.LabelStyle(largeFont, Color.WHITE);
 
         // label
         addCancelLabel = new Label("", style);
@@ -139,50 +140,80 @@ public class EditingPanel extends UIComponent {
 
 
     public void checkRefreshList(){
-        if(needRefreshList){
-            needRefreshList = false;
-            refreshModelList();
-            goToSelectOperationMode();
+        if(needRefreshCurrentList){
+            needRefreshCurrentList = false;
+            refreshCurrentModelList();
+        }
+        if(needRefreshNewList){
+            needRefreshNewList = false;
+            refreshNewModelList();
         }
     }
 
     private void refreshModelList(){
-        if(newButtonPane != null){
-            newButtonPane.remove();
-        }
+        refreshCurrentModelList();
+        refreshNewModelList();
+    }
+
+    private void refreshCurrentModelList(){
         if(currentButtonPane != null){
             currentButtonPane.remove();
         }
 
-        disposeNewModelButtons();
         disposeCurrentModelButtons();
-
-        newButtonCanvas = createCanvas();
-        newButtonPane = createPane(newButtonCanvas);
-        addNewModelComponents();
-        newButtonCanvas.setVisible(false);
-        newButtonPane.setY(-1000);
 
         currentsButtonCanvas = createCanvas();
         currentButtonPane = createPane(currentsButtonCanvas);
         addCurrentModelComponents();
-        currentsButtonCanvas.setVisible(false);
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectOperation || ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel ){
+            currentsButtonCanvas.setVisible(true);
+            currentButtonPane.setY(0);
+        }
+        else{
+            currentsButtonCanvas.setVisible(false);
+            currentButtonPane.setY(-1000);
+        }
+
+
+        this.stage.addActor(currentButtonPane);
+    }
+
+    private void refreshNewModelList(){
+        if(newButtonPane != null){
+            newButtonPane.remove();
+        }
+
+        disposeNewModelButtons();
+
+        newButtonCanvas = createCanvas();
+        newButtonPane = createPane(newButtonCanvas);
+        addNewModelComponents();
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel || ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingPosition ){
+            newButtonCanvas.setVisible(true);
+            newButtonPane.setY(0);
+        }
+        else{
+            newButtonCanvas.setVisible(false);
+            newButtonPane.setY(-1000);
+        }
 
         this.stage.addActor(newButtonPane);
-        this.stage.addActor(currentButtonPane);
     }
 
     private void addNewModelComponents(){
         List<Integer> idList = ConfigManager.getEditingNewModelIdList();
         if(idList != null && !idList.isEmpty()) {
+            // title
             Label title = new Label("Adding New model", largeLabelStyle);
             newButtonCanvas.add(title);
+            // Add cancel button
+            addCancelAddButton();
+            // buttons
             for (Integer modelId : idList) {
                 Cell<ModelButton> cell = addNewModelItemButton(modelId).width(buttonWidth);
                 newModelButtons.add(cell.getActor());
             }
-            // Add cancel button
-            addCancelAddButton();
+
 
         }
         else{
@@ -194,15 +225,16 @@ public class EditingPanel extends UIComponent {
     private void addCurrentModelComponents(){
         List<Integer> idList = ConfigManager.getEditingCurrentModelIdList();
         if(idList != null && !idList.isEmpty()) {
+            // title
             Label title = new Label("Moving existing model", largeLabelStyle);
             currentsButtonCanvas.add(title);
+            // Add New Model button
+            addNewModelButton();
+            // buttons
             for (Integer modelId : idList) {
                 Cell<ModelButton> cell = addCurrentModelItemButton(modelId).width(buttonWidth);
                 currentModelButtons.add(cell.getActor());
             }
-            // Add New Model button
-            addNewModelButton();
-
         }
         else{
             Label alert = new Label("Loading current model lists from server...", largeLabelStyle);
@@ -268,6 +300,7 @@ public class EditingPanel extends UIComponent {
 
     public void finishConfirmAddingMode(){
         addConfirmLabel.setVisible(false);
+        needRefreshCurrentList = true;
         goToSelectOperationMode();
     }
 
@@ -324,7 +357,7 @@ public class EditingPanel extends UIComponent {
                 }
             }
         };
-        ModelButton button = new ModelButton(modelId);
+        ModelButton button = new CurrentModelButton(modelId);
         button.addListener(listener);
         return currentsButtonCanvas.add(button);
     }
@@ -386,12 +419,20 @@ public class EditingPanel extends UIComponent {
         ConfigManager.getApp().onEditingNewModelChanged(lastIndex);
     }
 
-    public boolean isNeedRefreshList() {
-        return needRefreshList;
+    public boolean isNeedRefreshCurrentList() {
+        return needRefreshCurrentList;
     }
 
-    public void setNeedRefreshList(boolean needRefreshList) {
-        this.needRefreshList = needRefreshList;
+    public void setNeedRefreshCurrentList(boolean needRefreshCurrentList) {
+        this.needRefreshCurrentList = needRefreshCurrentList;
+    }
+
+    public boolean isNeedRefreshNewList() {
+        return needRefreshNewList;
+    }
+
+    public void setNeedRefreshNewList(boolean needRefreshNewList) {
+        this.needRefreshNewList = needRefreshNewList;
     }
 
     @Override

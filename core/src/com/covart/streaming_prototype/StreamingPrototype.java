@@ -27,6 +27,7 @@ import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.covart.streaming_prototype.UI.PositionController.Direction;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import StreamingFormat.Message;
@@ -509,9 +510,11 @@ public class StreamingPrototype extends ApplicationAdapter
                 if(editMsg != null){
                     switch(editMsg.getOp()){
                         case MODEL_LIST:
-                            ConfigManager.setEditingNewModelIdList(editMsg.getAddModelIdsList());
-                            ConfigManager.setEditingCurrentModelIdList(editMsg.getCurrentModelIdsList());
-                            editingPanel.setNeedRefreshList(true);
+
+                            ConfigManager.setEditingNewModelIdList(new ArrayList<Integer>(editMsg.getAddModelIdsList()));
+                            ConfigManager.setEditingCurrentModelIdList(new ArrayList<Integer>(editMsg.getCurrentModelIdsList()));
+                            editingPanel.setNeedRefreshCurrentList(true);
+                            editingPanel.setNeedRefreshNewList(true);
                             display.prepareForEditingMode();
                             ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
                             break;
@@ -519,7 +522,10 @@ public class StreamingPrototype extends ApplicationAdapter
                             if(ConfigManager.getEditingState() == ConfigManager.EditingState.ConfirmAdding){
                                 Gdx.app.log("Editing", "Confirm adding, model id = " + editMsg.getModelId());
                                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
+                                ConfigManager.getEditingCurrentModelIdList().add(editMsg.getModelId());
+                                display.onNewCurrentModel(editMsg.getModelId());
                                 editingPanel.finishConfirmAddingMode();
+
                             }
                             break;
                         default:
@@ -624,7 +630,9 @@ public class StreamingPrototype extends ApplicationAdapter
         editingPositionIsDirty = false;
         editingPanel.hide();
         ConfigManager.setEditingCurrentModelIdList(null);
-        editingPanel.setNeedRefreshList(true);
+        ConfigManager.setEditingNewModelIdList(null);
+        editingPanel.setNeedRefreshNewList(true);
+        editingPanel.setNeedRefreshCurrentList(true);
     }
 
     private boolean editingTouchDragged(int screenX, int screenY) {

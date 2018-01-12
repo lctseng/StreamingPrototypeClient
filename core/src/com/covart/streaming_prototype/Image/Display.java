@@ -357,6 +357,11 @@ public class Display implements Disposable{
         }
     }
 
+    public void onNewCurrentModel(int modelId){
+        // TODO: change to model info, and copy coordinate from server
+        editingImagePositions.add(new Vector2(modelId * 10,ConfigManager.getImageHeight()/2));
+    }
+
     public void startEditingModel(int index){
         if(index >= 0){
             editingImagePosition.set(editingImagePositions.get(index));
