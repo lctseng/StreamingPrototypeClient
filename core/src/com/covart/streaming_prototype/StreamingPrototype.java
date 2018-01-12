@@ -646,6 +646,11 @@ public class StreamingPrototype extends ApplicationAdapter
                 needSendEditingPositionMessage = true;
             }
         }
+        if(ConfigManager.getEditingState() == ConfigManager.EditingState.MoveAddingModel && isEditingCancelAddArea(screenX, screenY)) {
+            Gdx.app.log("Editing", "Adding canceled");
+            ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
+            editingPanel.hideAddingCancel();
+        }
         return true;
     }
 
