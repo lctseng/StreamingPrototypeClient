@@ -22,14 +22,23 @@ import java.util.Locale;
 
 public class VerticalImageTextButton extends ImageTextButton implements Disposable {
 
+    protected Texture textureUp;
+    protected Texture textureDown;
+
     public VerticalImageTextButton(String text, String filename) {
         super(text, createImageTextButtonStyle(filename));
-        makeVertical();
+        setup();
     }
 
     public VerticalImageTextButton(String text, FileHandle file) {
         super(text, createImageTextButtonStyle(file));
+        setup();
+    }
+
+    private void setup(){
         makeVertical();
+        textureUp = ((TextureRegionDrawable)getStyle().imageUp).getRegion().getTexture();
+        textureDown = ((TextureRegionDrawable)getStyle().imageDown).getRegion().getTexture();
     }
 
     private void makeVertical(){
@@ -72,7 +81,7 @@ public class VerticalImageTextButton extends ImageTextButton implements Disposab
     @Override
     public void dispose() {
         getStyle().font.dispose();
-        ((TextureRegionDrawable)getStyle().imageUp).getRegion().getTexture().dispose();
-        ((TextureRegionDrawable)getStyle().imageDown).getRegion().getTexture().dispose();
+        textureUp.dispose();
+        textureDown.dispose();
     }
 }
