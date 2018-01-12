@@ -2,11 +2,13 @@ package com.covart.streaming_prototype.UI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -44,20 +46,33 @@ public class VerticalImageTextButton extends ImageTextButton implements Disposab
         ImageTextButton.ImageTextButtonStyle style = new ImageTextButton.ImageTextButtonStyle();
 
         // font
-        BitmapFont font = new BitmapFont();
+        style.font = new BitmapFont();;
 
-        // bg
-        Texture texture = new Texture(file);
-        TextureRegion textureRegion = new TextureRegion(texture);
-        style.imageUp = new TextureRegionDrawable(textureRegion);
-        style.font = font;
+        // image up
+        style.imageUp = extractTextureDrawable(new Texture(file));
+
+        // image down
+        Pixmap imgDown = new Pixmap(file);
+        Pixmap.Blending oldBlending = Pixmap.getBlending();
+        Pixmap.setBlending(Pixmap.Blending.SourceOver);
+        imgDown.setColor(0.5f,0,0,0.5f);
+        imgDown.fillRectangle(0, 0, imgDown.getWidth(), imgDown.getHeight());
+        style.imageDown = extractTextureDrawable(new Texture(imgDown));
+        imgDown.dispose();
+        Pixmap.setBlending(oldBlending);
 
         return style;
+    }
+
+    protected static Drawable extractTextureDrawable(Texture texture){
+        TextureRegion textureRegion = new TextureRegion(texture);
+        return new TextureRegionDrawable(textureRegion);
     }
 
     @Override
     public void dispose() {
         getStyle().font.dispose();
         ((TextureRegionDrawable)getStyle().imageUp).getRegion().getTexture().dispose();
+        ((TextureRegionDrawable)getStyle().imageDown).getRegion().getTexture().dispose();
     }
 }

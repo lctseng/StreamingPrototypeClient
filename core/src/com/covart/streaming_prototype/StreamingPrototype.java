@@ -510,7 +510,7 @@ public class StreamingPrototype extends ApplicationAdapter
                 if(editMsg != null){
                     switch(editMsg.getOp()){
                         case MODEL_LIST:
-
+                            // TODO:  do we need to lock these list? which threads are reading these lists?
                             ConfigManager.setEditingNewModelIdList(new ArrayList<Integer>(editMsg.getAddModelIdsList()));
                             ConfigManager.setEditingCurrentModelIdList(new ArrayList<Integer>(editMsg.getCurrentModelIdsList()));
                             editingPanel.setNeedRefreshCurrentList(true);
