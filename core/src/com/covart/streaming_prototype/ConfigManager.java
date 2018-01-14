@@ -4,6 +4,7 @@ package com.covart.streaming_prototype;
 import com.badlogic.gdx.Gdx;
 import com.covart.streaming_prototype.AutoAction.InternalState;
 import com.covart.streaming_prototype.Image.Display;
+import com.covart.streaming_prototype.UI.EditingModelManager;
 import com.covart.streaming_prototype.UI.PositionController;
 import com.google.vrtoolkit.cardboard.Eye;
 
@@ -126,13 +127,7 @@ public class ConfigManager {
 
     private static float stPlaneRadius = 1f;
 
-    private static List<Integer> editingCurrentModelIdList;
-
-    private static List<Integer> editingNewModelIdList;
-
-    private static int editingCurrentModelIndex = -1;
-
-    private static int editingNewModelIndex = -1;
+    public static EditingModelManager editingModelManager = new EditingModelManager();
 
     private static boolean forceLowQuality = false;
 
@@ -374,92 +369,6 @@ public class ConfigManager {
 
     public static void setStPlaneRadius(float stPlaneRadius) {
         ConfigManager.stPlaneRadius = stPlaneRadius;
-    }
-
-    public static int getEditingCurrentModelIndex() {
-        return editingCurrentModelIndex;
-    }
-
-    public static void setEditingCurrentModelIndex(int editingCurrentModelIndex) {
-        Gdx.app.log("Moving Model Index", "" + editingCurrentModelIndex);
-        StringPool.addField("Moving Model Index", "" + editingCurrentModelIndex);
-        ConfigManager.editingCurrentModelIndex = editingCurrentModelIndex;
-    }
-
-    public static List<Integer> getEditingCurrentModelIdList() {
-        return editingCurrentModelIdList;
-    }
-
-    public static void setEditingCurrentModelIdList(List<Integer> editingCurrentModelIdList) {
-        ConfigManager.editingCurrentModelIdList = editingCurrentModelIdList;
-    }
-
-    public static List<Integer> getEditingNewModelIdList() {
-        return editingNewModelIdList;
-    }
-
-    public static void setEditingNewModelIdList(List<Integer> editingNewModelIdList) {
-        ConfigManager.editingNewModelIdList = editingNewModelIdList;
-    }
-
-    public static int getEditingNewModelIndex() {
-        return editingNewModelIndex;
-    }
-
-    public static void setEditingNewModelIndex(int editingNewModelIndex) {
-        Gdx.app.log("Adding Model Index", "" + editingNewModelIndex);
-        StringPool.addField("Adding Model Index", "" + editingNewModelIndex);
-        ConfigManager.editingNewModelIndex = editingNewModelIndex;
-    }
-
-    public static int getEditingCurrentModelId() {
-        if(editingCurrentModelIndex >= 0){
-            return editingCurrentModelIdList.get(editingCurrentModelIndex);
-        }
-        else{
-            return -1;
-        }
-
-    }
-
-    public static void setEditingCurrentModelId(int id) {
-        if(id >= 0){
-            // find index by id
-            for(int i = 0; i< editingCurrentModelIdList.size(); i++){
-                if(editingCurrentModelIdList.get(i) == id){
-                    setEditingCurrentModelIndex(i);
-                    break;
-                }
-            }
-        }
-        else{
-            setEditingCurrentModelIndex(-1);
-        }
-    }
-
-    public static int getEditingNewModelId() {
-        if(editingNewModelIndex >= 0){
-            return editingNewModelIdList.get(editingNewModelIndex);
-        }
-        else{
-            return -1;
-        }
-
-    }
-
-    public static void setEditingNewModelId(int id) {
-        if(id >= 0){
-            // find index by id
-            for(int i = 0; i< editingNewModelIdList.size(); i++){
-                if(editingNewModelIdList.get(i) == id){
-                    setEditingNewModelIndex(i);
-                    break;
-                }
-            }
-        }
-        else{
-            setEditingNewModelIndex(-1);
-        }
     }
 
     public static boolean isForceLowQuality() {

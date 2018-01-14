@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  */
 
 public class ModelButton extends VerticalImageTextButton {
-    private int modelId;
+    private EditingModelManager.ModelInfo model;
 
     private static FileHandle openModelFileWithFallback(String filename){
         FileHandle file = Gdx.files.internal(filename);
@@ -25,23 +25,22 @@ public class ModelButton extends VerticalImageTextButton {
         }
     }
 
-    public ModelButton(int modelId, String filename) {
-        super("Model " + modelId, openModelFileWithFallback(filename));
-        this.modelId = modelId;
+    public ModelButton(EditingModelManager.ModelInfo model, String filename) {
+        super("Model " + model.modelId, openModelFileWithFallback(filename));
+        this.model = model;
     }
 
-    public ModelButton(int modelId) {
-        super("Model " + modelId, "base.png");
-        this.modelId = modelId;
+    public ModelButton(EditingModelManager.ModelInfo model) {
+        super("Model " + model.modelId, "base.png");
+        this.model = model;
     }
 
-
-    public int getModelId() {
-        return modelId;
+    public EditingModelManager.ModelInfo getModel() {
+        return model;
     }
 
-    public void onModelChanged(int currentId){
-        if(modelId == currentId){
+    public void onModelChanged(EditingModelManager.ModelInfo currentModel){
+        if(model == currentModel){
             getStyle().imageUp = extractTextureDrawable(textureDown);
             getStyle().fontColor = Color.YELLOW;
         }

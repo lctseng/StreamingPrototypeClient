@@ -201,44 +201,46 @@ public class EditingPanel extends UIComponent {
     }
 
     private void addNewModelComponents(){
-        List<Integer> idList = ConfigManager.getEditingNewModelIdList();
-        if(idList != null && !idList.isEmpty()) {
-            // title
-            Label title = new Label("Adding New model", largeLabelStyle);
-            newButtonCanvas.add(title);
-            // Add cancel button
-            addCancelAddButton();
-            // buttons
-            for (Integer modelId : idList) {
-                Cell<ModelButton> cell = addNewModelItemButton(modelId).width(buttonWidth);
-                newModelButtons.add(cell.getActor());
+        synchronized (ConfigManager.editingModelManager.addModelLock) {
+            List<EditingModelManager.ModelInfo> list =  ConfigManager.editingModelManager.getAddModelList();
+            if (list != null && !list.isEmpty()) {
+                // title
+                Label title = new Label("Adding New model", largeLabelStyle);
+                newButtonCanvas.add(title);
+                // Add cancel button
+                addCancelAddButton();
+                // buttons
+                for (EditingModelManager.ModelInfo model : list) {
+                    Cell<ModelButton> cell = addNewModelItemButton(model).width(buttonWidth);
+                    newModelButtons.add(cell.getActor());
+                }
+
+
+            } else {
+                Label alert = new Label("Loading new model lists from server...", largeLabelStyle);
+                newButtonCanvas.add(alert);
             }
-
-
-        }
-        else{
-            Label alert = new Label("Loading new model lists from server...", largeLabelStyle);
-            newButtonCanvas.add(alert);
         }
     }
 
     private void addCurrentModelComponents(){
-        List<Integer> idList = ConfigManager.getEditingCurrentModelIdList();
-        if(idList != null && !idList.isEmpty()) {
-            // title
-            Label title = new Label("Moving existing model", largeLabelStyle);
-            currentsButtonCanvas.add(title);
-            // Add New Model button
-            addNewModelButton();
-            // buttons
-            for (Integer modelId : idList) {
-                Cell<ModelButton> cell = addCurrentModelItemButton(modelId).width(buttonWidth);
-                currentModelButtons.add(cell.getActor());
+        synchronized (ConfigManager.editingModelManager.currentModelLock) {
+            List<EditingModelManager.ModelInfo> list = ConfigManager.editingModelManager.getCurrentModelList();
+            if (list != null && !list.isEmpty()) {
+                // title
+                Label title = new Label("Moving existing model", largeLabelStyle);
+                currentsButtonCanvas.add(title);
+                // Add New Model button
+                addNewModelButton();
+                // buttons
+                for (EditingModelManager.ModelInfo model : list) {
+                    Cell<ModelButton> cell = addCurrentModelItemButton(model).width(buttonWidth);
+                    currentModelButtons.add(cell.getActor());
+                }
+            } else {
+                Label alert = new Label("Loading current model lists from server...", largeLabelStyle);
+                currentsButtonCanvas.add(alert);
             }
-        }
-        else{
-            Label alert = new Label("Loading current model lists from server...", largeLabelStyle);
-            currentsButtonCanvas.add(alert);
         }
     }
 
@@ -281,21 +283,21 @@ public class EditingPanel extends UIComponent {
         hideCurrentModels();
         showAddingModels();
 
-        clearAllIndex();
+        resetAllIndex();
     }
 
     public void goToSelectOperationMode(){
         showCurrentModels();
         hideAddingModels();
 
-        clearAllIndex();
+        resetAllIndex();
     }
 
     public void goToConfirmAddingMode(){
         hideAddingModels();
         addConfirmLabel.setVisible(true);
 
-        clearAllIndex();
+        resetAllIndex();
     }
 
     public void finishConfirmAddingMode(){
@@ -315,14 +317,13 @@ public class EditingPanel extends UIComponent {
         addButton(currentsButtonCanvas,"[Add New Model]", "add.png", listener).width(buttonWidth);;
     }
 
-    public void clearAllIndex(){
-        ConfigManager.setEditingCurrentModelIndex(-1);
-        ConfigManager.setEditingNewModelIndex(-1);
+    public void resetAllIndex(){
+        ConfigManager.editingModelManager.resetAllIndex();
         for(ModelButton button : currentModelButtons){
-            button.onModelChanged(-1);
+            button.onModelChanged(null);
         }
         for(ModelButton button : newModelButtons){
-            button.onModelChanged(-1);
+            button.onModelChanged(null);
         }
     }
 
@@ -331,24 +332,24 @@ public class EditingPanel extends UIComponent {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
-                ConfigManager.setEditingNewModelId(-1);
+                ConfigManager.editingModelManager.setAddModel(null);
                 goToSelectOperationMode();
             }
         };
         addButton(newButtonCanvas, "[Back to select]", "back.png", listener).width(buttonWidth);;
     }
 
-    private Cell<ModelButton> addCurrentModelItemButton(final int modelId){
+    private Cell<ModelButton> addCurrentModelItemButton(final EditingModelManager.ModelInfo model){
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectOperation || ConfigManager.getEditingState() == ConfigManager.EditingState.MovingModel) {
-                    int lastIndex = ConfigManager.getEditingCurrentModelIndex();
-                    if (ConfigManager.getEditingCurrentModelId() == modelId) {
+                    int lastIndex = ConfigManager.editingModelManager.getCurrentIndex();
+                    if (ConfigManager.editingModelManager.getCurrentModelInfo() == model) {
                         // click on same model id, toggle it
-                        ConfigManager.setEditingCurrentModelId(-1);
+                        ConfigManager.editingModelManager.setCurrentModel(null);
                     } else {
-                        ConfigManager.setEditingCurrentModelId(modelId);
+                        ConfigManager.editingModelManager.setCurrentModel(model);
                     }
                     onCurrentModelChanged(lastIndex);
                 }
@@ -357,22 +358,22 @@ public class EditingPanel extends UIComponent {
                 }
             }
         };
-        ModelButton button = new CurrentModelButton(modelId);
+        ModelButton button = new CurrentModelButton(model);
         button.addListener(listener);
         return currentsButtonCanvas.add(button);
     }
 
-    private Cell<ModelButton> addNewModelItemButton(final int modelId){
+    private Cell<ModelButton> addNewModelItemButton(final EditingModelManager.ModelInfo model){
         EventListener listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if(ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingModel || ConfigManager.getEditingState() == ConfigManager.EditingState.SelectAddingPosition ) {
-                    int lastIndex = ConfigManager.getEditingNewModelIndex();
-                    if (ConfigManager.getEditingNewModelId() == modelId) {
+                    int lastIndex = ConfigManager.editingModelManager.getAddIndex();
+                    if (ConfigManager.editingModelManager.getAddModelInfo() == model) {
                         // click on same model id, toggle it
-                        ConfigManager.setEditingNewModelId(-1);
+                        ConfigManager.editingModelManager.setAddModel(null);
                     } else {
-                        ConfigManager.setEditingNewModelId(modelId);
+                        ConfigManager.editingModelManager.setAddModel(model);
                     }
                     onNewModelChanged(lastIndex);
                 }
@@ -381,7 +382,7 @@ public class EditingPanel extends UIComponent {
                 }
             }
         };
-        ModelButton button = new NewModelButton(modelId);
+        ModelButton button = new NewModelButton(model);
         button.addListener(listener);
         return newButtonCanvas.add(button);
     }
@@ -404,17 +405,17 @@ public class EditingPanel extends UIComponent {
     }
 
     private void onCurrentModelChanged(int lastIndex){
-        int currentId = ConfigManager.getEditingCurrentModelId();
+        EditingModelManager.ModelInfo model = ConfigManager.editingModelManager.getCurrentModelInfo();
         for(ModelButton button : currentModelButtons){
-            button.onModelChanged(currentId);
+            button.onModelChanged(model);
         }
         ConfigManager.getApp().onEditingCurrentModelChanged(lastIndex);
     }
 
     private void onNewModelChanged(int lastIndex){
-        int currentId = ConfigManager.getEditingNewModelId();
+        EditingModelManager.ModelInfo model = ConfigManager.editingModelManager.getAddModelInfo();
         for(ModelButton button : newModelButtons){
-            button.onModelChanged(currentId);
+            button.onModelChanged(model);
         }
         ConfigManager.getApp().onEditingNewModelChanged(lastIndex);
     }

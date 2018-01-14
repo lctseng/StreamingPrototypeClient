@@ -16,6 +16,7 @@ import com.covart.streaming_prototype.Image.ImageDecoderBase;
 import com.covart.streaming_prototype.Image.ImageDecoderStaticFiles;
 import com.covart.streaming_prototype.Net.Connection;
 import com.covart.streaming_prototype.Net.Network;
+import com.covart.streaming_prototype.UI.EditingModelManager;
 import com.covart.streaming_prototype.UI.EditingPanel;
 import com.covart.streaming_prototype.UI.MainMenu;
 import com.covart.streaming_prototype.UI.PositionController;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import StreamingFormat.Message;
+import sun.security.krb5.Config;
 
 import static com.badlogic.gdx.Gdx.app;
 import static com.badlogic.gdx.math.MathUtils.clamp;
@@ -511,8 +513,7 @@ public class StreamingPrototype extends ApplicationAdapter
                     switch(editMsg.getOp()){
                         case MODEL_LIST:
                             // TODO:  do we need to lock these list? which threads are reading these lists?
-                            ConfigManager.setEditingNewModelIdList(new ArrayList<Integer>(editMsg.getAddModelIdsList()));
-                            ConfigManager.setEditingCurrentModelIdList(new ArrayList<Integer>(editMsg.getCurrentModelIdsList()));
+                            ConfigManager.editingModelManager.setupEditing(editMsg.getCurrentModelIdsList(), editMsg.getAddModelIdsList());
                             editingPanel.setNeedRefreshCurrentList(true);
                             editingPanel.setNeedRefreshNewList(true);
                             display.prepareForEditingMode();
@@ -522,7 +523,7 @@ public class StreamingPrototype extends ApplicationAdapter
                             if(ConfigManager.getEditingState() == ConfigManager.EditingState.ConfirmAdding){
                                 Gdx.app.log("Editing", "Confirm adding, model id = " + editMsg.getModelId());
                                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
-                                ConfigManager.getEditingCurrentModelIdList().add(editMsg.getModelId());
+                                ConfigManager.editingModelManager.addNewModel(editMsg.getModelId());
                                 display.onNewCurrentModel(editMsg.getModelId());
                                 editingPanel.finishConfirmAddingMode();
 
@@ -629,8 +630,7 @@ public class StreamingPrototype extends ApplicationAdapter
         display.editingScreenPosition.set(-1, -1);
         editingPositionIsDirty = false;
         editingPanel.hide();
-        ConfigManager.setEditingCurrentModelIdList(null);
-        ConfigManager.setEditingNewModelIdList(null);
+        ConfigManager.editingModelManager.resetAllIndex();
         editingPanel.setNeedRefreshNewList(true);
         editingPanel.setNeedRefreshCurrentList(true);
     }
@@ -660,7 +660,7 @@ public class StreamingPrototype extends ApplicationAdapter
             editingPanel.showAddingCancel();
         }
         editingTouchDragged(screenX, screenY);
-        if(ConfigManager.getEditingCurrentModelIndex() >= 0 || ConfigManager.getEditingNewModelIndex() >= 0){
+        if(ConfigManager.editingModelManager.getCurrentIndex() >= 0 || ConfigManager.editingModelManager.getAddIndex() >= 0){
             display.setEditingPositionFollowCursor(true);
         }
         return true;
@@ -680,11 +680,12 @@ public class StreamingPrototype extends ApplicationAdapter
                     ConfigManager.setEditingState(ConfigManager.EditingState.ConfirmAdding);
                     Message.Editing.Builder builder = Message.Editing.newBuilder()
                             .setOp(Message.EditOperation.ADD_MODEL)
-                            .setModelId(ConfigManager.getEditingNewModelId())
+                            .setModelId(ConfigManager.editingModelManager.getAddModelInfo().modelId)
                             .setScreenX(ConfigManager.getImageWidth() - display.editingImagePosition.x) // TODO: find out why we need to reverse the X, may be due to reversed up vector
                             .setScreenY(display.editingImagePosition.y);
                     sendEditingModeMessage(builder);
-                    display.finishEditingModel(ConfigManager.getEditingNewModelIndex());
+                    // We don't pass index for finishing add object, since we don't save final position
+                    display.finishEditingModel(-1);
                     editingPanel.goToConfirmAddingMode();
                 }
                 break;
@@ -726,16 +727,18 @@ public class StreamingPrototype extends ApplicationAdapter
             // sending final editing position
             sendEditingFinalMovingPositionMessage();
         }
-        sendEditingSetModelIdMessage(ConfigManager.getEditingCurrentModelId());
-        if(ConfigManager.getEditingCurrentModelId() >= 0){
+        EditingModelManager.ModelInfo model = ConfigManager.editingModelManager.getCurrentModelInfo();
+        if(model != null){
+            sendEditingSetModelIdMessage(model.modelId);
             ConfigManager.setEditingState(ConfigManager.EditingState.MovingModel);
             if(lastIndex >= 0) {
                 // this happens when directly change model
                 display.finishEditingModel(lastIndex);
             }
-            display.startEditingModel(ConfigManager.getEditingCurrentModelIndex());
+            display.startEditingModel(ConfigManager.editingModelManager.getCurrentIndex());
         }
         else{
+            sendEditingSetModelIdMessage(-1);
             ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
             display.finishEditingModel(lastIndex);
         }
@@ -743,15 +746,10 @@ public class StreamingPrototype extends ApplicationAdapter
 
     public void onEditingNewModelChanged(int lastIndex){
         ConfigManager.setEditingState(ConfigManager.EditingState.SelectAddingPosition);
-        if(ConfigManager.getEditingNewModelId() >= 0){
-            if(lastIndex >= 0) {
-                // this happens when directly change model
-                display.finishEditingModel(lastIndex);
-            }
-            display.startEditingModel(-1); // We dont need to load previous position
-        }
-        else{
-            display.finishEditingModel(lastIndex);
+        // for add model, we don't save any info, so pass index = -1
+        display.finishEditingModel(-1);
+        if(ConfigManager.editingModelManager.getAddModelInfo() != null){
+            display.startEditingModel(-1); // We don't need to load previous position
         }
     }
 
@@ -804,7 +802,7 @@ public class StreamingPrototype extends ApplicationAdapter
                         // terminate current moving
                         sendEditingFinalMovingPositionMessage();
                         sendEditingSetModelIdMessage(-1);
-                        display.finishEditingModel(ConfigManager.getEditingCurrentModelIndex());
+                        display.finishEditingModel(ConfigManager.editingModelManager.getCurrentIndex());
                         break;
                 }
                 break;

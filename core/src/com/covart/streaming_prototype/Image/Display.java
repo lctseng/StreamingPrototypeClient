@@ -352,8 +352,10 @@ public class Display implements Disposable{
 
         editingImagePositions.clear();
         // TODO: copy image coordinate from model list
-        for(int i = 0; i<ConfigManager.getEditingCurrentModelIdList().size(); i++){
-            editingImagePositions.add(new Vector2(i * 10,ConfigManager.getImageHeight()/2));
+        synchronized (ConfigManager.editingModelManager.currentModelLock) {
+            for (int i = 0; i < ConfigManager.editingModelManager.getCurrentModelList().size(); i++) {
+                editingImagePositions.add(new Vector2(i * 10, ConfigManager.getImageHeight() / 2));
+            }
         }
     }
 

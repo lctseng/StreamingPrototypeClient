@@ -9,8 +9,8 @@ import java.util.Locale;
 
 public class CurrentModelButton extends ModelButton {
 
-    public CurrentModelButton(int modelId) {
-        super(modelId, String.format(Locale.TAIWAN,"current_model_%d.png", modelId));
+    public CurrentModelButton(EditingModelManager.ModelInfo model) {
+        super(model, String.format(Locale.TAIWAN,"current_model_%d.png", model.modelId));
     }
 
 }
