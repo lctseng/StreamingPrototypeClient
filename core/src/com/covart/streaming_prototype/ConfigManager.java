@@ -454,7 +454,7 @@ public class ConfigManager {
     // end of getters and setters
 
     public static boolean isHighQualityImagesNeeded(){
-        return !isForceLowQuality() && editingState != EditingState.Normal;
+        return !isForceLowQuality() && editingState == EditingState.Normal;
     }
 
     public static boolean isMainEye(Eye eye){
