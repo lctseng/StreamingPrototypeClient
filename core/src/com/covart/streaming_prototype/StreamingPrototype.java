@@ -513,7 +513,7 @@ public class StreamingPrototype extends ApplicationAdapter
                     switch(editMsg.getOp()){
                         case MODEL_LIST:
                             // TODO:  do we need to lock these list? which threads are reading these lists?
-                            ConfigManager.editingModelManager.setupEditing(editMsg.getCurrentModelIdsList(), editMsg.getAddModelIdsList());
+                            ConfigManager.editingModelManager.setupEditing(editMsg.getCurrentModelInfosList(), editMsg.getAddModelInfosList());
                             editingPanel.setNeedRefreshCurrentList(true);
                             editingPanel.setNeedRefreshNewList(true);
                             display.prepareForEditingMode();
@@ -523,7 +523,7 @@ public class StreamingPrototype extends ApplicationAdapter
                             if(ConfigManager.getEditingState() == ConfigManager.EditingState.ConfirmAdding){
                                 Gdx.app.log("Editing", "Confirm adding, model id = " + editMsg.getModelId());
                                 ConfigManager.setEditingState(ConfigManager.EditingState.SelectOperation);
-                                ConfigManager.editingModelManager.addNewModel(editMsg.getModelId());
+                                ConfigManager.editingModelManager.addNewModel(editMsg.getCurrentModelInfos(0));
                                 display.onNewCurrentModel(editMsg.getModelId());
                                 editingPanel.finishConfirmAddingMode();
 

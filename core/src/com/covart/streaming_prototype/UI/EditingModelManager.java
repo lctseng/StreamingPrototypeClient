@@ -19,6 +19,7 @@ public class EditingModelManager {
         public int modelId;
         public float screenX;
         public float screenY;
+        public String name;
 
     }
 
@@ -31,12 +32,13 @@ public class EditingModelManager {
     private int currentIndex = -1;
     private int addIndex = -1;
 
-    private static void convertMsgsToModelInfos(List<Integer> modelMsgList, List<ModelInfo> modelInfoList){
+    private static void convertMsgsToModelInfos(List<Message.ModelInfo> modelMsgList, List<ModelInfo> modelInfoList){
         modelInfoList.clear();
         // TODO: model id should be replaced
-        for(Integer newModelId : modelMsgList){
+        for(Message.ModelInfo newModelInfo : modelMsgList){
             ModelInfo modelInfo = new ModelInfo();
-            modelInfo.modelId = newModelId;
+            modelInfo.modelId = newModelInfo.getModelId();
+            modelInfo.name = newModelInfo.getModelName();
             modelInfoList.add(modelInfo);
         }
     }
@@ -51,16 +53,17 @@ public class EditingModelManager {
     }
 
     // TODO: model id should be replaced
-    public void setupEditing(List<Integer> currentModelMsgList, List<Integer> addModelMsgList){
+    public void setupEditing(List<Message.ModelInfo> currentModelMsgList, List<Message.ModelInfo> addModelMsgList){
         convertMsgsToModelInfos(currentModelMsgList, currentModelList);
         convertMsgsToModelInfos(addModelMsgList, addModelList);
         resetAllIndex();
     }
 
     // TODO: model id should be replaced
-    public void addNewModel(int modelId){
+    public void addNewModel(Message.ModelInfo newModelInfo){
         ModelInfo model = new ModelInfo();
-        model.modelId = modelId;
+        model.modelId = newModelInfo.getModelId();
+        model.name = newModelInfo.getModelName();
         synchronized (currentModelLock){
             currentModelList.add(model);
         }

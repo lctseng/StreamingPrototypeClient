@@ -26,12 +26,12 @@ public class ModelButton extends VerticalImageTextButton {
     }
 
     public ModelButton(EditingModelManager.ModelInfo model, String filename) {
-        super("Model " + model.modelId, openModelFileWithFallback(filename));
+        super(model.name, openModelFileWithFallback(filename));
         this.model = model;
     }
 
     public ModelButton(EditingModelManager.ModelInfo model) {
-        super("Model " + model.modelId, "base.png");
+        super(model.name, "base.png");
         this.model = model;
     }
 

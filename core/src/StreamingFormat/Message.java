@@ -269,7 +269,7 @@ public final class Message {
     UPDATE(2),
     /**
      * <pre>
-     * param: currentModelIds, addModelIds
+     * param: currentModelInfos, addModelInfos
      * </pre>
      *
      * <code>MODEL_LIST = 3;</code>
@@ -291,6 +291,14 @@ public final class Message {
      * <code>ADD_MODEL = 5;</code>
      */
     ADD_MODEL(5),
+    /**
+     * <pre>
+     * param: currentModelInfos
+     * </pre>
+     *
+     * <code>CONFIRM_ADD = 6;</code>
+     */
+    CONFIRM_ADD(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -312,7 +320,7 @@ public final class Message {
     public static final int UPDATE_VALUE = 2;
     /**
      * <pre>
-     * param: currentModelIds, addModelIds
+     * param: currentModelInfos, addModelInfos
      * </pre>
      *
      * <code>MODEL_LIST = 3;</code>
@@ -334,6 +342,14 @@ public final class Message {
      * <code>ADD_MODEL = 5;</code>
      */
     public static final int ADD_MODEL_VALUE = 5;
+    /**
+     * <pre>
+     * param: currentModelInfos
+     * </pre>
+     *
+     * <code>CONFIRM_ADD = 6;</code>
+     */
+    public static final int CONFIRM_ADD_VALUE = 6;
 
 
     public final int getNumber() {
@@ -360,6 +376,7 @@ public final class Message {
         case 3: return MODEL_LIST;
         case 4: return SET_MODEL;
         case 5: return ADD_MODEL;
+        case 6: return CONFIRM_ADD;
         default: return null;
       }
     }
@@ -2753,6 +2770,810 @@ public final class Message {
 
   }
 
+  public interface ModelInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:StreamingFormat.ModelInfo)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 model_id = 1;</code>
+     */
+    int getModelId();
+
+    /**
+     * <code>string model_name = 2;</code>
+     */
+    java.lang.String getModelName();
+    /**
+     * <code>string model_name = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getModelNameBytes();
+
+    /**
+     * <pre>
+     * screen xy is for displaying current position, valid only for existing model
+     * </pre>
+     *
+     * <code>float screen_x = 3;</code>
+     */
+    float getScreenX();
+
+    /**
+     * <code>float screen_y = 4;</code>
+     */
+    float getScreenY();
+
+    /**
+     * <pre>
+     * model image in PNG format
+     * </pre>
+     *
+     * <code>bytes model_image = 5;</code>
+     */
+    com.google.protobuf.ByteString getModelImage();
+  }
+  /**
+   * Protobuf type {@code StreamingFormat.ModelInfo}
+   */
+  public  static final class ModelInfo extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:StreamingFormat.ModelInfo)
+      ModelInfoOrBuilder {
+    // Use ModelInfo.newBuilder() to construct.
+    private ModelInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ModelInfo() {
+      modelId_ = 0;
+      modelName_ = "";
+      screenX_ = 0F;
+      screenY_ = 0F;
+      modelImage_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private ModelInfo(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              modelId_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              modelName_ = s;
+              break;
+            }
+            case 29: {
+
+              screenX_ = input.readFloat();
+              break;
+            }
+            case 37: {
+
+              screenY_ = input.readFloat();
+              break;
+            }
+            case 42: {
+
+              modelImage_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_ModelInfo_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return StreamingFormat.Message.internal_static_StreamingFormat_ModelInfo_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              StreamingFormat.Message.ModelInfo.class, StreamingFormat.Message.ModelInfo.Builder.class);
+    }
+
+    public static final int MODEL_ID_FIELD_NUMBER = 1;
+    private int modelId_;
+    /**
+     * <code>int32 model_id = 1;</code>
+     */
+    public int getModelId() {
+      return modelId_;
+    }
+
+    public static final int MODEL_NAME_FIELD_NUMBER = 2;
+    private volatile java.lang.Object modelName_;
+    /**
+     * <code>string model_name = 2;</code>
+     */
+    public java.lang.String getModelName() {
+      java.lang.Object ref = modelName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        modelName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string model_name = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getModelNameBytes() {
+      java.lang.Object ref = modelName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        modelName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SCREEN_X_FIELD_NUMBER = 3;
+    private float screenX_;
+    /**
+     * <pre>
+     * screen xy is for displaying current position, valid only for existing model
+     * </pre>
+     *
+     * <code>float screen_x = 3;</code>
+     */
+    public float getScreenX() {
+      return screenX_;
+    }
+
+    public static final int SCREEN_Y_FIELD_NUMBER = 4;
+    private float screenY_;
+    /**
+     * <code>float screen_y = 4;</code>
+     */
+    public float getScreenY() {
+      return screenY_;
+    }
+
+    public static final int MODEL_IMAGE_FIELD_NUMBER = 5;
+    private com.google.protobuf.ByteString modelImage_;
+    /**
+     * <pre>
+     * model image in PNG format
+     * </pre>
+     *
+     * <code>bytes model_image = 5;</code>
+     */
+    public com.google.protobuf.ByteString getModelImage() {
+      return modelImage_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (modelId_ != 0) {
+        output.writeInt32(1, modelId_);
+      }
+      if (!getModelNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, modelName_);
+      }
+      if (screenX_ != 0F) {
+        output.writeFloat(3, screenX_);
+      }
+      if (screenY_ != 0F) {
+        output.writeFloat(4, screenY_);
+      }
+      if (!modelImage_.isEmpty()) {
+        output.writeBytes(5, modelImage_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (modelId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, modelId_);
+      }
+      if (!getModelNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, modelName_);
+      }
+      if (screenX_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(3, screenX_);
+      }
+      if (screenY_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(4, screenY_);
+      }
+      if (!modelImage_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, modelImage_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof StreamingFormat.Message.ModelInfo)) {
+        return super.equals(obj);
+      }
+      StreamingFormat.Message.ModelInfo other = (StreamingFormat.Message.ModelInfo) obj;
+
+      boolean result = true;
+      result = result && (getModelId()
+          == other.getModelId());
+      result = result && getModelName()
+          .equals(other.getModelName());
+      result = result && (
+          java.lang.Float.floatToIntBits(getScreenX())
+          == java.lang.Float.floatToIntBits(
+              other.getScreenX()));
+      result = result && (
+          java.lang.Float.floatToIntBits(getScreenY())
+          == java.lang.Float.floatToIntBits(
+              other.getScreenY()));
+      result = result && getModelImage()
+          .equals(other.getModelImage());
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MODEL_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getModelId();
+      hash = (37 * hash) + MODEL_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getModelName().hashCode();
+      hash = (37 * hash) + SCREEN_X_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getScreenX());
+      hash = (37 * hash) + SCREEN_Y_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getScreenY());
+      hash = (37 * hash) + MODEL_IMAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getModelImage().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.ModelInfo parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.ModelInfo parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static StreamingFormat.Message.ModelInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(StreamingFormat.Message.ModelInfo prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code StreamingFormat.ModelInfo}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:StreamingFormat.ModelInfo)
+        StreamingFormat.Message.ModelInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_ModelInfo_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_ModelInfo_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                StreamingFormat.Message.ModelInfo.class, StreamingFormat.Message.ModelInfo.Builder.class);
+      }
+
+      // Construct using StreamingFormat.Message.ModelInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        modelId_ = 0;
+
+        modelName_ = "";
+
+        screenX_ = 0F;
+
+        screenY_ = 0F;
+
+        modelImage_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return StreamingFormat.Message.internal_static_StreamingFormat_ModelInfo_descriptor;
+      }
+
+      public StreamingFormat.Message.ModelInfo getDefaultInstanceForType() {
+        return StreamingFormat.Message.ModelInfo.getDefaultInstance();
+      }
+
+      public StreamingFormat.Message.ModelInfo build() {
+        StreamingFormat.Message.ModelInfo result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public StreamingFormat.Message.ModelInfo buildPartial() {
+        StreamingFormat.Message.ModelInfo result = new StreamingFormat.Message.ModelInfo(this);
+        result.modelId_ = modelId_;
+        result.modelName_ = modelName_;
+        result.screenX_ = screenX_;
+        result.screenY_ = screenY_;
+        result.modelImage_ = modelImage_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof StreamingFormat.Message.ModelInfo) {
+          return mergeFrom((StreamingFormat.Message.ModelInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(StreamingFormat.Message.ModelInfo other) {
+        if (other == StreamingFormat.Message.ModelInfo.getDefaultInstance()) return this;
+        if (other.getModelId() != 0) {
+          setModelId(other.getModelId());
+        }
+        if (!other.getModelName().isEmpty()) {
+          modelName_ = other.modelName_;
+          onChanged();
+        }
+        if (other.getScreenX() != 0F) {
+          setScreenX(other.getScreenX());
+        }
+        if (other.getScreenY() != 0F) {
+          setScreenY(other.getScreenY());
+        }
+        if (other.getModelImage() != com.google.protobuf.ByteString.EMPTY) {
+          setModelImage(other.getModelImage());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        StreamingFormat.Message.ModelInfo parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (StreamingFormat.Message.ModelInfo) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int modelId_ ;
+      /**
+       * <code>int32 model_id = 1;</code>
+       */
+      public int getModelId() {
+        return modelId_;
+      }
+      /**
+       * <code>int32 model_id = 1;</code>
+       */
+      public Builder setModelId(int value) {
+        
+        modelId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 model_id = 1;</code>
+       */
+      public Builder clearModelId() {
+        
+        modelId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object modelName_ = "";
+      /**
+       * <code>string model_name = 2;</code>
+       */
+      public java.lang.String getModelName() {
+        java.lang.Object ref = modelName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          modelName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string model_name = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getModelNameBytes() {
+        java.lang.Object ref = modelName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          modelName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string model_name = 2;</code>
+       */
+      public Builder setModelName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        modelName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string model_name = 2;</code>
+       */
+      public Builder clearModelName() {
+        
+        modelName_ = getDefaultInstance().getModelName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string model_name = 2;</code>
+       */
+      public Builder setModelNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        modelName_ = value;
+        onChanged();
+        return this;
+      }
+
+      private float screenX_ ;
+      /**
+       * <pre>
+       * screen xy is for displaying current position, valid only for existing model
+       * </pre>
+       *
+       * <code>float screen_x = 3;</code>
+       */
+      public float getScreenX() {
+        return screenX_;
+      }
+      /**
+       * <pre>
+       * screen xy is for displaying current position, valid only for existing model
+       * </pre>
+       *
+       * <code>float screen_x = 3;</code>
+       */
+      public Builder setScreenX(float value) {
+        
+        screenX_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * screen xy is for displaying current position, valid only for existing model
+       * </pre>
+       *
+       * <code>float screen_x = 3;</code>
+       */
+      public Builder clearScreenX() {
+        
+        screenX_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private float screenY_ ;
+      /**
+       * <code>float screen_y = 4;</code>
+       */
+      public float getScreenY() {
+        return screenY_;
+      }
+      /**
+       * <code>float screen_y = 4;</code>
+       */
+      public Builder setScreenY(float value) {
+        
+        screenY_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>float screen_y = 4;</code>
+       */
+      public Builder clearScreenY() {
+        
+        screenY_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString modelImage_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <pre>
+       * model image in PNG format
+       * </pre>
+       *
+       * <code>bytes model_image = 5;</code>
+       */
+      public com.google.protobuf.ByteString getModelImage() {
+        return modelImage_;
+      }
+      /**
+       * <pre>
+       * model image in PNG format
+       * </pre>
+       *
+       * <code>bytes model_image = 5;</code>
+       */
+      public Builder setModelImage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        modelImage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * model image in PNG format
+       * </pre>
+       *
+       * <code>bytes model_image = 5;</code>
+       */
+      public Builder clearModelImage() {
+        
+        modelImage_ = getDefaultInstance().getModelImage();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:StreamingFormat.ModelInfo)
+    }
+
+    // @@protoc_insertion_point(class_scope:StreamingFormat.ModelInfo)
+    private static final StreamingFormat.Message.ModelInfo DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new StreamingFormat.Message.ModelInfo();
+    }
+
+    public static StreamingFormat.Message.ModelInfo getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ModelInfo>
+        PARSER = new com.google.protobuf.AbstractParser<ModelInfo>() {
+      public ModelInfo parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ModelInfo(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ModelInfo> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ModelInfo> getParserForType() {
+      return PARSER;
+    }
+
+    public StreamingFormat.Message.ModelInfo getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface EditingOrBuilder extends
       // @@protoc_insertion_point(interface_extends:StreamingFormat.Editing)
       com.google.protobuf.MessageOrBuilder {
@@ -2782,53 +3603,91 @@ public final class Message {
 
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    java.util.List<java.lang.Integer> getCurrentModelIdsList();
+    java.util.List<StreamingFormat.Message.ModelInfo> 
+        getCurrentModelInfosList();
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    int getCurrentModelIdsCount();
+    StreamingFormat.Message.ModelInfo getCurrentModelInfos(int index);
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    int getCurrentModelIds(int index);
+    int getCurrentModelInfosCount();
+    /**
+     * <pre>
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+     */
+    java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+        getCurrentModelInfosOrBuilderList();
+    /**
+     * <pre>
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+     */
+    StreamingFormat.Message.ModelInfoOrBuilder getCurrentModelInfosOrBuilder(
+        int index);
 
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    java.util.List<java.lang.Integer> getAddModelIdsList();
+    java.util.List<StreamingFormat.Message.ModelInfo> 
+        getAddModelInfosList();
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    int getAddModelIdsCount();
+    StreamingFormat.Message.ModelInfo getAddModelInfos(int index);
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    int getAddModelIds(int index);
+    int getAddModelInfosCount();
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+     */
+    java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+        getAddModelInfosOrBuilderList();
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+     */
+    StreamingFormat.Message.ModelInfoOrBuilder getAddModelInfosOrBuilder(
+        int index);
 
     /**
      * <pre>
@@ -2854,8 +3713,8 @@ public final class Message {
       op_ = 0;
       screenX_ = 0F;
       screenY_ = 0F;
-      currentModelIds_ = java.util.Collections.emptyList();
-      addModelIds_ = java.util.Collections.emptyList();
+      currentModelInfos_ = java.util.Collections.emptyList();
+      addModelInfos_ = java.util.Collections.emptyList();
       modelId_ = 0;
     }
 
@@ -2900,46 +3759,22 @@ public final class Message {
               screenY_ = input.readFloat();
               break;
             }
-            case 32: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                currentModelIds_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              currentModelIds_.add(input.readInt32());
-              break;
-            }
             case 34: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                currentModelIds_ = new java.util.ArrayList<java.lang.Integer>();
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                currentModelInfos_ = new java.util.ArrayList<StreamingFormat.Message.ModelInfo>();
                 mutable_bitField0_ |= 0x00000008;
               }
-              while (input.getBytesUntilLimit() > 0) {
-                currentModelIds_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 40: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                addModelIds_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              addModelIds_.add(input.readInt32());
+              currentModelInfos_.add(
+                  input.readMessage(StreamingFormat.Message.ModelInfo.parser(), extensionRegistry));
               break;
             }
             case 42: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
-                addModelIds_ = new java.util.ArrayList<java.lang.Integer>();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                addModelInfos_ = new java.util.ArrayList<StreamingFormat.Message.ModelInfo>();
                 mutable_bitField0_ |= 0x00000010;
               }
-              while (input.getBytesUntilLimit() > 0) {
-                addModelIds_.add(input.readInt32());
-              }
-              input.popLimit(limit);
+              addModelInfos_.add(
+                  input.readMessage(StreamingFormat.Message.ModelInfo.parser(), extensionRegistry));
               break;
             }
             case 48: {
@@ -2956,10 +3791,10 @@ public final class Message {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-          currentModelIds_ = java.util.Collections.unmodifiableList(currentModelIds_);
+          currentModelInfos_ = java.util.Collections.unmodifiableList(currentModelInfos_);
         }
         if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          addModelIds_ = java.util.Collections.unmodifiableList(addModelIds_);
+          addModelInfos_ = java.util.Collections.unmodifiableList(addModelInfos_);
         }
         makeExtensionsImmutable();
       }
@@ -3015,75 +3850,115 @@ public final class Message {
       return screenY_;
     }
 
-    public static final int CURRENT_MODEL_IDS_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Integer> currentModelIds_;
+    public static final int CURRENT_MODEL_INFOS_FIELD_NUMBER = 4;
+    private java.util.List<StreamingFormat.Message.ModelInfo> currentModelInfos_;
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    public java.util.List<java.lang.Integer>
-        getCurrentModelIdsList() {
-      return currentModelIds_;
+    public java.util.List<StreamingFormat.Message.ModelInfo> getCurrentModelInfosList() {
+      return currentModelInfos_;
     }
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    public int getCurrentModelIdsCount() {
-      return currentModelIds_.size();
+    public java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+        getCurrentModelInfosOrBuilderList() {
+      return currentModelInfos_;
     }
     /**
      * <pre>
-     * modelIds is only valid in: MODEL_LIST
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
      * </pre>
      *
-     * <code>repeated int32 current_model_ids = 4;</code>
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
      */
-    public int getCurrentModelIds(int index) {
-      return currentModelIds_.get(index);
+    public int getCurrentModelInfosCount() {
+      return currentModelInfos_.size();
     }
-    private int currentModelIdsMemoizedSerializedSize = -1;
+    /**
+     * <pre>
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+     */
+    public StreamingFormat.Message.ModelInfo getCurrentModelInfos(int index) {
+      return currentModelInfos_.get(index);
+    }
+    /**
+     * <pre>
+     * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+     */
+    public StreamingFormat.Message.ModelInfoOrBuilder getCurrentModelInfosOrBuilder(
+        int index) {
+      return currentModelInfos_.get(index);
+    }
 
-    public static final int ADD_MODEL_IDS_FIELD_NUMBER = 5;
-    private java.util.List<java.lang.Integer> addModelIds_;
+    public static final int ADD_MODEL_INFOS_FIELD_NUMBER = 5;
+    private java.util.List<StreamingFormat.Message.ModelInfo> addModelInfos_;
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    public java.util.List<java.lang.Integer>
-        getAddModelIdsList() {
-      return addModelIds_;
+    public java.util.List<StreamingFormat.Message.ModelInfo> getAddModelInfosList() {
+      return addModelInfos_;
     }
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    public int getAddModelIdsCount() {
-      return addModelIds_.size();
+    public java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+        getAddModelInfosOrBuilderList() {
+      return addModelInfos_;
     }
     /**
      * <pre>
      * for list of new models
      * </pre>
      *
-     * <code>repeated int32 add_model_ids = 5;</code>
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
      */
-    public int getAddModelIds(int index) {
-      return addModelIds_.get(index);
+    public int getAddModelInfosCount() {
+      return addModelInfos_.size();
     }
-    private int addModelIdsMemoizedSerializedSize = -1;
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+     */
+    public StreamingFormat.Message.ModelInfo getAddModelInfos(int index) {
+      return addModelInfos_.get(index);
+    }
+    /**
+     * <pre>
+     * for list of new models
+     * </pre>
+     *
+     * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+     */
+    public StreamingFormat.Message.ModelInfoOrBuilder getAddModelInfosOrBuilder(
+        int index) {
+      return addModelInfos_.get(index);
+    }
 
     public static final int MODEL_ID_FIELD_NUMBER = 6;
     private int modelId_;
@@ -3110,7 +3985,6 @@ public final class Message {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       if (op_ != StreamingFormat.Message.EditOperation.START.getNumber()) {
         output.writeEnum(1, op_);
       }
@@ -3120,19 +3994,11 @@ public final class Message {
       if (screenY_ != 0F) {
         output.writeFloat(3, screenY_);
       }
-      if (getCurrentModelIdsList().size() > 0) {
-        output.writeUInt32NoTag(34);
-        output.writeUInt32NoTag(currentModelIdsMemoizedSerializedSize);
+      for (int i = 0; i < currentModelInfos_.size(); i++) {
+        output.writeMessage(4, currentModelInfos_.get(i));
       }
-      for (int i = 0; i < currentModelIds_.size(); i++) {
-        output.writeInt32NoTag(currentModelIds_.get(i));
-      }
-      if (getAddModelIdsList().size() > 0) {
-        output.writeUInt32NoTag(42);
-        output.writeUInt32NoTag(addModelIdsMemoizedSerializedSize);
-      }
-      for (int i = 0; i < addModelIds_.size(); i++) {
-        output.writeInt32NoTag(addModelIds_.get(i));
+      for (int i = 0; i < addModelInfos_.size(); i++) {
+        output.writeMessage(5, addModelInfos_.get(i));
       }
       if (modelId_ != 0) {
         output.writeInt32(6, modelId_);
@@ -3156,33 +4022,13 @@ public final class Message {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(3, screenY_);
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < currentModelIds_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(currentModelIds_.get(i));
-        }
-        size += dataSize;
-        if (!getCurrentModelIdsList().isEmpty()) {
-          size += 1;
-          size += com.google.protobuf.CodedOutputStream
-              .computeInt32SizeNoTag(dataSize);
-        }
-        currentModelIdsMemoizedSerializedSize = dataSize;
+      for (int i = 0; i < currentModelInfos_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, currentModelInfos_.get(i));
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < addModelIds_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(addModelIds_.get(i));
-        }
-        size += dataSize;
-        if (!getAddModelIdsList().isEmpty()) {
-          size += 1;
-          size += com.google.protobuf.CodedOutputStream
-              .computeInt32SizeNoTag(dataSize);
-        }
-        addModelIdsMemoizedSerializedSize = dataSize;
+      for (int i = 0; i < addModelInfos_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, addModelInfos_.get(i));
       }
       if (modelId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -3213,10 +4059,10 @@ public final class Message {
           java.lang.Float.floatToIntBits(getScreenY())
           == java.lang.Float.floatToIntBits(
               other.getScreenY()));
-      result = result && getCurrentModelIdsList()
-          .equals(other.getCurrentModelIdsList());
-      result = result && getAddModelIdsList()
-          .equals(other.getAddModelIdsList());
+      result = result && getCurrentModelInfosList()
+          .equals(other.getCurrentModelInfosList());
+      result = result && getAddModelInfosList()
+          .equals(other.getAddModelInfosList());
       result = result && (getModelId()
           == other.getModelId());
       return result;
@@ -3237,13 +4083,13 @@ public final class Message {
       hash = (37 * hash) + SCREEN_Y_FIELD_NUMBER;
       hash = (53 * hash) + java.lang.Float.floatToIntBits(
           getScreenY());
-      if (getCurrentModelIdsCount() > 0) {
-        hash = (37 * hash) + CURRENT_MODEL_IDS_FIELD_NUMBER;
-        hash = (53 * hash) + getCurrentModelIdsList().hashCode();
+      if (getCurrentModelInfosCount() > 0) {
+        hash = (37 * hash) + CURRENT_MODEL_INFOS_FIELD_NUMBER;
+        hash = (53 * hash) + getCurrentModelInfosList().hashCode();
       }
-      if (getAddModelIdsCount() > 0) {
-        hash = (37 * hash) + ADD_MODEL_IDS_FIELD_NUMBER;
-        hash = (53 * hash) + getAddModelIdsList().hashCode();
+      if (getAddModelInfosCount() > 0) {
+        hash = (37 * hash) + ADD_MODEL_INFOS_FIELD_NUMBER;
+        hash = (53 * hash) + getAddModelInfosList().hashCode();
       }
       hash = (37 * hash) + MODEL_ID_FIELD_NUMBER;
       hash = (53 * hash) + getModelId();
@@ -3361,6 +4207,8 @@ public final class Message {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getCurrentModelInfosFieldBuilder();
+          getAddModelInfosFieldBuilder();
         }
       }
       public Builder clear() {
@@ -3371,10 +4219,18 @@ public final class Message {
 
         screenY_ = 0F;
 
-        currentModelIds_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        addModelIds_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        if (currentModelInfosBuilder_ == null) {
+          currentModelInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          currentModelInfosBuilder_.clear();
+        }
+        if (addModelInfosBuilder_ == null) {
+          addModelInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          addModelInfosBuilder_.clear();
+        }
         modelId_ = 0;
 
         return this;
@@ -3404,16 +4260,24 @@ public final class Message {
         result.op_ = op_;
         result.screenX_ = screenX_;
         result.screenY_ = screenY_;
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          currentModelIds_ = java.util.Collections.unmodifiableList(currentModelIds_);
-          bitField0_ = (bitField0_ & ~0x00000008);
+        if (currentModelInfosBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            currentModelInfos_ = java.util.Collections.unmodifiableList(currentModelInfos_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.currentModelInfos_ = currentModelInfos_;
+        } else {
+          result.currentModelInfos_ = currentModelInfosBuilder_.build();
         }
-        result.currentModelIds_ = currentModelIds_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          addModelIds_ = java.util.Collections.unmodifiableList(addModelIds_);
-          bitField0_ = (bitField0_ & ~0x00000010);
+        if (addModelInfosBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            addModelInfos_ = java.util.Collections.unmodifiableList(addModelInfos_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.addModelInfos_ = addModelInfos_;
+        } else {
+          result.addModelInfos_ = addModelInfosBuilder_.build();
         }
-        result.addModelIds_ = addModelIds_;
         result.modelId_ = modelId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -3466,25 +4330,57 @@ public final class Message {
         if (other.getScreenY() != 0F) {
           setScreenY(other.getScreenY());
         }
-        if (!other.currentModelIds_.isEmpty()) {
-          if (currentModelIds_.isEmpty()) {
-            currentModelIds_ = other.currentModelIds_;
-            bitField0_ = (bitField0_ & ~0x00000008);
-          } else {
-            ensureCurrentModelIdsIsMutable();
-            currentModelIds_.addAll(other.currentModelIds_);
+        if (currentModelInfosBuilder_ == null) {
+          if (!other.currentModelInfos_.isEmpty()) {
+            if (currentModelInfos_.isEmpty()) {
+              currentModelInfos_ = other.currentModelInfos_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensureCurrentModelInfosIsMutable();
+              currentModelInfos_.addAll(other.currentModelInfos_);
+            }
+            onChanged();
           }
-          onChanged();
+        } else {
+          if (!other.currentModelInfos_.isEmpty()) {
+            if (currentModelInfosBuilder_.isEmpty()) {
+              currentModelInfosBuilder_.dispose();
+              currentModelInfosBuilder_ = null;
+              currentModelInfos_ = other.currentModelInfos_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              currentModelInfosBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getCurrentModelInfosFieldBuilder() : null;
+            } else {
+              currentModelInfosBuilder_.addAllMessages(other.currentModelInfos_);
+            }
+          }
         }
-        if (!other.addModelIds_.isEmpty()) {
-          if (addModelIds_.isEmpty()) {
-            addModelIds_ = other.addModelIds_;
-            bitField0_ = (bitField0_ & ~0x00000010);
-          } else {
-            ensureAddModelIdsIsMutable();
-            addModelIds_.addAll(other.addModelIds_);
+        if (addModelInfosBuilder_ == null) {
+          if (!other.addModelInfos_.isEmpty()) {
+            if (addModelInfos_.isEmpty()) {
+              addModelInfos_ = other.addModelInfos_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureAddModelInfosIsMutable();
+              addModelInfos_.addAll(other.addModelInfos_);
+            }
+            onChanged();
           }
-          onChanged();
+        } else {
+          if (!other.addModelInfos_.isEmpty()) {
+            if (addModelInfosBuilder_.isEmpty()) {
+              addModelInfosBuilder_.dispose();
+              addModelInfosBuilder_ = null;
+              addModelInfos_ = other.addModelInfos_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              addModelInfosBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAddModelInfosFieldBuilder() : null;
+            } else {
+              addModelInfosBuilder_.addAllMessages(other.addModelInfos_);
+            }
+          }
         }
         if (other.getModelId() != 0) {
           setModelId(other.getModelId());
@@ -3624,150 +4520,391 @@ public final class Message {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> currentModelIds_ = java.util.Collections.emptyList();
-      private void ensureCurrentModelIdsIsMutable() {
+      private java.util.List<StreamingFormat.Message.ModelInfo> currentModelInfos_ =
+        java.util.Collections.emptyList();
+      private void ensureCurrentModelInfosIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          currentModelIds_ = new java.util.ArrayList<java.lang.Integer>(currentModelIds_);
+          currentModelInfos_ = new java.util.ArrayList<StreamingFormat.Message.ModelInfo>(currentModelInfos_);
           bitField0_ |= 0x00000008;
          }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder> currentModelInfosBuilder_;
+
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public java.util.List<java.lang.Integer>
-          getCurrentModelIdsList() {
-        return java.util.Collections.unmodifiableList(currentModelIds_);
+      public java.util.List<StreamingFormat.Message.ModelInfo> getCurrentModelInfosList() {
+        if (currentModelInfosBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(currentModelInfos_);
+        } else {
+          return currentModelInfosBuilder_.getMessageList();
+        }
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public int getCurrentModelIdsCount() {
-        return currentModelIds_.size();
+      public int getCurrentModelInfosCount() {
+        if (currentModelInfosBuilder_ == null) {
+          return currentModelInfos_.size();
+        } else {
+          return currentModelInfosBuilder_.getCount();
+        }
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public int getCurrentModelIds(int index) {
-        return currentModelIds_.get(index);
+      public StreamingFormat.Message.ModelInfo getCurrentModelInfos(int index) {
+        if (currentModelInfosBuilder_ == null) {
+          return currentModelInfos_.get(index);
+        } else {
+          return currentModelInfosBuilder_.getMessage(index);
+        }
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public Builder setCurrentModelIds(
-          int index, int value) {
-        ensureCurrentModelIdsIsMutable();
-        currentModelIds_.set(index, value);
-        onChanged();
+      public Builder setCurrentModelInfos(
+          int index, StreamingFormat.Message.ModelInfo value) {
+        if (currentModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.set(index, value);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public Builder addCurrentModelIds(int value) {
-        ensureCurrentModelIdsIsMutable();
-        currentModelIds_.add(value);
-        onChanged();
+      public Builder setCurrentModelInfos(
+          int index, StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (currentModelInfosBuilder_ == null) {
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public Builder addAllCurrentModelIds(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureCurrentModelIdsIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, currentModelIds_);
-        onChanged();
+      public Builder addCurrentModelInfos(StreamingFormat.Message.ModelInfo value) {
+        if (currentModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.add(value);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
        * <pre>
-       * modelIds is only valid in: MODEL_LIST
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
        * </pre>
        *
-       * <code>repeated int32 current_model_ids = 4;</code>
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
        */
-      public Builder clearCurrentModelIds() {
-        currentModelIds_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        onChanged();
+      public Builder addCurrentModelInfos(
+          int index, StreamingFormat.Message.ModelInfo value) {
+        if (currentModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.add(index, value);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.addMessage(index, value);
+        }
         return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public Builder addCurrentModelInfos(
+          StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (currentModelInfosBuilder_ == null) {
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.add(builderForValue.build());
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public Builder addCurrentModelInfos(
+          int index, StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (currentModelInfosBuilder_ == null) {
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public Builder addAllCurrentModelInfos(
+          java.lang.Iterable<? extends StreamingFormat.Message.ModelInfo> values) {
+        if (currentModelInfosBuilder_ == null) {
+          ensureCurrentModelInfosIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, currentModelInfos_);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public Builder clearCurrentModelInfos() {
+        if (currentModelInfosBuilder_ == null) {
+          currentModelInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public Builder removeCurrentModelInfos(int index) {
+        if (currentModelInfosBuilder_ == null) {
+          ensureCurrentModelInfosIsMutable();
+          currentModelInfos_.remove(index);
+          onChanged();
+        } else {
+          currentModelInfosBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder getCurrentModelInfosBuilder(
+          int index) {
+        return getCurrentModelInfosFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public StreamingFormat.Message.ModelInfoOrBuilder getCurrentModelInfosOrBuilder(
+          int index) {
+        if (currentModelInfosBuilder_ == null) {
+          return currentModelInfos_.get(index);  } else {
+          return currentModelInfosBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+           getCurrentModelInfosOrBuilderList() {
+        if (currentModelInfosBuilder_ != null) {
+          return currentModelInfosBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(currentModelInfos_);
+        }
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder addCurrentModelInfosBuilder() {
+        return getCurrentModelInfosFieldBuilder().addBuilder(
+            StreamingFormat.Message.ModelInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder addCurrentModelInfosBuilder(
+          int index) {
+        return getCurrentModelInfosFieldBuilder().addBuilder(
+            index, StreamingFormat.Message.ModelInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * modelIds is only valid in: MODEL_LIST, CONFIRM_ADD
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo current_model_infos = 4;</code>
+       */
+      public java.util.List<StreamingFormat.Message.ModelInfo.Builder> 
+           getCurrentModelInfosBuilderList() {
+        return getCurrentModelInfosFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder> 
+          getCurrentModelInfosFieldBuilder() {
+        if (currentModelInfosBuilder_ == null) {
+          currentModelInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder>(
+                  currentModelInfos_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          currentModelInfos_ = null;
+        }
+        return currentModelInfosBuilder_;
       }
 
-      private java.util.List<java.lang.Integer> addModelIds_ = java.util.Collections.emptyList();
-      private void ensureAddModelIdsIsMutable() {
+      private java.util.List<StreamingFormat.Message.ModelInfo> addModelInfos_ =
+        java.util.Collections.emptyList();
+      private void ensureAddModelInfosIsMutable() {
         if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          addModelIds_ = new java.util.ArrayList<java.lang.Integer>(addModelIds_);
+          addModelInfos_ = new java.util.ArrayList<StreamingFormat.Message.ModelInfo>(addModelInfos_);
           bitField0_ |= 0x00000010;
          }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder> addModelInfosBuilder_;
+
       /**
        * <pre>
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public java.util.List<java.lang.Integer>
-          getAddModelIdsList() {
-        return java.util.Collections.unmodifiableList(addModelIds_);
+      public java.util.List<StreamingFormat.Message.ModelInfo> getAddModelInfosList() {
+        if (addModelInfosBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(addModelInfos_);
+        } else {
+          return addModelInfosBuilder_.getMessageList();
+        }
       }
       /**
        * <pre>
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public int getAddModelIdsCount() {
-        return addModelIds_.size();
+      public int getAddModelInfosCount() {
+        if (addModelInfosBuilder_ == null) {
+          return addModelInfos_.size();
+        } else {
+          return addModelInfosBuilder_.getCount();
+        }
       }
       /**
        * <pre>
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public int getAddModelIds(int index) {
-        return addModelIds_.get(index);
+      public StreamingFormat.Message.ModelInfo getAddModelInfos(int index) {
+        if (addModelInfosBuilder_ == null) {
+          return addModelInfos_.get(index);
+        } else {
+          return addModelInfosBuilder_.getMessage(index);
+        }
       }
       /**
        * <pre>
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public Builder setAddModelIds(
-          int index, int value) {
-        ensureAddModelIdsIsMutable();
-        addModelIds_.set(index, value);
-        onChanged();
+      public Builder setAddModelInfos(
+          int index, StreamingFormat.Message.ModelInfo value) {
+        if (addModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.set(index, value);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
@@ -3775,12 +4912,17 @@ public final class Message {
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public Builder addAddModelIds(int value) {
-        ensureAddModelIdsIsMutable();
-        addModelIds_.add(value);
-        onChanged();
+      public Builder setAddModelInfos(
+          int index, StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (addModelInfosBuilder_ == null) {
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          addModelInfosBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
@@ -3788,14 +4930,19 @@ public final class Message {
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public Builder addAllAddModelIds(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureAddModelIdsIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, addModelIds_);
-        onChanged();
+      public Builder addAddModelInfos(StreamingFormat.Message.ModelInfo value) {
+        if (addModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.add(value);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
@@ -3803,13 +4950,198 @@ public final class Message {
        * for list of new models
        * </pre>
        *
-       * <code>repeated int32 add_model_ids = 5;</code>
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
        */
-      public Builder clearAddModelIds() {
-        addModelIds_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
-        onChanged();
+      public Builder addAddModelInfos(
+          int index, StreamingFormat.Message.ModelInfo value) {
+        if (addModelInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.add(index, value);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.addMessage(index, value);
+        }
         return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public Builder addAddModelInfos(
+          StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (addModelInfosBuilder_ == null) {
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.add(builderForValue.build());
+          onChanged();
+        } else {
+          addModelInfosBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public Builder addAddModelInfos(
+          int index, StreamingFormat.Message.ModelInfo.Builder builderForValue) {
+        if (addModelInfosBuilder_ == null) {
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          addModelInfosBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public Builder addAllAddModelInfos(
+          java.lang.Iterable<? extends StreamingFormat.Message.ModelInfo> values) {
+        if (addModelInfosBuilder_ == null) {
+          ensureAddModelInfosIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, addModelInfos_);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public Builder clearAddModelInfos() {
+        if (addModelInfosBuilder_ == null) {
+          addModelInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public Builder removeAddModelInfos(int index) {
+        if (addModelInfosBuilder_ == null) {
+          ensureAddModelInfosIsMutable();
+          addModelInfos_.remove(index);
+          onChanged();
+        } else {
+          addModelInfosBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder getAddModelInfosBuilder(
+          int index) {
+        return getAddModelInfosFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public StreamingFormat.Message.ModelInfoOrBuilder getAddModelInfosOrBuilder(
+          int index) {
+        if (addModelInfosBuilder_ == null) {
+          return addModelInfos_.get(index);  } else {
+          return addModelInfosBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public java.util.List<? extends StreamingFormat.Message.ModelInfoOrBuilder> 
+           getAddModelInfosOrBuilderList() {
+        if (addModelInfosBuilder_ != null) {
+          return addModelInfosBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(addModelInfos_);
+        }
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder addAddModelInfosBuilder() {
+        return getAddModelInfosFieldBuilder().addBuilder(
+            StreamingFormat.Message.ModelInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public StreamingFormat.Message.ModelInfo.Builder addAddModelInfosBuilder(
+          int index) {
+        return getAddModelInfosFieldBuilder().addBuilder(
+            index, StreamingFormat.Message.ModelInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * for list of new models
+       * </pre>
+       *
+       * <code>repeated .StreamingFormat.ModelInfo add_model_infos = 5;</code>
+       */
+      public java.util.List<StreamingFormat.Message.ModelInfo.Builder> 
+           getAddModelInfosBuilderList() {
+        return getAddModelInfosFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder> 
+          getAddModelInfosFieldBuilder() {
+        if (addModelInfosBuilder_ == null) {
+          addModelInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              StreamingFormat.Message.ModelInfo, StreamingFormat.Message.ModelInfo.Builder, StreamingFormat.Message.ModelInfoOrBuilder>(
+                  addModelInfos_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          addModelInfos_ = null;
+        }
+        return addModelInfosBuilder_;
       }
 
       private int modelId_ ;
@@ -7497,6 +8829,11 @@ public final class Message {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StreamingFormat_Camera_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StreamingFormat_ModelInfo_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StreamingFormat_ModelInfo_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StreamingFormat_Editing_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -7539,33 +8876,38 @@ public final class Message {
       "\017\n\007delta_z\030\005 \001(\002\022\020\n\010delta_vx\030\006 \001(\002\022\020\n\010de" +
       "lta_vy\030\007 \001(\002\022\020\n\010delta_vz\030\010 \001(\002\0223\n\014imageQ" +
       "uality\030\t \001(\0162\035.StreamingFormat.ImageQual" +
-      "ity\"\235\001\n\007Editing\022*\n\002op\030\001 \001(\0162\036.StreamingF",
-      "ormat.EditOperation\022\020\n\010screen_x\030\002 \001(\002\022\020\n" +
-      "\010screen_y\030\003 \001(\002\022\031\n\021current_model_ids\030\004 \003" +
-      "(\005\022\025\n\radd_model_ids\030\005 \003(\005\022\020\n\010model_id\030\006 " +
-      "\001(\005\"u\n\007Control\022\022\n\ndrop_index\030\001 \003(\r\022\022\n\nsa" +
-      "ve_frame\030\002 \001(\r\022\024\n\014change_scene\030\003 \001(\r\022,\n\n" +
-      "editingMsg\030\004 \001(\0132\030.StreamingFormat.Editi" +
-      "ng\"\201\001\n\005Image\022\024\n\014serialNumber\030\002 \001(\r\022\016\n\006st" +
-      "atus\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\timageDat" +
-      "a\030\005 \001(\014\022-\n\timageType\030\006 \001(\0162\032.StreamingFo" +
-      "rmat.ImageType\"\010\n\006Ending\"\312\002\n\020StreamingMe",
-      "ssage\022*\n\004type\030\001 \001(\0162\034.StreamingFormat.Me" +
-      "ssageType\022&\n\007initMsg\030\002 \001(\0132\025.StreamingFo" +
-      "rmat.Init\0222\n\rdefaultPosMsg\030\003 \001(\0132\033.Strea" +
-      "mingFormat.DefaultPos\022*\n\tcameraMsg\030\004 \001(\013" +
-      "2\027.StreamingFormat.Camera\022(\n\010imageMsg\030\005 " +
-      "\001(\0132\026.StreamingFormat.Image\022*\n\tendingMsg" +
-      "\030\006 \001(\0132\027.StreamingFormat.Ending\022,\n\ncontr" +
-      "olMsg\030\007 \001(\0132\030.StreamingFormat.Control*m\n" +
-      "\013MessageType\022\013\n\007MsgInit\020\000\022\021\n\rMsgDefaultP" +
-      "os\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010MsgImage\020\003\022\r\n",
-      "\tMsgEnding\020\004\022\016\n\nMsgControl\020\005*!\n\014ImageQua" +
-      "lity\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\001*`\n\rEditOperation" +
-      "\022\t\n\005START\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDATE\020\002\022\016\n\nM" +
-      "ODEL_LIST\020\003\022\r\n\tSET_MODEL\020\004\022\r\n\tADD_MODEL\020" +
-      "\005*:\n\tImageType\022\016\n\nFULL_INDEX\020\000\022\r\n\tODD_IN" +
-      "DEX\020\001\022\016\n\nEVEN_INDEX\020\002b\006proto3"
+      "ity\"j\n\tModelInfo\022\020\n\010model_id\030\001 \001(\005\022\022\n\nmo",
+      "del_name\030\002 \001(\t\022\020\n\010screen_x\030\003 \001(\002\022\020\n\010scre" +
+      "en_y\030\004 \001(\002\022\023\n\013model_image\030\005 \001(\014\"\331\001\n\007Edit" +
+      "ing\022*\n\002op\030\001 \001(\0162\036.StreamingFormat.EditOp" +
+      "eration\022\020\n\010screen_x\030\002 \001(\002\022\020\n\010screen_y\030\003 " +
+      "\001(\002\0227\n\023current_model_infos\030\004 \003(\0132\032.Strea" +
+      "mingFormat.ModelInfo\0223\n\017add_model_infos\030" +
+      "\005 \003(\0132\032.StreamingFormat.ModelInfo\022\020\n\010mod" +
+      "el_id\030\006 \001(\005\"u\n\007Control\022\022\n\ndrop_index\030\001 \003" +
+      "(\r\022\022\n\nsave_frame\030\002 \001(\r\022\024\n\014change_scene\030\003" +
+      " \001(\r\022,\n\neditingMsg\030\004 \001(\0132\030.StreamingForm",
+      "at.Editing\"\201\001\n\005Image\022\024\n\014serialNumber\030\002 \001" +
+      "(\r\022\016\n\006status\030\003 \001(\r\022\020\n\010byteSize\030\004 \001(\r\022\021\n\t" +
+      "imageData\030\005 \001(\014\022-\n\timageType\030\006 \001(\0162\032.Str" +
+      "eamingFormat.ImageType\"\010\n\006Ending\"\312\002\n\020Str" +
+      "eamingMessage\022*\n\004type\030\001 \001(\0162\034.StreamingF" +
+      "ormat.MessageType\022&\n\007initMsg\030\002 \001(\0132\025.Str" +
+      "eamingFormat.Init\0222\n\rdefaultPosMsg\030\003 \001(\013" +
+      "2\033.StreamingFormat.DefaultPos\022*\n\tcameraM" +
+      "sg\030\004 \001(\0132\027.StreamingFormat.Camera\022(\n\010ima" +
+      "geMsg\030\005 \001(\0132\026.StreamingFormat.Image\022*\n\te",
+      "ndingMsg\030\006 \001(\0132\027.StreamingFormat.Ending\022" +
+      ",\n\ncontrolMsg\030\007 \001(\0132\030.StreamingFormat.Co" +
+      "ntrol*m\n\013MessageType\022\013\n\007MsgInit\020\000\022\021\n\rMsg" +
+      "DefaultPos\020\001\022\021\n\rMsgCameraInfo\020\002\022\014\n\010MsgIm" +
+      "age\020\003\022\r\n\tMsgEnding\020\004\022\016\n\nMsgControl\020\005*!\n\014" +
+      "ImageQuality\022\007\n\003LOW\020\000\022\010\n\004HIGH\020\001*q\n\rEditO" +
+      "peration\022\t\n\005START\020\000\022\n\n\006FINISH\020\001\022\n\n\006UPDAT" +
+      "E\020\002\022\016\n\nMODEL_LIST\020\003\022\r\n\tSET_MODEL\020\004\022\r\n\tAD" +
+      "D_MODEL\020\005\022\017\n\013CONFIRM_ADD\020\006*:\n\tImageType\022" +
+      "\016\n\nFULL_INDEX\020\000\022\r\n\tODD_INDEX\020\001\022\016\n\nEVEN_I",
+      "NDEX\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -7597,32 +8939,38 @@ public final class Message {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Camera_descriptor,
         new java.lang.String[] { "SerialNumber", "DeltaX", "DeltaY", "DeltaZ", "DeltaVx", "DeltaVy", "DeltaVz", "ImageQuality", });
-    internal_static_StreamingFormat_Editing_descriptor =
+    internal_static_StreamingFormat_ModelInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_StreamingFormat_ModelInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StreamingFormat_ModelInfo_descriptor,
+        new java.lang.String[] { "ModelId", "ModelName", "ScreenX", "ScreenY", "ModelImage", });
+    internal_static_StreamingFormat_Editing_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_StreamingFormat_Editing_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Editing_descriptor,
-        new java.lang.String[] { "Op", "ScreenX", "ScreenY", "CurrentModelIds", "AddModelIds", "ModelId", });
+        new java.lang.String[] { "Op", "ScreenX", "ScreenY", "CurrentModelInfos", "AddModelInfos", "ModelId", });
     internal_static_StreamingFormat_Control_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_StreamingFormat_Control_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Control_descriptor,
         new java.lang.String[] { "DropIndex", "SaveFrame", "ChangeScene", "EditingMsg", });
     internal_static_StreamingFormat_Image_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_StreamingFormat_Image_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Image_descriptor,
         new java.lang.String[] { "SerialNumber", "Status", "ByteSize", "ImageData", "ImageType", });
     internal_static_StreamingFormat_Ending_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_StreamingFormat_Ending_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_Ending_descriptor,
         new java.lang.String[] { });
     internal_static_StreamingFormat_StreamingMessage_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_StreamingFormat_StreamingMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StreamingFormat_StreamingMessage_descriptor,
